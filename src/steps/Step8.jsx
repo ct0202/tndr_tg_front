@@ -28,7 +28,7 @@ function Step8() {
       formData.append('photo', file);
 
       const response = await axios.post(
-        `/api/user/upload-photo?index=${index}&userId=${filters.userId}`, // Replace USER_ID dynamically
+        `/user/uploadPhoto?index=${index}&userId=${filters.userId}`, // Replace USER_ID dynamically
         formData,
         {
           headers: {

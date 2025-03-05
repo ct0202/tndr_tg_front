@@ -6,11 +6,12 @@ import TopChat from "../../components/TopChat";
 import "./FullChat.css";
 import Loading from "../../components/Loading";
 
-const socket = io("http://localhost:3001");
+// const socket = io("http://localhost:3001");
 // const socket = io("wss://tinder-back-production.up.railway.app");
-
+const socket = io("https://api.godateapp.ru");
 // const API_URL = "https://tinder-back-production.up.railway.app";
-const API_URL = "http://localhost:3001";
+// const API_URL = "http://localhost:3001";
+const API_URL= "https://api.godateapp.ru";
 
 function FullChat() {
   const { userId } = useParams();
