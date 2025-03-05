@@ -50,6 +50,7 @@ function Chat() {
                   </p>
                   <img src="/images/icons/chat_seach_button.svg"
                        className="mt-[70px]"
+                       alt="chat_search_icon"
                        onClick={() => setIsSearchOpen(!isSearchOpen)}
                   />
             </div>
@@ -72,7 +73,7 @@ function Chat() {
                   <div onClick={() => {navigate(`/chatWith/${elem?._id}`)}} className="relative w-[81px] h-[81px] bg-[#feffff] rounded-[40px] overflow-hidden border border-solid border-[#f2dddf]">
                     <img
                       className="absolute w-[70px] h-[70px] top-[5px] left-[5px] rounded-[40px] object-cover"
-                      alt="Image"
+                      alt="Image "
                       src={
                         elem?.photos[0] ||
                         "https://scott88lee.github.io/FMX/img/avatar.jpg"

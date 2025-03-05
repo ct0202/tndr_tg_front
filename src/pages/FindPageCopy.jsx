@@ -23,13 +23,14 @@ function FindPage() {
     }, [findFilters]);
 
     const handleReaction = async (action) => {
+        console.log("Reaction:", action);
         if (currentIndex >= candidates.length) return;
 
         const userId = localStorage.getItem("userId");
         const targetUserId = candidates[currentIndex]._id;
 
         try {
-            // await axios.post("/users/react", { userId, targetUserId, action });
+            await axios.post("/users/react", { userId, targetUserId, action });
             setCurrentIndex((prev) => prev + 1);
         } catch (err) {
             console.error("Ошибка при отправке реакции:", err);
@@ -40,7 +41,7 @@ function FindPage() {
         <div className="w-[90vw] flex flex-col justify-start items-center" style={{ height: "calc(100% - 80px)" }}>
             {filters && <Filters closePopup={() => setFilters(false)} />}
 
-            <div className="flex justify-between items-center w-[100%] mt-[45px]">
+            <div className="flex justify-between items-center w-[100%] mt-[90px]">
                 <img src="/images/ui/logo.svg" className="w-[125px]" alt="" />
                 <img
                     src="/images/ui/filter.png"
@@ -49,23 +50,52 @@ function FindPage() {
                     alt=""
                 />
             </div>
-            <div className="w-full max-w-[345px] top-[100px] absolute z-0 flex flex-col justify-start items-center bg-black">
+
+
+
+            {/*<div className="w-full max-w-[345px] top-[100px] absolute z-0 flex flex-col justify-start items-center bg-black">*/}
+            {/*    {candidates.length > 0 ? (*/}
+            {/*        candidates*/}
+            {/*            .slice(currentIndex, currentIndex + 2) // Берем две верхние карточки*/}
+            {/*            .reverse()*/}
+            {/*            .map((candidate, index) => (*/}
+            {/*                <Card*/}
+            {/*                    key={candidate._id}*/}
+            {/*                    user={candidate}*/}
+            {/*                    onSwipe={handleReaction}*/}
+            {/*                    isFront={index === 0} // Верхняя карточка*/}
+            {/*                />*/}
+            {/*            ))*/}
+            {/*    ) : (*/}
+            {/*        <img src="/images/icons/undef.svg" alt="Нет кандидатов" className="w-[100%]" />*/}
+            {/*    )}*/}
+            {/*</div>*/}
+
+            <div className="w-full max-w-[345px] top-[145px] absolute z-0 flex flex-col justify-start items-center">
                 {candidates.length > 0 ? (
-                    candidates
-                        .slice(currentIndex, currentIndex + 2) // Берем две верхние карточки
-                        .reverse()
-                        .map((candidate, index) => (
+                    <>
+                        {(candidates.length > 1
+                                ? candidates.slice(currentIndex, currentIndex + 2).reverse()
+                                : candidates.slice(currentIndex, currentIndex + 1)
+                        ).map((candidate, index) => (
                             <Card
                                 key={candidate._id}
                                 user={candidate}
                                 onSwipe={handleReaction}
                                 isFront={index === 0} // Верхняя карточка
                             />
-                        ))
+                        ))}
+                        {currentIndex >= candidates.length - 1 && (
+                            <img src="/images/icons/undef.svg" alt="Нет кандидатов" className="w-[100%]" />
+                        )}
+                    </>
                 ) : (
                     <img src="/images/icons/undef.svg" alt="Нет кандидатов" className="w-[100%]" />
                 )}
             </div>
+
+
+
             <div className="flex justify-between items-center absolute bottom-20 w-[90%]">
                 <img
                     src="/images/ui/primary button (1).png"
@@ -94,21 +124,34 @@ const Card = ({ user, onSwipe, isFront }) => {
     const x = useMotionValue(0);
     const rotateRaw = useTransform(x, [-200, 200], [-25, 25]);
     const opacity = useTransform(x, [-200, 0, 200], [0, 1, 0]);
-
     const controls = useAnimation();
-
     const scale = isFront ? 1 : 1;
 
-    const handleDragEnd = async (_, info) => {
-        const offsetX = info.offset.x;
-        console.log(offsetX);
-        onSwipe(offsetX > 0 ? "right" : "left");
+
+
+    // const handleDragEnd = async (_, info) => {
+    //     const offsetX = info.offset.x;
+    //     console.log(offsetX);
+    //     onSwipe(offsetX > 0 ? "right" : "left");
+    // };
+    const handleDragEnd = (_, info) => {
+        const swipeThreshold = 100; // Минимальное смещение для свайпа
+        const swipeDirection = info.offset.x > swipeThreshold ? "like"
+            : info.offset.x < -swipeThreshold ? "dislike"
+                : null; // Не свайпаем, если меньше порога
+
+        if (swipeDirection) {
+            onSwipe(swipeDirection);
+        }
     };
+
+
+
 
     return (
         <motion.div
             drag="x"
-            dragConstraints={{ left: -100, right: 100 }}
+            dragConstraints={{ left: 0, right: 0 }}
             style={{ x, rotate: rotateRaw, opacity, scale, zIndex: isFront ? 1 : 2  }}
             animate={controls}
             onDragEnd={handleDragEnd}
