@@ -11,6 +11,7 @@ import Chat from "./pages/Chat";
 import FullChat from "./pages/FullChat/FullChat";
 import Premium from "./pages/Premium";
 import FindPageCopy from "./pages/FindPageCopy";
+import {useEffect} from "react";
 
 function App() {
   useEffect(() => {
@@ -23,7 +24,7 @@ function App() {
 
     tg.ready();
 
-    return () => { commented
+    return () => {
       tg.close(); // Закрытие веб-приложения (при необходимости)
     };
   }, []);
