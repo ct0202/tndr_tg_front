@@ -31,6 +31,7 @@ function LogoPage() {
           .post("/getTelegramId", { initData: userObj.id })
           .then((response) => {
             if (response.data?.user?._id) {
+              console.log(response.data?.user?._id);
               localStorage.setItem("userId", response.data.user._id);
               setUser(response.data?.user);
             }

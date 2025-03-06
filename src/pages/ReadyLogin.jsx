@@ -21,7 +21,7 @@ function ReadyLogin() {
             .then((res) => res.data)
             .then((data) => {
                 if (data) {
-                    console.log(data);
+                    console.log(data.message);
                     setUser(data);
                 }
             })
