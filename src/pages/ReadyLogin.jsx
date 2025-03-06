@@ -22,6 +22,10 @@ function ReadyLogin() {
             .then((data) => {
                 if (data) {
                     console.log(data.message);
+                    if(data.message == "Пользователь не найден"){
+                        navigate('/calculate');
+                    }
+
                     setUser(data);
                 }
             })
