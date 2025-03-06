@@ -62,7 +62,7 @@ function LogoPage() {
       <Button
         className="mt-[120px] h-[64px] w-[250px]"
         onClick={() => {
-          if (user === undefined || user === null) {
+          if (user === undefined || user === null || user.name === undefined || user.name === null) {
             navigate("/calculate");
           } else {
             navigate("/readyLogin");
