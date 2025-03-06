@@ -81,6 +81,7 @@ function CalculatePage() {
       if(data){
         console.log(data);
         console.log("Успешная регистрация");
+        alert("Успешная регистрация");
         // navigate('/readyLogin')
         window.location.href = "/home";
       }else{
@@ -115,7 +116,7 @@ function CalculatePage() {
           !isStepValid() ? "bg-gray-300 cursor-not-allowed" : "bg-blue-500"
         }`}
         onClick={step !== 7 ? 
-          (step === 8 ? congradulations : () => setStep((prev) => prev + 1)) : 
+          (step === 8 ? congradulations : () => setStep((prev) => prev + 1)) :
           registration}
         
         disabled={!isStepValid()} // Блокируем кнопку, если шаг не валиден
