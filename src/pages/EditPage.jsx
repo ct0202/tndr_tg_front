@@ -65,13 +65,22 @@ function EditPage() {
             setPhotos((prevPhotos) => {
                 const updatedPhotos = [...prevPhotos];
                 updatedPhotos[index] = response.data.photoUrl;
-                console.log(response.data.photoUrl);
                 return updatedPhotos;
             });
 
         } catch (error) {
             console.error('Ошибка при загрузке фото:', error);
-            alert(error);
+            let errorMessage = 'Не удалось загрузить фото.';
+
+            if (error.response) {
+                errorMessage += ` Сервер ответил: ${error.response.data?.message || JSON.stringify(error.response.data)}`;
+            } else if (error.request) {
+                errorMessage += ' Нет ответа от сервера.';
+            } else {
+                errorMessage += ` Ошибка: ${error.message}`;
+            }
+
+            alert(errorMessage);
         }
     };
     // Функция для обновления имени пользователя
