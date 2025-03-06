@@ -80,8 +80,9 @@ function CalculatePage() {
     .then(data => {
       if(data){
         console.log(data);
-        
-        navigate('/readyLogin')
+        console.log("Успешная регистрация");
+        // navigate('/readyLogin')
+        window.location.href = "/home";
       }else{
         alert("Что то пошло не так")
       }
