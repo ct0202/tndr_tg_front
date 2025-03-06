@@ -83,7 +83,7 @@ function CalculatePage() {
         console.log("Успешная регистрация");
         alert("Успешная регистрация");
         // navigate('/readyLogin')
-        window.location.href = "/home";
+        window.location.href = "/readyLogin";
       }else{
         alert("Что то пошло не так")
       }
