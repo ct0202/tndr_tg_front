@@ -91,7 +91,7 @@ function CalculatePage() {
   }
 
   return (
-    <div className='flex flex-col justify-start items-center w-[100%]'>
+    <div className='flex flex-col justify-start items-center w-[100%] mt-[48px]'>
       <div className="flex flex-col justify-start items-start w-[100%] ml-4 mt-[32px]">
         <ProgressBar 
           current={step} 
