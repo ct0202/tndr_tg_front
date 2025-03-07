@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
 import io from "socket.io-client";
 import axios from "../../axios";
@@ -6,94 +6,92 @@ import TopChat from "../../components/TopChat";
 import "./FullChat.css";
 import Loading from "../../components/Loading";
 
-const socket = io("https://api.godateapp.ru");
 const API_URL = "https://api.godateapp.ru";
 
 function FullChat() {
   const { userId } = useParams();
   const id = localStorage.getItem("userId");
 
+  const socketRef = useRef(null);
   const [user, setUser] = useState(null);
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
   const [status, setStatus] = useState(null);
 
-  // 🔹 Подключаем пользователя к сокетам
+  // Подключение к WebSocket
   useEffect(() => {
+    socketRef.current = io(API_URL);
 
-    console.log("🔌 Подключение к WebSocket...");
-
-    socket.on("connect", () => {
-      console.log("✅ Успешное подключение! Socket ID:", socket.id);
+    socketRef.current.on("connect", () => {
+      console.log("✅ Подключено к WebSocket. Socket ID:", socketRef.current.id);
     });
 
-    socket.on("disconnect", (reason) => {
-      console.warn("⚠️ Отключение от WebSocket. Причина:", reason);
+    socketRef.current.on("disconnect", (reason) => {
+      console.warn("⚠️ Отключено от WebSocket. Причина:", reason);
     });
 
     return () => {
-      socket.off("connect");
-      socket.off("disconnect");
+      socketRef.current.disconnect();
     };
+  }, []);
 
-    if (id) {
-      socket.emit("joinChat", id);
+  // Подключение к чату
+  useEffect(() => {
+    if (id && socketRef.current) {
+      socketRef.current.emit("joinChat", id);
     }
-
-    return () => {
-      socket.off("joinChat");
-    };
   }, [id]);
 
+  // Логирование всех событий
   useEffect(() => {
     const logAllEvents = (event, data) => {
       console.log(`📩 Событие: ${event}`, data);
     };
 
-    socket.onAny(logAllEvents);
+    socketRef.current.onAny(logAllEvents);
 
     return () => {
-      socket.offAny(logAllEvents);
+      socketRef.current.offAny(logAllEvents);
     };
   }, []);
 
-
-  // 🔹 Загружаем историю сообщений при смене собеседника
+  // Загрузка данных собеседника и сообщений
   useEffect(() => {
-    if (id && userId) {
-      axios
-          .post(`${API_URL}/auth/getUserById`, { userId })
-          .then((res) => {
-            if (res.data) {
-              setUser(res.data);
-              setStatus({ online: res.data.online, lastSeen: res.data.lastSeen });
-            }
-          });
+    const fetchChatData = async () => {
+      try {
+        if (!id || !userId) return;
 
-      axios
-          .post(`${API_URL}/getMessages`, { userId: id, receiverId: userId })
-          .then((res) => {
-            setMessages(res.data);
-          })
-          .catch((err) => console.error(err));
-    }
-  }, [userId]); // ✅ Теперь `userId` в зависимостях
+        const userRes = await axios.post(`${API_URL}/auth/getUserById`, { userId });
+        if (userRes.data) {
+          setUser(userRes.data);
+          setStatus({ online: userRes.data.online, lastSeen: userRes.data.lastSeen });
+        }
 
-  // 🔹 Получение сообщений в реальном времени
+        const messagesRes = await axios.post(`${API_URL}/getMessages`, { userId: id, receiverId: userId });
+        setMessages(messagesRes.data);
+      } catch (error) {
+        console.error("Ошибка загрузки данных:", error);
+      }
+    };
+
+    fetchChatData();
+  }, [userId, id]);
+
+  // Получение сообщений в реальном времени
   useEffect(() => {
     const handleReceiveMessage = (data) => {
       console.log("📨 Новое сообщение от сервера:", data);
       setMessages((prev) => [...prev, data]);
     };
 
-    socket.off("receiveMessage").on("receiveMessage", handleReceiveMessage);
+    socketRef.current.on("receiveMessage", handleReceiveMessage);
 
     return () => {
-      socket.off("receiveMessage", handleReceiveMessage);
+      socketRef.current.off("receiveMessage", handleReceiveMessage);
     };
   }, []);
 
-  // 🔹 Обработчик отправки сообщений
+  // Отправка сообщения
   const sendMessage = () => {
     if (message.trim() && userId) {
       const newMessage = {
@@ -103,9 +101,8 @@ function FullChat() {
         createdAt: new Date().toISOString(),
       };
 
-      socket.emit("sendMessage", newMessage); // ✅ Отправляем на сервер
-
-      setMessages((prev) => [...prev, newMessage]); // ✅ Обновляем UI мгновенно
+      socketRef.current.emit("sendMessage", newMessage);
+      setMessages((prev) => [...prev, newMessage]);
       setMessage("");
     }
   };
