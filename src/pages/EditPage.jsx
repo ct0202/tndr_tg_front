@@ -50,7 +50,6 @@ function EditPage() {
         const file = e.target.files[0];
         if (!file) return;
 
-        alert(file.type);
         const validTypes = ['image/png', 'image/jpg'];
         if (!validTypes.includes(file.type)) {
             alert('Файл должен быть в формате PNG или JPG!');
