@@ -55,6 +55,21 @@ function FullChat() {
     };
   }, []);
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (id && userId) {
+        axios
+            .post(`${API_URL}/getMessages`, { userId: id, receiverId: userId })
+            .then((res) => {
+              setMessages(res.data);
+            })
+            .catch((err) => console.error(err));
+      }
+    }, 1000); // 🔹 Запрос каждую секунду
+
+    return () => clearInterval(interval); // ✅ Чистим интервал при размонтировании
+  }, [userId]);
+
   // Загрузка данных собеседника и сообщений
   useEffect(() => {
     const fetchChatData = async () => {
