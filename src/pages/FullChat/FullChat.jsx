@@ -20,6 +20,22 @@ function FullChat() {
 
   // 🔹 Подключаем пользователя к сокетам
   useEffect(() => {
+
+    console.log("🔌 Подключение к WebSocket...");
+
+    socket.on("connect", () => {
+      console.log("✅ Успешное подключение! Socket ID:", socket.id);
+    });
+
+    socket.on("disconnect", (reason) => {
+      console.warn("⚠️ Отключение от WebSocket. Причина:", reason);
+    });
+
+    return () => {
+      socket.off("connect");
+      socket.off("disconnect");
+    };
+
     if (id) {
       socket.emit("joinChat", id);
     }
@@ -28,6 +44,19 @@ function FullChat() {
       socket.off("joinChat");
     };
   }, [id]);
+
+  useEffect(() => {
+    const logAllEvents = (event, data) => {
+      console.log(`📩 Событие: ${event}`, data);
+    };
+
+    socket.onAny(logAllEvents);
+
+    return () => {
+      socket.offAny(logAllEvents);
+    };
+  }, []);
+
 
   // 🔹 Загружаем историю сообщений при смене собеседника
   useEffect(() => {
@@ -53,6 +82,7 @@ function FullChat() {
   // 🔹 Получение сообщений в реальном времени
   useEffect(() => {
     const handleReceiveMessage = (data) => {
+      console.log("📨 Новое сообщение от сервера:", data);
       setMessages((prev) => [...prev, data]);
     };
 
