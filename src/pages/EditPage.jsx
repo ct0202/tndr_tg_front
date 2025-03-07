@@ -58,8 +58,6 @@ function EditPage() {
                 e.target.value = ''; // Очищаем input, чтобы пользователь мог выбрать новый файл
                 return;
             }
-
-            handleFileSelection(e, index);
         }
 
         const formData = new FormData();
