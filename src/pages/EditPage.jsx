@@ -50,14 +50,12 @@ function EditPage() {
         const file = e.target.files[0];
         if (!file) return;
 
-        if (file) {
-            const validTypes = ['image/png', 'image/jpeg', 'image/jpg'];
-
-            if (!validTypes.includes(file.type)) {
-                alert('Файл должен быть в формате PNG или JPG!');
-                e.target.value = ''; // Очищаем input, чтобы пользователь мог выбрать новый файл
-                return;
-            }
+        alert(file.type);
+        const validTypes = ['image/png', 'image/jpeg', 'image/jpg'];
+        if (!validTypes.includes(file.type)) {
+            alert('Файл должен быть в формате PNG или JPG!');
+            e.target.value = ''; // Очищаем input, чтобы пользователь мог выбрать новый файл
+            return;
         }
 
         const formData = new FormData();
