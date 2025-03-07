@@ -86,8 +86,14 @@ function FullChat() {
 
     socketRef.current.on("receiveMessage", handleReceiveMessage);
 
+    const interval = setInterval(() => {
+      console.log("🔄 Проверка новых сообщений...");
+      socketRef.current.emit("checkMessages"); // Можно добавить событие, если сервер поддерживает
+    }, 2000);
+
     return () => {
       socketRef.current.off("receiveMessage", handleReceiveMessage);
+      clearInterval(interval);
     };
   }, []);
 
