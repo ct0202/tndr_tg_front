@@ -45,7 +45,7 @@ function Chat() {
       ) : (
         <>
             <div className={'w-full flex flex-row justify-between items-center'}>
-                  <p className="text-gray text-[20px] font-semibold w-[100%] mt-[70px] ">
+                  <p className="text-gray text-[20px] font-semibold w-[100%] mt-[110px] ">
                     Чаты
                   </p>
                   <img src="/images/icons/chat_seach_button.svg"
