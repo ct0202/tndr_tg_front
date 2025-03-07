@@ -24,19 +24,35 @@ function FullChat() {
 
 
 
+  // useEffect(() => {
+  //   if (id) {
+  //     socket.emit("joinChat", id);
+  //   }
+  //
+  //   socket.on("receiveMessage", (data) => {
+  //     setMessages((prev) => [...prev, data]);
+  //   });
+  //
+  //   return () => {
+  //     socket.off("receiveMessage");
+  //   };
+  // }, [id]);
   useEffect(() => {
-    if (id) {
+    if (id && userId) {
       socket.emit("joinChat", id);
+
+      const handleReceiveMessage = (data) => {
+        setMessages((prev) => [...prev, data]);
+      };
+
+      socket.on("receiveMessage", handleReceiveMessage);
+
+      return () => {
+        socket.off("receiveMessage", handleReceiveMessage);
+      };
     }
+  }, [id, userId]);
 
-    socket.on("receiveMessage", (data) => {
-      setMessages((prev) => [...prev, data]);
-    });
-
-    return () => {
-      socket.off("receiveMessage");
-    };
-  }, [id]);
 
   useEffect(() => {
     console.log("id:", id, "userId:", userId);
