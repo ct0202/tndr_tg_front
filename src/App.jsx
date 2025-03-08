@@ -28,6 +28,22 @@ function App() {
       tg.close(); // Закрытие веб-приложения (при необходимости)
     };
   }, []);
+
+
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (event.key === "Enter" && document.activeElement.tagName === "INPUT") {
+        document.activeElement.blur(); // Скрываем клавиатуру
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
+
   return (
     <FiltersProvider>
       <div className="App flex justify-center items-center">
