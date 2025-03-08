@@ -151,7 +151,7 @@ function EditPage() {
                             hidden={true}
                             id={`image${index}`}
                             onChange={(e) => handleFileSelection(e, index)}
-                            accept='.png, .jpg'
+                            accept
                         />
                     </label>
                 ))}
