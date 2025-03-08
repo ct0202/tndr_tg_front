@@ -50,9 +50,9 @@ function EditPage() {
         const file = e.target.files[0];
         if (!file) return;
 
-        const validTypes = ['image/png', 'image/jpg'];
-        if (!validTypes.includes(file.type)) {
-            alert('Файл должен быть в формате PNG или JPG!');
+        const invalidTypes = ['image/svg+xml', 'text/html'];
+        if (invalidTypes.includes(file.type)) {
+            alert('Недопустимый формат изображения');
             e.target.value = ''; // Очищаем input, чтобы пользователь мог выбрать новый файл
             return;
         }
