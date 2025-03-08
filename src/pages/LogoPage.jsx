@@ -50,7 +50,7 @@ function LogoPage() {
 
   return (
     <div
-      className={`flex flex-col justify-start items-center transition-opacity duration-500 ${
+      className={`flex flex-col justify-start overflow-hidden items-center transition-opacity duration-500 ${
         isLoaded ? "opacity-100" : "opacity-0"
       }`}
     >
