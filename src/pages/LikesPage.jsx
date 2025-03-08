@@ -90,6 +90,8 @@ function LikesPage() {
         }
       });
   }, []);
+
+
   return (
     <>
       <div className="w-[90%] mt-[80px] flex flex-col justify-start items-center mb-[70px]">

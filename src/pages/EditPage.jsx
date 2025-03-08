@@ -23,7 +23,16 @@ function EditPage() {
     // }, []);
 
     useEffect(() => {
+        document.body.style.overflow = "auto"; // Включаем скролл на этой странице
+
+        return () => {
+            document.body.style.overflow = "hidden"; // Выключаем скролл при уходе со страницы
+        };
+    }, []);
+
+    useEffect(() => {
         const userId = localStorage.getItem('userId');
+
         axios.post('/auth/getUserById', { userId })
             .then((res) => res.data)
             .then((data) => {
