@@ -112,7 +112,7 @@ function EditPage() {
     };
 
     return (
-        <div className='flex flex-col justify-center items-start w-[360px] mb-[20px] mt-[80px]'>
+        <div className='flex flex-col justify-center items-start w-[360px] mb-[20px] mt-[80px] overflow-y-scroll'>
             <h3
                 onClick={() => navigate(-1)}
                 className='text-gray font-semibold text-[24px] flex justify-center items-center whitespace-nowrap gap-2 mt-[5px]'
