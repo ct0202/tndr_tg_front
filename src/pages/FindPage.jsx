@@ -1,31 +1,29 @@
 import React, { useEffect, useState } from "react";
+import { motion, useMotionValue, useTransform, useAnimation } from "framer-motion";
 import axios from "../axios";
-
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Pagination } from "swiper/modules";
 import Filters from "../components/Filters";
 import { useFilters } from "../context/FiltersContext";
+import {Swiper, SwiperSlide} from "swiper/react";
+import {Pagination} from "swiper/modules";
 
 function FindPage() {
     const [candidates, setCandidates] = useState([]);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [filters, setFilters] = useState(false);
     const { updateFindFilter, findFilters } = useFilters();
-    console.log("filters", findFilters);
 
     useEffect(() => {
         const userId = localStorage.getItem("userId");
         axios
             .post("/users/getCandidates", { userId, filters: findFilters })
             .then((res) => {
-                console.log(res.data);
                 setCandidates(res.data);
             })
             .catch((err) => console.error("Ошибка загрузки кандидатов:", err));
     }, [findFilters]);
 
-    console.log(candidates);
     const handleReaction = async (action) => {
+        console.log("Reaction:", action);
         if (currentIndex >= candidates.length) return;
 
         const userId = localStorage.getItem("userId");
@@ -39,13 +37,8 @@ function FindPage() {
         }
     };
 
-    const user = candidates[currentIndex];
-
     return (
-        <div
-            className="w-[90vw] flex flex-col justify-start items-center"
-            style={{ height: "calc(100% - 80px)" }}
-        >
+        <div className="w-[90vw] flex flex-col justify-start items-center" style={{ height: "calc(100% - 80px)" }}>
             {filters && <Filters closePopup={() => setFilters(false)} />}
 
             <div className="flex justify-between items-center w-[100%] mt-[90px]">
@@ -57,63 +50,167 @@ function FindPage() {
                     alt=""
                 />
             </div>
-            <div className="w-full max-w-[345px] bottom-[160px] absolute z-0">
-                {
-                    user?.photos?.length > 0 ? (
-                        <Swiper
-                            modules={[Pagination]}
-                            spaceBetween={8}
-                            slidesPerView={1}
-                            pagination={{ clickable: true }}
-                            className="rounded-[8px]"
-                        >
-                            {user.photos.map((photo, index) => (
-                                <SwiperSlide key={index}>
-                                    <div className="relative w-full h-[533px] rounded-[8px] overflow-hidden">
-                                        <img
-                                            className="w-full h-full object-cover"
-                                            src={photo}
-                                            alt={`Фото ${index + 1}`}
-                                        />
-                                        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent"></div>
-                                    </div>
-                                </SwiperSlide>
-                            ))}
-                        </Swiper>
-                    ) : user ? (
-                        <Swiper
-                            modules={[Pagination]}
-                            spaceBetween={8}
-                            slidesPerView={1}
-                            pagination={{ clickable: true }}
-                            className="rounded-[8px]"
-                        >
-                            <SwiperSlide>
+
+
+
+            {/*<div className="w-full max-w-[345px] top-[100px] absolute z-0 flex flex-col justify-start items-center bg-black">*/}
+            {/*    {candidates.length > 0 ? (*/}
+            {/*        candidates*/}
+            {/*            .slice(currentIndex, currentIndex + 2) // Берем две верхние карточки*/}
+            {/*            .reverse()*/}
+            {/*            .map((candidate, index) => (*/}
+            {/*                <Card*/}
+            {/*                    key={candidate._id}*/}
+            {/*                    user={candidate}*/}
+            {/*                    onSwipe={handleReaction}*/}
+            {/*                    isFront={index === 0} // Верхняя карточка*/}
+            {/*                />*/}
+            {/*            ))*/}
+            {/*    ) : (*/}
+            {/*        <img src="/images/icons/undef.svg" alt="Нет кандидатов" className="w-[100%]" />*/}
+            {/*    )}*/}
+            {/*</div>*/}
+
+            <div className="w-full max-w-[345px] top-[145px] absolute z-0 flex flex-col justify-start items-center">
+                {candidates.length > 0 ? (
+                    <>
+                        {(candidates.length > 1
+                                ? candidates.slice(currentIndex, currentIndex + 2).reverse()
+                                : candidates.slice(currentIndex, currentIndex + 1)
+                        ).map((candidate, index) => (
+                            <Card
+                                key={candidate._id}
+                                user={candidate}
+                                onSwipe={handleReaction}
+                                isFront={index === 0} // Верхняя карточка
+                            />
+                        ))}
+                        {currentIndex >= candidates.length - 1 && (
+                            <img src="/images/icons/undef.svg" alt="Нет кандидатов" className="w-[100%]" />
+                        )}
+                    </>
+                ) : (
+                    <img src="/images/icons/undef.svg" alt="Нет кандидатов" className="w-[100%]" />
+                )}
+            </div>
+
+
+
+            <div className="flex justify-between items-center absolute bottom-20 w-[90%]">
+                <img
+                    src="/images/ui/primary button (1).png"
+                    className="w-[70px]"
+                    alt=""
+                />
+                <img
+                    src="/images/ui/closeBtn.png"
+                    className="w-[100px]"
+                    alt=""
+                    onClick={() => handleReaction("dislike")}
+                />
+                <img
+                    src="/images/ui/okBtn.png"
+                    className="w-[100px]"
+                    alt=""
+                    onClick={() => handleReaction("like")}
+                />
+                <img src="/images/ui/StarBtn.png" className="w-[70px]" alt="" />
+            </div>
+        </div>
+    );
+}
+
+const Card = ({ user, onSwipe, isFront }) => {
+    const x = useMotionValue(0);
+    const rotateRaw = useTransform(x, [-200, 200], [-25, 25]);
+    const opacity = useTransform(x, [-200, 0, 200], [0, 1, 0]);
+    const controls = useAnimation();
+    const scale = isFront ? 1 : 1;
+
+
+
+    // const handleDragEnd = async (_, info) => {
+    //     const offsetX = info.offset.x;
+    //     console.log(offsetX);
+    //     onSwipe(offsetX > 0 ? "right" : "left");
+    // };
+    const handleDragEnd = (_, info) => {
+        const swipeThreshold = 100; // Минимальное смещение для свайпа
+        const swipeDirection = info.offset.x > swipeThreshold ? "like"
+            : info.offset.x < -swipeThreshold ? "dislike"
+                : null; // Не свайпаем, если меньше порога
+
+        if (swipeDirection) {
+            onSwipe(swipeDirection);
+        }
+    };
+
+
+
+
+    return (
+        <motion.div
+            drag="x"
+            dragConstraints={{ left: 0, right: 0 }}
+            style={{ x, rotate: rotateRaw, opacity, scale, zIndex: isFront ? 1 : 2  }}
+            animate={controls}
+            onDragEnd={handleDragEnd}
+            className={`absolute w-full h-[533px] rounded-[8px] overflow-hidden`}
+        >
+            {
+                user?.photos?.length > 0 ? (
+                    <Swiper
+                        modules={[Pagination]}
+                        spaceBetween={8}
+                        slidesPerView={1}
+                        pagination={{ clickable: true }}
+                        className="rounded-[8px]"
+                    >
+                        {user.photos.map((photo, index) => (
+                            <SwiperSlide key={index}>
                                 <div className="relative w-full h-[533px] rounded-[8px] overflow-hidden">
                                     <img
                                         className="w-full h-full object-cover"
-                                        src={"https://scott88lee.github.io/FMX/img/avatar.jpg"}
-                                        alt={`Фото`}
+                                        src={photo}
+                                        alt={`photo ${index + 1}`}
                                     />
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent"></div>
                                 </div>
                             </SwiperSlide>
-                        </Swiper>
-                    ) : (
-                        <img
-                            src="/images/icons/undef.svg"
-                            alt="afddas"
-                            className="w-[100%]"
-                        />
-                    )
+                        ))}
+                    </Swiper>
+                ) : user ? (
+                    <Swiper
+                        modules={[Pagination]}
+                        spaceBetween={8}
+                        slidesPerView={1}
+                        pagination={{ clickable: true }}
+                        className="rounded-[8px]"
+                    >
+                        <SwiperSlide>
+                            <div className="relative w-full h-[533px] rounded-[8px] overflow-hidden">
+                                <img
+                                    className="w-full h-full object-cover"
+                                    src={"https://scott88lee.github.io/FMX/img/avatar.jpg"}
+                                    alt={`photo`}
+                                />
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent"></div>
+                            </div>
+                        </SwiperSlide>
+                    </Swiper>
+                ) : (
+                    <img
+                        src="/images/icons/undef.svg"
+                        alt="afddas"
+                        className="w-[100%]"
+                    />
+                )
 
-                    // https://scott88lee.github.io/FMX/img/avatar.jpg
-                }
-            </div>
 
-            {/* Информация о пользователе */}
+                // https://scott88lee.github.io/FMX/img/avatar.jpg
+            }
             {user ? (
-                <div className="flex flex-col w-[345px] text-left z-10 ml-3 absolute bottom-[190px] pointer-events-none">
+                <div className="flex flex-col w-[345px] text-left z-10 ml-3 absolute bottom-[30px] pointer-events-none">
                     <p className="bg-red-500 text-white rounded-[16px] px-[12px] py-1 font-medium min-w-[100px] max-w-fit flex justify-center items-center">
                         {user?.goal || "Цель не указана"}
                     </p>
@@ -152,29 +249,8 @@ function FindPage() {
             ) : (
                 <p></p>
             )}
-
-            <div className="flex justify-between items-center absolute bottom-20 w-[90%]">
-                <img
-                    src="/images/ui/primary button (1).png"
-                    className="w-[70px]"
-                    alt=""
-                />
-                <img
-                    src="/images/ui/closeBtn.png"
-                    className="w-[100px]"
-                    alt=""
-                    onClick={() => handleReaction("dislike")}
-                />
-                <img
-                    src="/images/ui/okBtn.png"
-                    className="w-[100px]"
-                    alt=""
-                    onClick={() => handleReaction("like")}
-                />
-                <img src="/images/ui/StarBtn.png" className="w-[70px]" alt="" />
-            </div>
-        </div>
+        </motion.div>
     );
-}
+};
 
 export default FindPage;

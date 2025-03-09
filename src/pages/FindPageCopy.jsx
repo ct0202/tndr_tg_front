@@ -30,10 +30,27 @@ function FindPage() {
         const targetUserId = candidates[currentIndex]._id;
 
         try {
-            await axios.post("/users/react", { userId, targetUserId, action });
             setCurrentIndex((prev) => prev + 1);
+
+            // await axios.post("/users/react", { userId, targetUserId, action });
+            // setCurrentIndex((prev) => prev + 1);
+
         } catch (err) {
             console.error("Ошибка при отправке реакции:", err);
+        }
+    };
+
+    const x = useMotionValue(0);
+    const rotate = useTransform(x, [-200, 200], [-25, 25]);
+    const opacity = useTransform(x, [-200, 0, 200], [0, 1, 0]);
+    const controls = useAnimation();
+
+    const handleDragEnd = (_, info) => {
+        const swipeThreshold = 100;
+        if (info.offset.x > swipeThreshold) {
+            handleReaction("like");
+        } else if (info.offset.x < -swipeThreshold) {
+            handleReaction("dislike");
         }
     };
 
@@ -51,26 +68,6 @@ function FindPage() {
                 />
             </div>
 
-
-
-            {/*<div className="w-full max-w-[345px] top-[100px] absolute z-0 flex flex-col justify-start items-center bg-black">*/}
-            {/*    {candidates.length > 0 ? (*/}
-            {/*        candidates*/}
-            {/*            .slice(currentIndex, currentIndex + 2) // Берем две верхние карточки*/}
-            {/*            .reverse()*/}
-            {/*            .map((candidate, index) => (*/}
-            {/*                <Card*/}
-            {/*                    key={candidate._id}*/}
-            {/*                    user={candidate}*/}
-            {/*                    onSwipe={handleReaction}*/}
-            {/*                    isFront={index === 0} // Верхняя карточка*/}
-            {/*                />*/}
-            {/*            ))*/}
-            {/*    ) : (*/}
-            {/*        <img src="/images/icons/undef.svg" alt="Нет кандидатов" className="w-[100%]" />*/}
-            {/*    )}*/}
-            {/*</div>*/}
-
             <div className="w-full max-w-[345px] top-[145px] absolute z-0 flex flex-col justify-start items-center">
                 {candidates.length > 0 ? (
                     <>
@@ -81,8 +78,12 @@ function FindPage() {
                             <Card
                                 key={candidate._id}
                                 user={candidate}
-                                onSwipe={handleReaction}
-                                isFront={index === 0} // Верхняя карточка
+                                x={index === 0 ? x : 0}
+                                rotate={index === 0 ? rotate : 0}
+                                opacity={index === 0 ? opacity : 1}
+                                controls={index === 0 ? controls : null}
+                                onDragEnd={handleDragEnd}
+                                isFront={index === 0}
                             />
                         ))}
                         {currentIndex >= candidates.length - 1 && (
@@ -93,8 +94,6 @@ function FindPage() {
                     <img src="/images/icons/undef.svg" alt="Нет кандидатов" className="w-[100%]" />
                 )}
             </div>
-
-
 
             <div className="flex justify-between items-center absolute bottom-20 w-[90%]">
                 <img
@@ -116,46 +115,21 @@ function FindPage() {
                 />
                 <img src="/images/ui/StarBtn.png" className="w-[70px]" alt="" />
             </div>
+
         </div>
     );
 }
 
-const Card = ({ user, onSwipe, isFront }) => {
-    const x = useMotionValue(0);
-    const rotateRaw = useTransform(x, [-200, 200], [-25, 25]);
-    const opacity = useTransform(x, [-200, 0, 200], [0, 1, 0]);
-    const controls = useAnimation();
-    const scale = isFront ? 1 : 1;
-
-
-
-    // const handleDragEnd = async (_, info) => {
-    //     const offsetX = info.offset.x;
-    //     console.log(offsetX);
-    //     onSwipe(offsetX > 0 ? "right" : "left");
-    // };
-    const handleDragEnd = (_, info) => {
-        const swipeThreshold = 100; // Минимальное смещение для свайпа
-        const swipeDirection = info.offset.x > swipeThreshold ? "like"
-            : info.offset.x < -swipeThreshold ? "dislike"
-                : null; // Не свайпаем, если меньше порога
-
-        if (swipeDirection) {
-            onSwipe(swipeDirection);
-        }
-    };
-
-
-
+const Card = ({ user, x, rotate, opacity, controls, onDragEnd, isFront }) => {
 
     return (
         <motion.div
-            drag="x"
+            drag={isFront ? "x" : false}
             dragConstraints={{ left: 0, right: 0 }}
-            style={{ x, rotate: rotateRaw, opacity, scale, zIndex: isFront ? 1 : 2  }}
+            style={{ x, rotate, opacity }}
             animate={controls}
-            onDragEnd={handleDragEnd}
-            className={`absolute w-full h-[533px] rounded-[8px] overflow-hidden`}
+            onDragEnd={onDragEnd}
+            className={`absolute w-full h-[533px] rounded-[8px] overflow-hidden ${isFront ? "z-[20]" : "z-0"}`}
         >
             {
                 user?.photos?.length > 0 ? (
