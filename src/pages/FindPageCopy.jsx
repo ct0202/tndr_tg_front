@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef, useImperativeHandle} from "react";
 import { motion, useMotionValue, useTransform, useAnimation } from "framer-motion";
 import axios from "../axios";
 import Filters from "../components/Filters";
@@ -12,33 +12,39 @@ function FindPage() {
     const [filters, setFilters] = useState(false);
     const { updateFindFilter, findFilters } = useFilters();
 
+    const [animation, setAnimation] = useState(null);
+    const [isAnimating, setIsAnimating] = useState(false);
+    const topCardRef = useRef(null);
+
     useEffect(() => {
         const userId = localStorage.getItem("userId");
         axios
             .post("/users/getCandidates", { userId, filters: findFilters })
             .then((res) => {
+                console.log("Загруженные кандидаты:", res.data);
                 setCandidates(res.data);
             })
             .catch((err) => console.error("Ошибка загрузки кандидатов:", err));
     }, [findFilters]);
 
     const handleReaction = async (action) => {
-        console.log("Reaction:", action);
-        if (currentIndex >= candidates.length) return;
-
+        if (candidates.length === 0) return;
         const userId = localStorage.getItem("userId");
-        const targetUserId = candidates[currentIndex]._id;
-
+        const targetUserId = candidates[0]._id;
         try {
-            setCurrentIndex((prev) => prev + 1);
 
-            // await axios.post("/users/react", { userId, targetUserId, action });
-            // setCurrentIndex((prev) => prev + 1);
-
-        } catch (err) {
+            setTimeout(() => {
+                setCandidates((prev) => prev.slice(1));
+            }, 200);
+            // setCandidates((prev) => prev.slice(1));
+            await axios.post("/users/react", { userId, targetUserId, action });
+        }
+        catch (err) {
+            setCandidates(prev => [candidates[0], ...prev]);
             console.error("Ошибка при отправке реакции:", err);
         }
     };
+
 
     const x = useMotionValue(0);
     const rotate = useTransform(x, [-200, 200], [-25, 25]);
@@ -54,12 +60,14 @@ function FindPage() {
         }
     };
 
+
+
     return (
-        <div className="w-[90vw] flex flex-col justify-start items-center" style={{ height: "calc(100% - 80px)" }}>
-            {filters && <Filters closePopup={() => setFilters(false)} />}
+        <div className="w-[90vw] flex flex-col justify-start items-center" style={{height: "calc(100% - 80px)"}}>
+            {filters && <Filters closePopup={() => setFilters(false)}/>}
 
             <div className="flex justify-between items-center w-[100%] mt-[90px]">
-                <img src="/images/ui/logo.svg" className="w-[125px]" alt="" />
+                <img src="/images/ui/logo.svg" className="w-[125px]" alt=""/>
                 <img
                     src="/images/ui/filter.png"
                     onClick={() => setFilters(true)}
@@ -71,27 +79,23 @@ function FindPage() {
             <div className="w-full max-w-[345px] top-[145px] absolute z-0 flex flex-col justify-start items-center">
                 {candidates.length > 0 ? (
                     <>
-                        {(candidates.length > 1
-                                ? candidates.slice(currentIndex, currentIndex + 2).reverse()
-                                : candidates.slice(currentIndex, currentIndex + 1)
-                        ).map((candidate, index) => (
+                        {/* Показываем максимум 2 карточки */}
+                        {candidates.slice(0, 2).reverse().map((candidate, index) => (
                             <Card
                                 key={candidate._id}
                                 user={candidate}
-                                x={index === 0 ? x : 0}
-                                rotate={index === 0 ? rotate : 0}
-                                opacity={index === 0 ? opacity : 1}
-                                controls={index === 0 ? controls : null}
-                                onDragEnd={handleDragEnd}
-                                isFront={index === 0}
+                                x={index === 1 ? x : 0}
+                                rotate={index === 1 ? rotate : 0}
+                                animation={index === 1 ? animation : null}
+                                opacity={index === 1 ? opacity : 1}
+                                controls={index === 1 ? controls : null}
+                                onDragEnd={index === 1 ? handleDragEnd : null}
+                                isFront={index === 1}
                             />
                         ))}
-                        {currentIndex >= candidates.length - 1 && (
-                            <img src="/images/icons/undef.svg" alt="Нет кандидатов" className="w-[100%]" />
-                        )}
                     </>
                 ) : (
-                    <img src="/images/icons/undef.svg" alt="Нет кандидатов" className="w-[100%]" />
+                    <img src="/images/icons/undef.svg" alt="Нет кандидатов" className="w-[100%]"/>
                 )}
             </div>
 
@@ -113,23 +117,29 @@ function FindPage() {
                     alt=""
                     onClick={() => handleReaction("like")}
                 />
-                <img src="/images/ui/StarBtn.png" className="w-[70px]" alt="" />
+                <img src="/images/ui/StarBtn.png" className="w-[70px]" alt=""/>
             </div>
 
         </div>
-    );
+    )
+        ;
 }
 
-const Card = ({ user, x, rotate, opacity, controls, onDragEnd, isFront }) => {
+const Card = React.forwardRef(({ user, x, rotate, opacity, controls, onDragEnd, isFront, animation}, ref) => {
+    const swiperRef = useRef(null);
+
+    useImperativeHandle(ref, () => ({
+        start: controls.start
+    }));
 
     return (
         <motion.div
             drag={isFront ? "x" : false}
-            dragConstraints={{ left: 0, right: 0 }}
-            style={{ x, rotate, opacity }}
+            dragConstraints={{left: 0, right: 0}}
+            style={{x, rotate, opacity}}
             animate={controls}
             onDragEnd={onDragEnd}
-            className={`absolute w-full h-[533px] rounded-[8px] overflow-hidden ${isFront ? "z-[20]" : "z-0"}`}
+            className={`absolute w-full h-[533px] rounded-[8px] overflow-hidden ${isFront ? "z-[20]" : "z-0"}  ${animation || ''}`}
         >
             {
                 user?.photos?.length > 0 ? (
@@ -139,6 +149,18 @@ const Card = ({ user, x, rotate, opacity, controls, onDragEnd, isFront }) => {
                         slidesPerView={1}
                         pagination={{ clickable: true }}
                         className="rounded-[8px]"
+                        allowTouchMove={false} // Отключаем свайп пальцем
+                        onSwiper={(swiper) => (swiperRef.current = swiper)}
+                        onClick={(swiper, event) => {
+                            const clickPosition = event.offsetX; // Позиция клика относительно контейнера
+                            const containerWidth = swiper.width;
+
+                            if (clickPosition < containerWidth / 2) {
+                                swiper.slidePrev();
+                            } else {
+                                swiper.slideNext();
+                            }
+                        }}
                     >
                         {user.photos.map((photo, index) => (
                             <SwiperSlide key={index}>
@@ -225,6 +247,6 @@ const Card = ({ user, x, rotate, opacity, controls, onDragEnd, isFront }) => {
             )}
         </motion.div>
     );
-};
+});
 
 export default FindPage;
