@@ -19,6 +19,7 @@ function FindPage() {
     const [filters, setFilters] = useState(false);
     const { updateFindFilter, findFilters } = useFilters();
     const [trigger, setTrigger] = useState(null);
+    const [history, setHistory] = useState([]);
 
     useEffect(() => {
         const userId = localStorage.getItem("userId");
@@ -35,6 +36,7 @@ function FindPage() {
         if (candidates.length === 0) return;
 
         setTrigger(action);
+        setHistory(prev => [candidates[0], ...prev]);
 
         setTimeout(async () => {
             const userId = localStorage.getItem("userId");
@@ -49,6 +51,13 @@ function FindPage() {
                 console.error("Ошибка при отправке реакции:", err);
             }
         }, 300)
+    };
+
+    const handleUndo = () => {
+        if (history.length === 0) return;
+        const lastCard = history[0];
+        setCandidates(prev => [lastCard, ...prev]);
+        setHistory(prev => prev.slice(1));
     };
 
     return (
@@ -92,6 +101,7 @@ function FindPage() {
                     src="/images/ui/primary button (1).png"
                     className="w-[70px]"
                     alt=""
+                    onClick={handleUndo}
                 />
                 <img
                     src="/images/ui/closeBtn.png"
@@ -105,7 +115,11 @@ function FindPage() {
                     alt=""
                     onClick={() => handleReaction("like")}
                 />
-                <img src="/images/ui/StarBtn.png" className="w-[70px]" alt=""/>
+                <img src="/images/ui/StarBtn.png"
+                     className="w-[70px]"
+                     alt=""
+                     onClick={() => handleReaction("superlike")}
+                />
             </div>
 
         </div>
@@ -122,6 +136,8 @@ const Card = ( { user, isFront, trigger }) => {
             setAnimationClass("slide-right");
         } else if (trigger === "dislike") {
             setAnimationClass("slide-left");
+        } else if(trigger === "superlike"){
+            setAnimationClass("slide-right");
         }
     }, [trigger]);
 
