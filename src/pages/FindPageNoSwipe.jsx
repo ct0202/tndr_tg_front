@@ -53,7 +53,7 @@ function FindPage() {
         }, 300)
     };
 
-    const handleUndo = () => {
+    const  handleUndo = () => {
         if (history.length === 0) return;
         const lastCard = history[0];
         setCandidates(prev => [lastCard, ...prev]);
