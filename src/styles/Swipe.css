@@ -1,0 +1,17 @@
+@keyframes slide-right {
+    0% { transform: translateX(0) rotate(0); opacity: 1; }
+    100% { transform: translateX(300px) rotate(15deg); opacity: 0; }
+}
+
+@keyframes slide-left {
+    0% { transform: translateX(0) rotate(0); opacity: 1; }
+    100% { transform: translateX(-300px) rotate(-15deg); opacity: 0; }
+}
+
+.slide-right {
+    animation: slide-right 0.3s ease-in-out forwards;
+}
+
+.slide-left {
+    animation: slide-left 0.3s ease-in-out forwards;
+}
