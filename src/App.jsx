@@ -12,6 +12,8 @@ import FullChat from "./pages/FullChat/FullChat";
 import Premium from "./pages/Premium";
 import FindPageCopy from "./pages/FindPageCopy";
 import {useEffect} from "react";
+import FindPageNoSwipe from "./pages/FindPageNoSwipe";
+import LikesPageCopy from "./pages/LikesPageCopy";
 
 function App() {
   useEffect(() => {
@@ -52,7 +54,7 @@ function App() {
           <Route path="/" element={<LogoPage />} />
           <Route path="/calculate" element={<CalculatePage />} />
           <Route path="/editProfile" element={<EditPage />} />
-          <Route path="/likes" element={<LikesPage />} />
+          <Route path="/likes" element={<LikesPageCopy />} />
 
           {/* Страницы с навигацией */}
           <Route path="/" element={<Layout />}>
@@ -61,7 +63,7 @@ function App() {
             <Route path="/chatWith/:userId" element={<FullChat />} />
             <Route path="/premium" element={<Premium />} />
 
-            <Route path="/find" element={<FindPageCopy />} />
+            <Route path="/find" element={<FindPageNoSwipe />} />
           </Route>
         </Routes>
       </div>
