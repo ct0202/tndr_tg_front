@@ -41,9 +41,10 @@ function FindPage() {
             const targetUserId = candidates[0]._id;
 
             try {
-                await axios.post("/users/react", { userId, targetUserId, action });
+
                 setCandidates((prev) => prev.slice(1));
                 setTrigger(null); // Сбрасываем триггер
+                await axios.post("/users/react", { userId, targetUserId, action });
             } catch (err) {
                 console.error("Ошибка при отправке реакции:", err);
             }
