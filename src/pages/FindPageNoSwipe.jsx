@@ -82,9 +82,13 @@ function FindPage() {
 
     const handleUndo = () => {
         if (history.length === 0) return;
+
         const lastCard = history[0];
         setCandidates(prev => [lastCard, ...prev]);
         setHistory(prev => prev.slice(1));
+
+        setTrigger('back');
+        setTimeout(() => setTrigger(null), 300);
     };
 
     return (
@@ -190,6 +194,8 @@ const Card = ({user, isFront, trigger}) => {
             setAnimationClass("slide-left");
         } else if(trigger === "superlike"){
             setAnimationClass("slide-right");
+        } else if(trigger === "back"){
+            setAnimationClass("slide-back");
         }
     }, [trigger]);
 
