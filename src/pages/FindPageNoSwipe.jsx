@@ -214,7 +214,10 @@ const Card = ({user, isFront, trigger}) => {
                         allowTouchMove={false} // Отключаем свайп пальцем
                         onSwiper={(swiper) => (swiperRef.current = swiper)}
                         onClick={(swiper, event) => {
-                            const clickPosition = event.offsetX; // Позиция клика относительно контейнера
+                            // const clickPosition = event.offsetX;
+                            // const containerWidth = swiper.width;
+                            const containerRect = swiper.el.getBoundingClientRect();
+                            const clickPosition = event.clientX - containerRect.left;
                             const containerWidth = swiper.width;
 
                             if (clickPosition < containerWidth / 2) {
