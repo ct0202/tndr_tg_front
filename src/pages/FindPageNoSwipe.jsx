@@ -12,6 +12,8 @@ import { useFilters } from "../context/FiltersContext";
 import {Swiper, SwiperSlide} from "swiper/react";
 import {Pagination} from "swiper/modules";
 
+import Modal from "react-modal";
+
 import '../styles/Swipe.css'
 
 function FindPage() {
@@ -20,6 +22,9 @@ function FindPage() {
     const { updateFindFilter, findFilters } = useFilters();
     const [trigger, setTrigger] = useState(null);
     const [history, setHistory] = useState([]);
+    const [msgModal, setMsgModal] = useState(false);
+    const [msg, setMsg] = useState('');
+    const [isSending, setIsSending] = useState(false);
 
     useEffect(() => {
         const userId = localStorage.getItem("userId");
@@ -43,7 +48,6 @@ function FindPage() {
             const targetUserId = candidates[0]._id;
 
             try {
-
                 setCandidates((prev) => prev.slice(1));
                 setTrigger(null); // Сбрасываем триггер
                 await axios.post("/users/react", { userId, targetUserId, action });
@@ -53,7 +57,30 @@ function FindPage() {
         }, 300)
     };
 
-    const  handleUndo = () => {
+    const handleSendMessage = async () => {
+        if (!msg.trim()) return; // Проверяем пустое сообщение
+        setIsSending(true);
+
+        try {
+            await axios.post('/send', {
+                senderId: localStorage.getItem("userId"),
+                receiverId: candidates[0]._id,
+                message: msg
+            });
+
+            // Очищаем поле и закрываем модалку
+            setMsg('');
+            setMsgModal(false);
+            handleReaction("superlike");
+
+        } catch (err) {
+            console.error('Ошибка отправки сообщения:', err);
+        } finally {
+            setIsSending(false);
+        }
+    };
+
+    const handleUndo = () => {
         if (history.length === 0) return;
         const lastCard = history[0];
         setCandidates(prev => [lastCard, ...prev]);
@@ -118,16 +145,41 @@ function FindPage() {
                 <img src="/images/ui/StarBtn.png"
                      className="w-[70px]"
                      alt=""
-                     onClick={() => handleReaction("superlike")}
+                    // onClick={() => { setMsgModal(true);}}
+                     onClick={() => {setMsgModal(true);}}
                 />
             </div>
+            <Modal
+                isOpen={msgModal}
+                shouldCloseOnOverlayClick={true}
+                contentLabel="Информация о пользователе"
+                className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-80 flex-col text-white"
+                overlayClassName="fixed inset-0"
+            >
+                <div className="w-[300px] flex align-center flex-col">
 
+                    <p className="text-center ml-1 text-[18px]">Напишите дейту приятные слова, он точно увидит это
+                        сообщение</p>
+                    <p className="text-left ml-1 mt-8 mb-1 font-italic">Сообщение</p>
+                    <input onChange={(e) => setMsg(e.target.value)} type="text"
+                           className="bg-black bg-opacity-20 h-[40px] w-full ml-1 mr-1"/>
+
+                    <button className="bg-red-500 mt-2 rounded-[400px]"
+                            onClick={() => handleSendMessage()}>{isSending ? 'Отправка...' : 'Отправить'}</button>
+                    <button
+                        onClick={() => setMsgModal(false)}
+                        className="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors"
+                    >
+                        Отмена
+                    </button>
+                </div>
+            </Modal>
         </div>
     )
         ;
 }
 
-const Card = ( { user, isFront, trigger }) => {
+const Card = ({user, isFront, trigger}) => {
     const swiperRef = useRef(null);
     const [animationClass, setAnimationClass] = useState("");
 
