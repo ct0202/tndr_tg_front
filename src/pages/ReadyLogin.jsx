@@ -87,7 +87,7 @@ function ReadyLogin() {
 
     return (
         <div
-            className={`flex flex-col justify-center items-center w-full p-[16px] transition-opacity duration-500 ${
+            className={`flex flex-col justify-center items-center w-full p-[16px] transition-opacity duration-500 overflow-hidden ${
                 isLoaded ? 'opacity-100' : 'opacity-0'
             }`}
         >

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import ProgressBar from '../components/ProgressBar';
 import Step1 from '../steps/Step1';
 import Step2 from '../steps/Step2';
@@ -18,8 +18,21 @@ function CalculatePage() {
   const { filters, updateFilter } = useFilters(); // Получаем значения из контекста
 
   console.log(filters);
-  
-  
+
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (event.key === "Enter" && document.activeElement.tagName === "INPUT") {
+        document.activeElement.blur(); // Скрываем клавиатуру
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
+
   const navigate = useNavigate()
   // Проверка, заполнен ли текущий шаг
   const isStepValid = () => {
@@ -43,7 +56,7 @@ function CalculatePage() {
       default:
         return true;
     }
-  };  
+  };
 
   const registration = () => {
     axios.post('/register', {
@@ -59,70 +72,70 @@ function CalculatePage() {
       goal: filters?.relationshipGoal,
       telegramId: filters?.telegramId,
     })
-    .then(res => {
-      if(res.data){
-        console.log('fsdafs', res.data);
-        updateFilter("userId",res.data._id)
-        localStorage.setItem('userId', res.data._id)
-        setStep(prev => prev + 1)
-      }
-    })
-    .catch((err) => {
-      alert("У вас уже есть аккаунт либо что то пошло не так")
-      navigate('/readyLogin')
-    })
+        .then(res => {
+          if(res.data){
+            console.log('fsdafs', res.data);
+            updateFilter("userId",res.data._id)
+            localStorage.setItem('userId', res.data._id)
+            setStep(prev => prev + 1)
+          }
+        })
+        .catch((err) => {
+          alert("У вас уже есть аккаунт либо что то пошло не так")
+          navigate('/readyLogin')
+        })
   }
 
   const congradulations = () => {
     const userId = filters?.userId
     axios.post(`/updateUserInfo/${userId}`, { about: filters?.about })
-    .then(res => res.data)
-    .then(data => {
-      if(data){
-        console.log(data);
-        console.log("Успешная регистрация");
-        alert("Успешная регистрация");
-        navigate('/readyLogin')
-      }else{
-        alert("Что то пошло не так")
-      }
-    })
+        .then(res => res.data)
+        .then(data => {
+          if(data){
+            console.log(data);
+            console.log("Успешная регистрация");
+            alert("Успешная регистрация");
+            navigate('/readyLogin')
+          }else{
+            alert("Что то пошло не так")
+          }
+        })
   }
 
   return (
-    <div className='flex flex-col justify-start items-center w-[100%] mt-[48px] overflow-hidden'>
-      <div className="flex flex-col justify-start items-start w-[100%] ml-4 mt-[32px]">
-        <ProgressBar 
-          current={step} 
-          max={8} 
-          onArrowClick={step >= 2 ? () => setStep((prev) => prev - 1) : () => {}} 
-        />
+      <div className='flex flex-col justify-start items-center w-[100%] mt-[48px] overflow-hidden'>
+        <div className="flex flex-col justify-start items-start w-[100%] ml-4 mt-[32px]">
+          <ProgressBar
+              current={step}
+              max={8}
+              onArrowClick={step >= 2 ? () => setStep((prev) => prev - 1) : () => {}}
+          />
+        </div>
+
+        {/* Шаги */}
+        {step === 1 && <Step1 />}
+        {step === 2 && <Step2 />}
+        {step === 3 && <Step3 />}
+        {step === 4 && <Step4 />}
+        {step === 5 && <Step5 />}
+        {step === 6 && <Step6 />}
+        {step === 7 && <Step7 />}
+        {step === 8 && <Step8 />}
+
+        {/* Кнопка Далее */}
+        <Button
+            className={`w-[360px] h-[64px] rounded-[16px] absolute bottom-6 ${
+                !isStepValid() ? "bg-gray-300 cursor-not-allowed" : "bg-blue-500"
+            }`}
+            onClick={step !== 7 ?
+                (step === 8 ? congradulations : () => setStep((prev) => prev + 1)) :
+                registration}
+
+            disabled={!isStepValid()} // Блокируем кнопку, если шаг не валиден
+        >
+          Далее
+        </Button>
       </div>
-
-      {/* Шаги */}
-      {step === 1 && <Step1 />}
-      {step === 2 && <Step2 />}
-      {step === 3 && <Step3 />}
-      {step === 4 && <Step4 />}
-      {step === 5 && <Step5 />}
-      {step === 6 && <Step6 />}
-      {step === 7 && <Step7 />}
-      {step === 8 && <Step8 />}
-
-      {/* Кнопка Далее */}
-      <Button
-        className={`w-[360px] h-[64px] rounded-[16px] absolute bottom-6 ${
-          !isStepValid() ? "bg-gray-300 cursor-not-allowed" : "bg-blue-500"
-        }`}
-        onClick={step !== 7 ? 
-          (step === 8 ? congradulations : () => setStep((prev) => prev + 1)) :
-          registration}
-        
-        disabled={!isStepValid()} // Блокируем кнопку, если шаг не валиден
-      >
-        Далее
-      </Button>
-    </div>
   );
 }
 
