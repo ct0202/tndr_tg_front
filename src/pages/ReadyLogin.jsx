@@ -11,6 +11,9 @@ import { useNavigate } from 'react-router-dom';
 function ReadyLogin() {
     const [user, setUser] = useState();
     const [isLoaded, setIsLoaded] = useState(false); // Состояние для загрузки
+
+    const [isHidden, setIsHidden] = useState(false);
+
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -28,7 +31,10 @@ function ReadyLogin() {
                         navigate('/calculate');
                     }
 
+                    console.log('===', data);
                     setUser(data);
+                    console.log('====', user);
+                    setIsHidden(data.hidden);
                 }
             })
             .finally(() => {
@@ -36,6 +42,21 @@ function ReadyLogin() {
                 setTimeout(() => setIsLoaded(true), 100); // Плавный эффект
             });
     }, []);
+
+    const handleToggleVisibility = async () => {
+        try {
+            const userId = localStorage.getItem("userId");
+
+            const response = await axios.patch(`/users/${userId}/hide`, {
+                hidden: !isHidden
+            });
+
+            setIsHidden(response.data.user.hidden);
+            alert(response.data.message);
+        } catch (err) {
+            setIsHidden(prev => !prev); // Откатываем состояние в случае ошибки
+        }
+    };
 
     return (
         <div
@@ -92,8 +113,8 @@ function ReadyLogin() {
                     {user?.goal || 'Цель не указана'}
                 </p>
                 <h1 className='flex justify-start items-start text-[32px] text-white font-bold mt-[4px]' style={{ fontStyle: "italic" }}>
-                    <span className='font-medium' style={{ fontStyle: "normal" }}>{user?.name || 'Имя не указано'}</span>, 
-                    {user?.birthYear ? new Date().getFullYear() - user.birthYear : 'Возраст неизвестен'} 
+                    <span className='font-medium' style={{ fontStyle: "normal" }}>{user?.name || 'Имя не указано'}</span>,
+                    {user?.birthYear ? new Date().getFullYear() - user.birthYear : 'Возраст неизвестен'}
                     <img src="/images/icons/Verifed.png" style={{ width: "28px", marginTop: "14px", marginLeft: "5px" }} alt="" />
                 </h1>
                 <p className='text-gray-500 mt-[4px] text-white'>
@@ -122,8 +143,9 @@ function ReadyLogin() {
                     boxShadow: '0 0 1px 0 rgba(201, 201, 201, 0.14), 0 2px 2px 0 rgba(201, 201, 201, 0.12), 0 4px 2px 0 rgba(201, 201, 201, 0.07), 0 7px 3px 0 rgba(201, 201, 201, 0.02), inset 0 -3px 11px 0 #e7e7e7',
                     border: '1px solid #f2dddf',
                 }}
+                onClick={handleToggleVisibility}
             >
-                Скрыть аккаунт из ленты
+                {isHidden ? 'Показать пользователя' : 'Скрыть аккаунт из ленты'}
                 <img src='/images/icons/Trash_1.svg' className='ml-[8px]' alt='Удалить' />
             </button>
 
