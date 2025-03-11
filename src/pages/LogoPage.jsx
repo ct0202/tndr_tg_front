@@ -48,6 +48,18 @@ function LogoPage() {
     }
   }, [initData]);
 
+  useEffect(() => {
+    // Второй эффект: навигация после загрузки
+    if (isLoaded) {
+      if (user?.name) {
+        navigate("/readyLogin");
+      } else {
+        navigate("/calculate");
+      }
+    }
+  }, [isLoaded, user]);
+
+
   return (
     <div
       className={`flex flex-col justify-start items-center transition-opacity duration-500 ${
