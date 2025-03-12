@@ -65,7 +65,7 @@ function LikesPage() {
                 </p>
                 <img src="" alt="" />
                 <div className="flex mt-4 justify-between items-start w-[100%] flex-wrap h-[auto]">
-                    {users &&
+                    {users === null &&
                         users.map((elem, idx) => (
                             <div
                                 key={idx}
