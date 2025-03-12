@@ -44,7 +44,7 @@ function Step8() {
 
     useEffect(() => {
         const handleKeyDown = (event) => {
-            if (event.key === "Enter" && document.activeElement.tagName === "INPUT") {
+            if (event.key === "Enter" && document.activeElement.tagName === "TEXTAREA") {
                 document.activeElement.blur(); // Скрываем клавиатуру
             }
         };
@@ -81,6 +81,7 @@ function Step8() {
                 ))}
             </div>
             <textarea
+                tabIndex="0"
                 placeholder='Расскажи о себе'
                 className='w-[361px] h-[207px] rounded-[12px] placeholder:text-gray outline-none p-4 mt-4'
                 style={{ color: 'black', background: '#f4f4f7' }}
