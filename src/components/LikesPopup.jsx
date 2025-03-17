@@ -34,7 +34,7 @@ function LikesPopup({ onClose }) {
                 </p>
                 <Button
                     onClick={() => {
-                        onClose();
+                        navigate('/premium');
                     }}
                     className="w-[284px] h-[48px] rounded-[8px] mt-[21px]"
                 >

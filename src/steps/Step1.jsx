@@ -1,14 +1,16 @@
 import React, {useEffect} from 'react'
 import { useFilters } from '../context/FiltersContext';
+import {useNavigate} from "react-router-dom";
 
 
 function Step1() {
   const { filters, updateFilter } = useFilters();
-
+  const navigate = useNavigate();
   useEffect(() => {
     const handleKeyDown = (event) => {
       if (event.key === "Enter" && document.activeElement.tagName === "INPUT") {
         document.activeElement.blur(); // Скрываем клавиатуру
+
       }
     };
 
