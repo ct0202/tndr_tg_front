@@ -111,7 +111,7 @@ function Chat() {
                     {/*<ChatCard showDelivered={true} userId={"67a0dcf645020c260d163b19"} receiverId={userId} />*/}
 
                     {/* <ChatCard showDelivered={true} userId={"67a0dc3b45020c260d163b0c"} /> */}
-                    <div className="w-full h-[calc(100vh-360px)] overflow-y-auto mb-[50px]">
+                    <div className="w-full h-[calc(100vh-360px)] overflow-y-auto mb-[80px]">
                         {filteredChats.length > 0 ? (
                             filteredChats.map((chat) => (
                                 <ChatCard
