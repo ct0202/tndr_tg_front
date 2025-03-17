@@ -31,6 +31,20 @@ function EditPage() {
     }, []);
 
     useEffect(() => {
+        const handleKeyDown = (event) => {
+            if (event.key === "Enter" && document.activeElement.tagName === "TEXTAREA") {
+                document.activeElement.blur(); // Скрываем клавиатуру
+            }
+        };
+
+        document.addEventListener("keydown", handleKeyDown);
+
+        return () => {
+            document.removeEventListener("keydown", handleKeyDown);
+        };
+    }, []);
+
+    useEffect(() => {
         const userId = localStorage.getItem('userId');
 
         axios.post('/auth/getUserById', { userId })
@@ -225,6 +239,7 @@ function EditPage() {
             </label>
             <p className='mt-4'>О себе</p>
             <textarea
+                tabIndex="0"
                 className='w-[361px] h-[130px] rounded-[12px] placeholder:text-gray outline-none p-4 mt-4'
                 style={{ color: 'black', background: '#f4f4f7' }}
                 onChange={(e) => setUser((prev) => ({ ...prev,  about: e.target.value}))}
