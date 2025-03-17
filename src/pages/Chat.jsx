@@ -70,7 +70,7 @@ function Chat() {
                     <div className="flex flex-row justify-start items-start w-full overflow-x-scroll gap-2 mt-4 scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200 pb-4 relative">
                         {candidates && candidates.length > 0 ? (
                             candidates.map((elem) => (
-                                <div key={elem._id} className="flex flex-col w-[91px] items-center gap-1 relative">
+                                <div key={elem._id} className="flex flex-col w-[91px] items-center gap-1.5 relative">
                                     <div
                                         onClick={() => navigate(`/chatWith/${elem?._id}`)}
                                         className="relative w-[81px] h-[81px] bg-[#feffff] rounded-[40px] overflow-hidden border border-solid border-[#f2dddf]"
@@ -85,7 +85,7 @@ function Chat() {
                                         />
                                     </div>
 
-                                    <div className="relative w-fit text-variable-collection-black text-[length:var(--medium-font-size)] tracking-[var(--medium-letter-spacing)] leading-[var(--medium-line-height)] whitespace-nowrap [font-style:var(--medium-font-style)]">
+                                    <div className="relative w-[80px] truncate text-variable-collection-black text-[length:var(--medium-font-size)] tracking-[var(--medium-letter-spacing)] leading-[var(--medium-line-height)] whitespace-nowrap [font-style:var(--medium-font-style)]">
                                         {elem.name}
                                     </div>
                                 </div>
