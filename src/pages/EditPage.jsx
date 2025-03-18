@@ -69,6 +69,33 @@ function EditPage() {
         setUser((prev) => ({ ...prev, [field]: value }));
     };
 
+    const deletePhoto = async (index) => {
+        try {
+            const userId = localStorage.getItem("userId");
+
+            if (!userId) {
+                console.error("Ошибка: отсутствует userId");
+                return;
+            }
+
+            const response = await axios.delete(`/users/deletePhoto`, {
+                params: { userId, index },
+            });
+
+            setPhotos((prevPhotos) => {
+                const updatedPhotos = [...prevPhotos];
+                updatedPhotos[index] = null;
+                return updatedPhotos;
+            });
+
+            console.log(response.data.message);
+            return response.data;
+        } catch (error) {
+            console.error("Ошибка при удалении фото:", error.response?.data || error.message);
+            return null;
+        }
+    };
+
     const handleFileSelection = async (e, index) => {
         const file = e.target.files[0];
         if (!file) return;
@@ -79,6 +106,30 @@ function EditPage() {
             e.target.value = ''; // Очищаем input, чтобы пользователь мог выбрать новый файл
             return;
         }
+
+        const reader = new FileReader();
+        reader.onload = async (event) => {
+            const img = new Image();
+            img.src = event.target.result;
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+
+                canvas.width = img.width;
+                canvas.height = img.height;
+                ctx.drawImage(img, 0, 0, img.width, img.height);
+
+                // Получаем корректное изображение без EXIF
+                const fixedImage = canvas.toDataURL('image/jpeg');
+
+                // Обновляем превью
+                const updatedPhotos = [...photos];
+                updatedPhotos[index] = fixedImage;
+                setPhotos(updatedPhotos);
+            };
+        };
+        reader.readAsDataURL(file);
+
 
         const formData = new FormData();
         formData.append('photo', file);
@@ -152,15 +203,19 @@ function EditPage() {
                 {[...photos].map((photo, index) => (
                     <label key={index} htmlFor={`image${index}`}>
                         <div
-                            className='w-[117px] h-[191px] flex justify-center items-center rounded-[12px]'
+                            className='w-[117px] h-[191px] flex justify-center items-center rounded-[12px] relative'
                             style={{ background: '#f4f4f7' }}
                         >
                             {photo ? (
-                                <img
-                                    className='w-full h-full object-cover rounded-[12px]'
-                                    src={photo}
-                                    alt='Uploaded'
-                                />
+                                <>
+                                    <img
+                                        className='w-full h-full object-cover rounded-[12px]'
+                                        src={photo}
+                                        alt='Uploaded'
+                                    />
+                                    <img className='absolute w-[70px] h-[50px]' src='/images/ui/closeBtn.png' alt='dlt photo'
+                                         onClick={() => {deletePhoto(index)}}/>
+                                </>
                             ) : (
                                 <img
                                     className='w-[30px]'
@@ -175,6 +230,7 @@ function EditPage() {
                             id={`image${index}`}
                             onChange={(e) => handleFileSelection(e, index)}
                             accept
+                            disabled={!!photo}
                         />
                     </label>
                 ))}
