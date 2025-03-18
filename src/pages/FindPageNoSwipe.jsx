@@ -119,11 +119,11 @@ function FindPage() {
                     ))}
 
                 {candidates.length < 2 && (
-                    <img
-                        src="/images/icons/undef.svg"
-                        alt="Нет кандидатов"
+                    <object
+                        type="image/svg+xml"
+                        data="/images/icons/undef.svg"
                         className="w-[100%]"
-                    />
+                    ></object>
                 )}
             </div>
 
@@ -275,9 +275,9 @@ const Card = ({user, isFront, trigger}) => {
                         className="flex justify-start items-start text-[32px] text-white font-bold mt-[4px]"
                         style={{ fontStyle: "italic" }}
                     >
-                    <span className="font-medium" style={{ fontStyle: "normal" }}>
-                      {user?.name || "Имя не указано"}
-                    </span>
+            <span className="font-medium" style={{ fontStyle: "normal" }}>
+              {user?.name || "Имя не указано"}
+            </span>
                         ,
                         {user?.birthYear
                             ? new Date().getFullYear() - user.birthYear
