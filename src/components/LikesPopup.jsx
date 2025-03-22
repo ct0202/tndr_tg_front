@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import Button from "./Button";
+import {useNavigate} from "react-router-dom";
 function LikesPopup({ onClose }) {
     // useEffect(() => {
     //   // Отключаем прокрутку при монтировании попапа
@@ -10,6 +11,7 @@ function LikesPopup({ onClose }) {
     //   };
     // }, []);
 
+    const navigate = useNavigate();
 
     return (
         <>
@@ -35,7 +37,8 @@ function LikesPopup({ onClose }) {
                 </p>
                 <Button
                     onClick={() => {
-                        onClose();
+                        // onClose();
+                        navigate('/premium');
                     }}
                     className="w-[284px] h-[48px] rounded-[8px] mt-[21px]"
                 >
