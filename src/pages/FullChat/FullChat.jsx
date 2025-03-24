@@ -7,6 +7,7 @@ import "./FullChat.css";
 import Loading from "../../components/Loading";
 
 const API_URL = "https://api.godateapp.ru";
+// const API_URL = "http://localhost:3001";
 
 function FullChat() {
   const { userId } = useParams();
@@ -18,7 +19,6 @@ function FullChat() {
   const [messages, setMessages] = useState([]);
   const [status, setStatus] = useState(null);
 
-  // Подключение к WebSocket
   useEffect(() => {
     socketRef.current = io(API_URL);
 
@@ -30,19 +30,23 @@ function FullChat() {
       console.warn("⚠️ Отключено от WebSocket. Причина:", reason);
     });
 
+    socketRef.current.on("userStatus", (statusUpdate) => {
+      if (statusUpdate.userId === userId) {
+        setStatus(statusUpdate);
+      }
+    });
+
     return () => {
       socketRef.current.disconnect();
     };
   }, []);
 
-  // Подключение к чату
   useEffect(() => {
     if (id && socketRef.current) {
       socketRef.current.emit("joinChat", id);
     }
   }, [id]);
 
-  // Логирование всех событий
   useEffect(() => {
     const logAllEvents = (event, data) => {
       console.log(`📩 Событие: ${event}`, data);
@@ -55,22 +59,6 @@ function FullChat() {
     };
   }, []);
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      if (id && userId) {
-        axios
-            .post(`${API_URL}/getMessages`, { userId: id, receiverId: userId })
-            .then((res) => {
-              setMessages(res.data);
-            })
-            .catch((err) => console.error(err));
-      }
-    }, 1000); // 🔹 Запрос каждую секунду
-
-    return () => clearInterval(interval); // ✅ Чистим интервал при размонтировании
-  }, [userId]);
-
-  // Загрузка данных собеседника и сообщений
   useEffect(() => {
     const fetchChatData = async () => {
       try {
@@ -92,7 +80,6 @@ function FullChat() {
     fetchChatData();
   }, [userId, id]);
 
-  // Получение сообщений в реальном времени
   useEffect(() => {
     const handleReceiveMessage = (data) => {
       console.log("📨 Новое сообщение от сервера:", data);
@@ -101,18 +88,11 @@ function FullChat() {
 
     socketRef.current.on("receiveMessage", handleReceiveMessage);
 
-    const interval = setInterval(() => {
-      console.log("🔄 Проверка новых сообщений...");
-      socketRef.current.emit("checkMessages"); // Можно добавить событие, если сервер поддерживает
-    }, 2000);
-
     return () => {
       socketRef.current.off("receiveMessage", handleReceiveMessage);
-      clearInterval(interval);
     };
   }, []);
 
-  // Отправка сообщения
   const sendMessage = () => {
     if (message.trim() && userId) {
       const newMessage = {
@@ -121,12 +101,26 @@ function FullChat() {
         message,
         createdAt: new Date().toISOString(),
       };
-
-      socketRef.current.emit("sendMessage", newMessage);
+      socketRef.current.emit("sendMessage", newMessage)
+      console.log("Вы отправили сообщение!")
       setMessages((prev) => [...prev, newMessage]);
       setMessage("");
     }
   };
+
+  useEffect(() => {
+    socketRef.current.on("messageStatusUpdated", (updatedMessage) => {
+      setMessages((prevMessages) =>
+          prevMessages.map((msg) =>
+              msg._id === updatedMessage._id ? updatedMessage : msg
+          )
+      );
+    });
+
+    return () => {
+      socketRef.current.off("messageStatusUpdated");
+    };
+  }, []);
 
   return (
       <div className="chat-container">
@@ -135,9 +129,9 @@ function FullChat() {
               <TopChat name={user?.name} img={user?.photos[0]} status={status} />
 
               <div className="chat-box">
-                {messages.map((msg, index) => (
+                {messages.map((msg) => (
                     <div
-                        key={index}
+                        key={msg._id} // Используем уникальный id для ключа
                         className={`message-wrapper ${msg.senderId === id ? "sent" : "received"}`}
                     >
                       <div className="message">
@@ -146,9 +140,10 @@ function FullChat() {
                     {new Date(msg.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                           {msg.senderId === id && (
                               <img
-                                  src={msg.status === "delivered" || msg.status == null
-                                      ? "/images/icons/chat_message_status_delivered.svg"
-                                      : "/images/icons/chat_message_status_read.svg"
+                                    src={
+                                    msg.status === "delivered" || msg.status == null
+                                        ? "/images/icons/chat_message_status_delivered.svg"
+                                        : "/images/icons/chat_message_status_read.svg"
                                   }
                                   alt=""
                               />
