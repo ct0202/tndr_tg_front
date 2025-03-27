@@ -4,6 +4,21 @@ import Button from "../components/Button";
 
 function Premium() {
 
+    const stars = () => {
+        const tg = window.Telegram.WebApp;
+
+        tg.requestStarsPayment({
+            amount: 10,
+            description: "Test Payment",
+            payload: "test_order_001",
+            test: true
+        }).then(result => {
+            console.log("Test payment successful:", result);
+        }).catch(error => {
+            console.error("Test payment failed:", error);
+        });
+    }
+
     return (
         <div
             className="w-[95vw] flex flex-col justify-start items-center"
@@ -62,7 +77,7 @@ function Premium() {
                         {/*<img src="/images/icons/buy_month.svg"/>*/}
                         {/*<img src="/images/icons/buy_3_month.svg"/>*/}
 
-                        <object data="/images/icons/buy_week.svg" type="image/svg+xml"/>
+                        <object data="/images/icons/buy_week.svg" type="image/svg+xml" onClick={() => stars('200')}/>
                         <object data="/images/icons/buy_month.svg" type="image/svg+xml"/>
                         <object data="/images/icons/buy_3_month.svg" type="image/svg+xml"/>
                     </div>
