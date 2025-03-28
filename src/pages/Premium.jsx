@@ -4,20 +4,8 @@ import Button from "../components/Button";
 
 function Premium() {
 
-    const stars = () => {
-        const tg = window.Telegram.WebApp;
+    const [link, setLink] = useState("");
 
-        tg.requestStarsPayment({
-            amount: 10,
-            description: "Test Payment",
-            payload: "test_order_001",
-            test: true
-        }).then(result => {
-            console.log("Test payment successful:", result);
-        }).catch(error => {
-            console.error("Test payment failed:", error);
-        });
-    }
 
     return (
         <div
@@ -25,10 +13,9 @@ function Premium() {
             style={{ height: "calc(100% - 80px)" }}
         >
             <div className="w-full h-[661px] mt-[100px] relative rounded-[16px] border-[1px] border-[lightgrey]">
-                <img src="/images/icons/gradient.svg" className="w-full"/>
+                {/*<img src="/images/icons/gradient.svg" className="w-full"/>*/}
                 <img src="/images/icons/logo_premium.svg" className="w-[220px] ml-4 absolute top-[80px]"/>
-                {/*<img src="/images/icons/close_button_premium_page.svg" className="absolute top-2 right-2"/>*/}
-                <object data="/images/icons/close_button_premium_page.svg" type="image/svg+xml" className="absolute top-2 right-2"/>
+                {/*<object data="/images/icons/close_button_premium_page.svg" type="image/svg+xml" className="absolute top-2 right-2"/>*/}
 
                 <div className="mt-[40px] ml-4 flex flex-col gap-[7px]">
                     <div className="w-full flex flex-row gap-[10px]">
@@ -76,10 +63,29 @@ function Premium() {
                         {/*<img src="/images/icons/buy_week.svg"/>*/}
                         {/*<img src="/images/icons/buy_month.svg"/>*/}
                         {/*<img src="/images/icons/buy_3_month.svg"/>*/}
-
-                        <object data="/images/icons/buy_week.svg" type="image/svg+xml" onClick={() => stars('200')}/>
-                        <object data="/images/icons/buy_month.svg" type="image/svg+xml"/>
-                        <object data="/images/icons/buy_3_month.svg" type="image/svg+xml"/>
+                        <div className="relative flex">
+                            <object data="/images/icons/primary%20button.svg" type="image/svg+xml"/>
+                            <div className="flex flex-col items-center justify-center absolute w-[105px] h-[64px]">
+                                <span className="pt-[8px] text-[#F8A93C] font-normal text-[20px] leading-[0.8]">200₽</span>
+                                <span className="pt-[4px] text-[14px] text-[#ED3144]">Неделя</span>
+                            </div>
+                        </div>
+                        <div className="relative flex">
+                            <object data="/images/icons/primary%20button.svg" type="image/svg+xml"/>
+                            <div className="flex flex-col items-center justify-center absolute w-[105px] h-[64px]">
+                                <span className="pt-[8px] text-[#F8A93C] font-normal text-[20px] leading-[0.8]">500₽</span>
+                                <span className="pt-[4px] text-[14px] text-[#ED3144]">Месяц</span>
+                            </div>
+                        </div>
+                        <div className="relative flex">
+                            <object data="/images/icons/primary%20button.svg" type="image/svg+xml"/>
+                            <div className="flex flex-col items-center justify-center absolute w-[105px] h-[64px]">
+                                <span className="pt-[8px] text-[#F8A93C] font-normal text-[20px] leading-[0.8]">1200₽</span>
+                                <span className="pt-[4px] text-[14px] text-[#ED3144]">3 Месяца</span>
+                            </div>
+                        </div>
+                        {/*<object data="/images/icons/buy_month.svg" type="image/svg+xml"/>*/}
+                        {/*<object data="/images/icons/buy_3_month.svg" type="image/svg+xml"/>*/}
                     </div>
                 </div>
             </div>
