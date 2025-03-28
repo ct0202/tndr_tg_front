@@ -13,9 +13,9 @@ function Premium() {
             style={{ height: "calc(100% - 80px)" }}
         >
             <div className="w-full h-[661px] mt-[100px] relative rounded-[16px] border-[1px] border-[lightgrey]">
-                {/*<img src="/images/icons/gradient.svg" className="w-full"/>*/}
+                <img src="/images/icons/gradient.svg" className="w-full"/>
                 <img src="/images/icons/logo_premium.svg" className="w-[220px] ml-4 absolute top-[80px]"/>
-                {/*<object data="/images/icons/close_button_premium_page.svg" type="image/svg+xml" className="absolute top-2 right-2"/>*/}
+                <object data="/images/icons/close_button_premium_page.svg" type="image/svg+xml" className="absolute top-2 right-2"/>
 
                 <div className="mt-[40px] ml-4 flex flex-col gap-[7px]">
                     <div className="w-full flex flex-row gap-[10px]">
