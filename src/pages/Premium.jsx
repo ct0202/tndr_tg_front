@@ -10,7 +10,7 @@ function Premium() {
     if (!window.Telegram?.WebApp) return;
 
     window.Telegram.WebApp.openInvoice({
-        payload: 'test', // или payload
+        slug: 'test', // или payload
         provider_token: '',
         title: 'Подписка Премиум',
         description: '14 дней подписки Премиум',
