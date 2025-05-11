@@ -1,40 +1,54 @@
 import React, { useEffect, useState } from "react";
 import axios from "../axios";
 import Button from "../components/Button";
-import { invoice } from "@telegram-apps/sdk";
 
 function Premium() {
 
     const [link, setLink] = useState("");
 
-    function handleBuy() {
-        if (!invoice.open.isAvailable()) {
-        console.error("Invoice not available in this context");
-        return;
-        }
+    async function handleBuy() {
+        if (!window.Telegram?.WebApp) return;
 
-        invoice
-        .open("abIIks213") // replace with real slug from your bot/payment setup
-        .then((status) => {
-            if (status === "paid") {
-            console.log("Payment successful!");
-            } else {
-            console.log("Payment not completed.");
+        const result = await axios.post(
+            `https://api.telegram.org/bot8193869137:AAFifGJF9t66MPcU5d_DFWvbfAwmufnOhlU/createInvoiceLink`,
+            {
+                title: "Подписка Премиум",
+                description: "14 дней подписки Премиум",
+                payload: "premium_14_days",
+                provider_token: process.env.PROVIDER_TOKEN,
+                currency: "RUB",
+                prices: [
+                    { label: "Подписка на 2 недели", amount: 20000 }
+                ],
+                start_parameter: "premium14days"
             }
-        })
-        .catch((err) => {
-            console.error("Invoice open failed", err);
-        });
+        );
+
+        console.log(result);
+
+        window.Telegram.WebApp.openInvoice(result.data.result);
     }
+
+    function handleTestButton() {
+        // This button will just trigger the handleBuy method to check the invoice functionality
+        handleBuy();
+    }
+
 
     return (
         <div
             className="w-[95vw] flex flex-col justify-start items-center"
             style={{ height: "calc(100% - 80px)" }}
         >
-            <button onClick={()=>handleBuy()}>
-                AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAa
-            </button>
+            <div className="w-full text-center mt-4">
+                <button 
+                    onClick={handleTestButton}
+                    className="px-6 py-3 bg-blue-500 text-white rounded-xl"
+                >
+                    Test Invoice Method
+                </button>
+            </div>
+            
             <div className="w-full h-[661px] mt-[100px] relative rounded-[16px] border-[1px] border-[lightgrey]">
                 <img src="/images/icons/gradient.svg" className="w-full"/>
                 <img src="/images/icons/logo_premium.svg" className="w-[220px] ml-4 absolute top-[80px]" />
@@ -75,7 +89,7 @@ function Premium() {
                 </div>
 
                 <div className="w-full text-sm text-center mt-7 flex items-center justify-center flex-col" >
-                    <span>Как получить 14 дней <span className="text-[#ED3144]" >Премиума</span> БЕСПЛАТНО?</span>
+                    <span>Как получить 14 дней <span className="text-[#ED3144]" onClick={()=>handleBuy()}>Премиума</span> БЕСПЛАТНО?</span>
                     {/*<img src="/images/icons/premium_invite_button.svg"/>*/}
                     <object data="/images/icons/premium_invite_button.svg" type="image/svg+xml" />
                 </div>
