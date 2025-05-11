@@ -6,7 +6,22 @@ function Premium() {
 
     const [link, setLink] = useState("");
 
+    function handleBuy() {
+    if (!window.Telegram?.WebApp) return;
 
+    window.Telegram.WebApp.openInvoice({
+        slug: '1056740', // или payload
+        provider_token: 'live_WiDJvvENlWl-Dlahz8FJHTU8G9flT_4VObp5bcJIsNc',
+        title: 'Подписка Премиум',
+        description: '14 дней подписки Премиум',
+        currency: 'RUB',
+        prices: [
+        { label: 'Подписка на 2 недели', amount: 20000 } // 200.00 RUB (в копейках)
+        ],
+        payload: 'premium_14_days',
+        start_parameter: 'premium14days',
+    });
+    }
     return (
         <div
             className="w-[95vw] flex flex-col justify-start items-center"
@@ -64,8 +79,8 @@ function Premium() {
                         {/*<img src="/images/icons/buy_month.svg"/>*/}
                         {/*<img src="/images/icons/buy_3_month.svg"/>*/}
                         <div className="relative flex">
-                            <object data="/images/icons/primary%20button.svg" type="image/svg+xml"/>
-                            <div className="flex flex-col items-center justify-center absolute w-[105px] h-[64px]">
+                            <object data="/images/icons/primary%20button.svg" type="image/svg+xml" />
+                            <div className="flex flex-col items-center justify-center absolute w-[105px] h-[64px]" onClick={()=>handleBuy()}>
                                 <span className="pt-[8px] text-[#F8A93C] font-normal text-[20px] leading-[0.8]">200₽</span>
                                 <span className="pt-[4px] text-[14px] text-[#ED3144]">Неделя</span>
                             </div>
