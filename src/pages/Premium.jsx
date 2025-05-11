@@ -16,7 +16,7 @@ function Premium() {
                 title: "Подписка Премиум",
                 description: "14 дней подписки Премиум",
                 payload: "premium_14_days",
-                provider_token: process.env.PROVIDER_TOKEN,
+                provider_token: "381764678:TEST:123526",
                 currency: "RUB",
                 prices: [
                 { label: "Подписка на 2 недели", amount: 20000 }
