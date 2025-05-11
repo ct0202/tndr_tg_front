@@ -25,7 +25,19 @@ function Premium() {
             }
             );
             console.log(result);
-            window.Telegram.WebApp.openInvoice(result.data.result);
+            window.Telegram.WebApp.openInvoice(result.data.result, (status) => {
+                console.log("Invoice closed with status:", status);
+
+                if (status === 'paid') {
+                    // Payment succeeded, do your logic here
+                    // For example, update user subscription status
+                    alert("Спасибо за оплату! Подписка активирована.");
+                } else {
+                    // Payment failed or cancelled
+                    alert("Платёж не был завершён.");
+                }
+            });
+
         } catch (error) {
             console.error("Error creating invoice:", error.response || error.message);
         }
