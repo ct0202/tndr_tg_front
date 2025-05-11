@@ -9,7 +9,8 @@ function Premium() {
     async function handleBuy() {
         if (!window.Telegram?.WebApp) return;
 
-        const result = await axios.post(
+        try {
+            const result = await axios.post(
             `https://api.telegram.org/bot8193869137:AAFifGJF9t66MPcU5d_DFWvbfAwmufnOhlU/createInvoiceLink`,
             {
                 title: "Подписка Премиум",
@@ -18,16 +19,18 @@ function Premium() {
                 provider_token: process.env.PROVIDER_TOKEN,
                 currency: "RUB",
                 prices: [
-                    { label: "Подписка на 2 недели", amount: 20000 }
+                { label: "Подписка на 2 недели", amount: 20000 }
                 ],
                 start_parameter: "premium14days"
             }
-        );
-
-        console.log(result);
-
-        window.Telegram.WebApp.openInvoice(result.data.result);
+            );
+            console.log(result);
+            window.Telegram.WebApp.openInvoice(result.data.result);
+        } catch (error) {
+            console.error("Error creating invoice:", error.response || error.message);
+        }
     }
+
 
     function handleTestButton() {
         // This button will just trigger the handleBuy method to check the invoice functionality
