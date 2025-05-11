@@ -11,7 +11,7 @@ function Premium() {
 
     window.Telegram.WebApp.openInvoice({
         slug: 'test', // или payload
-        provider_token: '',
+        provider_token: '381764678:TEST:123526',
         title: 'Подписка Премиум',
         description: '14 дней подписки Премиум',
         currency: 'RUB',
