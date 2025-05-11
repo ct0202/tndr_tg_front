@@ -32,6 +32,9 @@ function Premium() {
             className="w-[95vw] flex flex-col justify-start items-center"
             style={{ height: "calc(100% - 80px)" }}
         >
+            <button onClick={()=>handleBuy()}>
+                AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAa
+            </button>
             <div className="w-full h-[661px] mt-[100px] relative rounded-[16px] border-[1px] border-[lightgrey]">
                 <img src="/images/icons/gradient.svg" className="w-full"/>
                 <img src="/images/icons/logo_premium.svg" className="w-[220px] ml-4 absolute top-[80px]" />
@@ -72,7 +75,7 @@ function Premium() {
                 </div>
 
                 <div className="w-full text-sm text-center mt-7 flex items-center justify-center flex-col" >
-                    <span>Как получить 14 дней <span className="text-[#ED3144]" onClick={()=>handleBuy()}>Премиума</span> БЕСПЛАТНО?</span>
+                    <span>Как получить 14 дней <span className="text-[#ED3144]" >Премиума</span> БЕСПЛАТНО?</span>
                     {/*<img src="/images/icons/premium_invite_button.svg"/>*/}
                     <object data="/images/icons/premium_invite_button.svg" type="image/svg+xml" />
                 </div>
