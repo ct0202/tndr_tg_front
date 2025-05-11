@@ -1,27 +1,32 @@
 import React, { useEffect, useState } from "react";
 import axios from "../axios";
 import Button from "../components/Button";
+import { invoice } from "@telegram-apps/sdk";
 
 function Premium() {
 
     const [link, setLink] = useState("");
 
     function handleBuy() {
-    if (!window.Telegram?.WebApp) return;
+        if (!invoice.open.isAvailable()) {
+        console.error("Invoice not available in this context");
+        return;
+        }
 
-    window.Telegram.WebApp.openInvoice({
-        slug: 'test', // или payload
-        provider_token: '381764678:TEST:123526',
-        title: 'Подписка Премиум',
-        description: '14 дней подписки Премиум',
-        currency: 'RUB',
-        prices: [
-        { label: 'Подписка на 2 недели', amount: 20000 } // 200.00 RUB (в копейках)
-        ],
-        payload: 'premium_14_days',
-        start_parameter: 'premium14days',
-    });
+        invoice
+        .open("abIIks213") // replace with real slug from your bot/payment setup
+        .then((status) => {
+            if (status === "paid") {
+            console.log("Payment successful!");
+            } else {
+            console.log("Payment not completed.");
+            }
+        })
+        .catch((err) => {
+            console.error("Invoice open failed", err);
+        });
     }
+
     return (
         <div
             className="w-[95vw] flex flex-col justify-start items-center"
@@ -29,7 +34,7 @@ function Premium() {
         >
             <div className="w-full h-[661px] mt-[100px] relative rounded-[16px] border-[1px] border-[lightgrey]">
                 <img src="/images/icons/gradient.svg" className="w-full"/>
-                <img src="/images/icons/logo_premium.svg" className="w-[220px] ml-4 absolute top-[80px]"/>
+                <img src="/images/icons/logo_premium.svg" className="w-[220px] ml-4 absolute top-[80px]" />
                 <object data="/images/icons/close_button_premium_page.svg" type="image/svg+xml" className="absolute top-2 right-2"/>
 
                 <div className="mt-[40px] ml-4 flex flex-col gap-[7px]">
@@ -66,10 +71,10 @@ function Premium() {
                     </div>
                 </div>
 
-                <div className="w-full text-sm text-center mt-7 flex items-center justify-center flex-col">
-                    <span>Как получить 14 дней <span className="text-[#ED3144]">Премиума</span> БЕСПЛАТНО?</span>
+                <div className="w-full text-sm text-center mt-7 flex items-center justify-center flex-col" >
+                    <span>Как получить 14 дней <span className="text-[#ED3144]" onClick={()=>handleBuy()}>Премиума</span> БЕСПЛАТНО?</span>
                     {/*<img src="/images/icons/premium_invite_button.svg"/>*/}
-                    <object data="/images/icons/premium_invite_button.svg" type="image/svg+xml"/>
+                    <object data="/images/icons/premium_invite_button.svg" type="image/svg+xml" />
                 </div>
 
                 <div className="w-full flex flex-col text-center items-center justify-center">
