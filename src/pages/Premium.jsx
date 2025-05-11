@@ -5,38 +5,68 @@ import Button from "../components/Button";
 function Premium() {
 
     const [link, setLink] = useState("");
+    const [duration, setDuration] = useState("week")
 
     async function handleBuy() {
         if (!window.Telegram?.WebApp) return;
 
         try {
-            const result = await axios.post(
-            `https://api.telegram.org/bot8193869137:AAFifGJF9t66MPcU5d_DFWvbfAwmufnOhlU/createInvoiceLink`,
-            {
-                title: "Подписка Премиум",
-                description: "14 дней подписки Премиум",
-                payload: "premium_14_days",
-                provider_token: "390540012:LIVE:70096",
-                currency: "RUB",
-                prices: [
-                { label: "Подписка на 2 недели", amount: 20000 }
-                ],
-                start_parameter: "premium14days"
-            }
-            );
-            console.log(result);
-            window.Telegram.WebApp.openInvoice(result.data.result, (status) => {
-                console.log("Invoice closed with status:", status);
+            let tgId = null;
+            const params = new URLSearchParams(window.Telegram.WebApp.initData);
+            const userData = params.get("user");
+            if (userData) {
+                const userObj = JSON.parse(decodeURIComponent(userData));
 
-                if (status === 'paid') {
-                    // Payment succeeded, do your logic here
-                    // For example, update user subscription status
-                    alert("Спасибо за оплату! Подписка активирована.");
-                } else {
-                    // Payment failed or cancelled
-                    alert("Платёж не был завершён.");
+                if (!userObj.id) {
+                alert("Не удалось получить Telegram ID");
+                return;
                 }
+                tgId = userObj.id;
+
+            };
+            console.log(tgId);
+
+            const server_response = await axios.post(`/users/givepremium`, {
+                telegramId: tgId,
+                duration: duration
             });
+
+            console.log(server_response);
+
+            // const result = await axios.post(
+            // `https://api.telegram.org/bot8193869137:AAFifGJF9t66MPcU5d_DFWvbfAwmufnOhlU/createInvoiceLink`,
+            // {
+            //     title: "Подписка Премиум",
+            //     description: "14 дней подписки Премиум",
+            //     payload: "premium_14_days",
+            //     provider_token: "390540012:LIVE:70096",
+            //     currency: "RUB",
+            //     prices: [
+            //     { label: "Подписка на 2 недели", amount: 20000 }
+            //     ],
+            //     start_parameter: "premium14days"
+            // }
+            // );
+            // console.log(result);
+            // window.Telegram.WebApp.openInvoice(result.data.result, (status) => {
+            //     console.log("Invoice closed with status:", status);
+
+            //     if (status === 'paid') {
+            //         // Payment succeeded, do your logic here
+            //         // For example, update user subscription status
+            //         alert("Спасибо за оплату! Подписка активирована.");
+            //         const server_response = await axios.post(`/users/givepremium`, {
+            //             telegramId: tgId,
+            //             duration: duration
+            //         });
+
+            //         console.log(server_response);
+
+            //     } else {
+            //         // Payment failed or cancelled
+            //         alert("Платёж не был завершён.");
+            //     }
+            // });
 
         } catch (error) {
             console.error("Error creating invoice:", error.response || error.message);
