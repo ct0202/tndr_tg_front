@@ -55,12 +55,12 @@ function Premium() {
                     // Payment succeeded, do your logic here
                     // For example, update user subscription status
                     alert("Спасибо за оплату! Подписка активирована.");
-                    const server_response = await axios.post(`/users/givepremium`, {
-                        telegramId: tgId,
-                        duration: duration
-                    });
+                    // const server_response = await axios.post(`/users/givepremium`, {
+                    //     telegramId: tgId,
+                    //     duration: duration
+                    // });
 
-                    console.log(server_response);
+                    // console.log(server_response);
 
                 } else {
                     // Payment failed or cancelled
