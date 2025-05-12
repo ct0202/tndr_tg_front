@@ -186,6 +186,8 @@ function FindPage() {
 const Card = ({user, isFront, trigger}) => {
     const swiperRef = useRef(null);
     const [animationClass, setAnimationClass] = useState("");
+    const [imageLoaded, setImageLoaded] = useState(false);
+    const [nextImageLoaded, setNextImageLoaded] = useState(false);
 
     useEffect(() => {
         if (trigger === "like") {
@@ -199,6 +201,14 @@ const Card = ({user, isFront, trigger}) => {
         }
     }, [trigger]);
 
+    // Предварительная загрузка следующего изображения
+    useEffect(() => {
+        if (user?.photos?.length > 1) {
+            const nextImage = new Image();
+            nextImage.src = user.photos[1];
+            nextImage.onload = () => setNextImageLoaded(true);
+        }
+    }, [user?.photos]);
 
     return (
         <div className={`absolute w-full h-[533px] rounded-[8px] overflow-hidden ${animationClass} ${isFront ? "z-[20]" : "z-0"}`}
@@ -211,7 +221,7 @@ const Card = ({user, isFront, trigger}) => {
                         slidesPerView={1}
                         pagination={{ clickable: true }}
                         className="rounded-[8px]"
-                        allowTouchMove={false} // Отключаем свайп пальцем
+                        allowTouchMove={false}
                         onSwiper={(swiper) => (swiperRef.current = swiper)}
                         onClick={(swiper, event) => {
                             console.log(event.changedTouches[0].clientX);
@@ -226,10 +236,18 @@ const Card = ({user, isFront, trigger}) => {
                         {user.photos.map((photo, index) => (
                             <SwiperSlide key={index}>
                                 <div className="relative w-full h-[533px] rounded-[8px] overflow-hidden">
+                                    {!imageLoaded && (
+                                        <div className="absolute inset-0 bg-gray-300 animate-pulse" style={{ background: '#f4f4f7' }} />
+                                    )}
                                     <img
-                                        className="w-full h-full object-cover"
+                                        className={`w-full h-full object-cover transition-opacity duration-500 ${
+                                            imageLoaded ? 'opacity-100' : 'opacity-0'
+                                        }`}
                                         src={photo}
                                         alt={`photo ${index + 1}`}
+                                        loading="lazy"
+                                        onLoad={() => setImageLoaded(true)}
+                                        onError={() => console.error("Failed to load image")}
                                     />
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent"></div>
                                 </div>
@@ -246,10 +264,18 @@ const Card = ({user, isFront, trigger}) => {
                     >
                         <SwiperSlide>
                             <div className="relative w-full h-[533px] rounded-[8px] overflow-hidden">
+                                {!imageLoaded && (
+                                    <div className="absolute inset-0 bg-gray-300 animate-pulse" style={{ background: '#f4f4f7' }} />
+                                )}
                                 <img
-                                    className="w-full h-full object-cover"
+                                    className={`w-full h-full object-cover transition-opacity duration-500 ${
+                                        imageLoaded ? 'opacity-100' : 'opacity-0'
+                                    }`}
                                     src={"https://scott88lee.github.io/FMX/img/avatar.jpg"}
                                     alt={`photo`}
+                                    loading="lazy"
+                                    onLoad={() => setImageLoaded(true)}
+                                    onError={() => console.error("Failed to load image")}
                                 />
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent"></div>
                             </div>
@@ -262,9 +288,6 @@ const Card = ({user, isFront, trigger}) => {
                         className="w-[100%]"
                     />
                 )
-
-
-                // https://scott88lee.github.io/FMX/img/avatar.jpg
             }
             {user ? (
                 <div className="flex flex-col w-[345px] text-left z-10 ml-3 absolute bottom-[30px] pointer-events-none">
