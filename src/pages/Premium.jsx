@@ -42,7 +42,7 @@ function Premium() {
                 provider_token: "390540012:LIVE:70096",
                 currency: "RUB",
                 prices: [
-                { label: "Подписка на 2 недели", amount: 5000 }
+                { label: "Подписка на 2 недели", amount: 10000 }
                 ],
                 start_parameter: "premium14days"
             }
