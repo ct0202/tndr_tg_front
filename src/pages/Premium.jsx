@@ -45,25 +45,26 @@ function Premium() {
                 { label: "Подписка на 2 недели", amount: 20000 }
             ],
             start_parameter: "premium14days",
-            provider_data: {
-                receipt: {
-                customer: {
-                    email: "arman.jumashev@gmail.com" // или phone: "79211234567"
+            "provider_data": {
+                "receipt": {
+                "customer": {
+                    "email": "arman.jumashev@gmail.com", // или 
+                    "phone": "79211234567"
                 },
-                items: [
+                "items": [
                     {
-                    description: "Подписка на 2 недели",
-                    quantity: 1,
-                    amount: {
-                        value: 200, // в рублях, не копейках!
-                        currency: "RUB"
+                    "description": "Подписка на 2 недели",
+                    "quantity": 1,
+                    "amount": {
+                        "value": 200, // в рублях, не копейках!
+                        "currency": "RUB"
                     },
-                    vat_code: 1,
-                    payment_mode: "full_payment",
-                    payment_subject: "service"
+                    "vat_code": 1,
+                    "payment_mode": "full_payment",
+                    "payment_subject": "service"
                     }
                 ],
-                tax_system_code: 1
+                "tax_system_code": 1
                 }
             }
             }
