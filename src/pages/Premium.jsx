@@ -48,7 +48,7 @@ function Premium() {
             provider_data: {
                 receipt: {
                 customer: {
-                    email: "example@example.com" // или phone: "79211234567"
+                    email: "arman.jumashev@gmail.com" // или phone: "79211234567"
                 },
                 items: [
                     {
