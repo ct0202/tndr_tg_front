@@ -36,48 +36,48 @@ function Premium() {
             const result = await axios.post(
             `https://api.telegram.org/bot8193869137:AAFifGJF9t66MPcU5d_DFWvbfAwmufnOhlU/createInvoiceLink`,
             {
-            title: "Подписка Премиум",
-            description: "14 дней подписки Премиум",
-            payload: "premium_14_days",
-            provider_token: "390540012:LIVE:70096",
-            currency: "RUB",
-            prices: [
-                { label: "Подписка на 2 недели", amount: 20000 }
-            ],
-            start_parameter: "premium14days",
-            provider_data: {
-                receipt: {
-                customer: {
-                    email: "arman.jumashev@gmail.com",
-                    phone: "79211234567"
-                },
-                items: [
-                    {
-                    description: "Подписка на 2 недели",
-                    quantity: 1,
-                    amount: {
-                        value: 200, // в рублях, не копейках!
-                        currency: "RUB"
-                    },
-                    vat_code: 1,
-                    payment_mode: "full_payment",
-                    payment_subject: "service"
-                    }
+                title: "Подписка Премиум",
+                description: "14 дней подписки Премиум",
+                payload: "premium_14_days",
+                provider_token: "390540012:LIVE:70096",
+                currency: "RUB",
+                prices: [
+                    { label: "Подписка на 2 недели", amount: 20000 }
                 ],
-                tax_system_code: 1
-                }
-            }
+                start_parameter: "premium14days",
+                provider_data: JSON.stringify({
+                    receipt: {
+                    customer: {
+                        email: "arman.jumashev@gmail.com",
+                        phone: "79211234567"
+                    },
+                    items: [
+                        {
+                        description: "Подписка на 2 недели",
+                        quantity: 1,
+                        amount: {
+                            value: 200, // в рублях, не копейках!
+                            currency: "RUB"
+                        },
+                        vat_code: 1,
+                        payment_mode: "full_payment",
+                        payment_subject: "service"
+                        }
+                    ],
+                    tax_system_code: 1
+                    }
+                })
             }
 
             );
-            console.log(result);
+            console.log("RESULT FROM AXIOS",result);
             window.Telegram.WebApp.openInvoice(result.data.result, (status) => {
-                console.log("Invoice closed with status:", status);
+                alert("Invoice closed with status:", status);
 
                 if (status === 'paid') {
                     // Payment succeeded, do your logic here
                     // For example, update user subscription status
-                    alert("Спасибо за оплату! Подписка активирована.");
+                    // alert("Спасибо за оплату! Подписка активирована.");
                     // const server_response = await axios.post(`/users/givepremium`, {
                     //     telegramId: tgId,
                     //     duration: duration
@@ -87,7 +87,7 @@ function Premium() {
 
                 } else {
                     // Payment failed or cancelled
-                    alert("Платёж не был завершён.");
+                    // alert("Платёж не был завершён.");
                 }
             });
 
