@@ -51,10 +51,6 @@ function Premium() {
                 start_parameter: "premium14days",
                 provider_data: JSON.stringify({
                     receipt: {
-                        customer: {
-                            email: "arman.jumashev@gmail.com",
-                            phone: "79211234567"
-                        },
                         items: [
                             {
                             description: "Подписка на 2 недели",
