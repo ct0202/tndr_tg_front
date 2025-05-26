@@ -44,27 +44,31 @@ function Premium() {
                 prices: [
                     { label: "Подписка на 2 недели", amount: 20000 }
                 ],
+                need_email: true,
+                send_email_to_provider: true,
+                need_phone_number: true,
+                send_phone_number_to_provider: true,
                 start_parameter: "premium14days",
                 provider_data: JSON.stringify({
                     receipt: {
-                    customer: {
-                        email: "arman.jumashev@gmail.com",
-                        phone: "79211234567"
-                    },
-                    items: [
-                        {
-                        description: "Подписка на 2 недели",
-                        quantity: 1,
-                        amount: {
-                            value: 200, // в рублях, не копейках!
-                            currency: "RUB"
+                        customer: {
+                            email: "arman.jumashev@gmail.com",
+                            phone: "79211234567"
                         },
-                        vat_code: 1,
-                        payment_mode: "full_payment",
-                        payment_subject: "service"
-                        }
-                    ],
-                    tax_system_code: 1
+                        items: [
+                            {
+                            description: "Подписка на 2 недели",
+                            quantity: 1,
+                            amount: {
+                                value: 200, // в рублях, не копейках!
+                                currency: "RUB"
+                            },
+                            vat_code: 1,
+                            payment_mode: "full_payment",
+                            payment_subject: "service"
+                            }
+                        ],
+                        tax_system_code: 1
                     }
                 })
             }
