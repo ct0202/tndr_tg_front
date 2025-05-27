@@ -36,7 +36,9 @@ function Premium() {
 
             const result = await axios.post('/createInvoiceLink', {type: type});
             console.log("RESULT FROM AXIOS",result);
-            window.Telegram.WebApp.openInvoice(result.data.result);
+            window.Telegram.WebApp.openInvoice(result.data.result, async (result) => {
+                alert(result);
+            });
             
 
 
