@@ -36,24 +36,26 @@ function Premium() {
 
             const result = await axios.post('/createInvoiceLink', {type: type});
             console.log("RESULT FROM AXIOS",result);
-            window.Telegram.WebApp.openInvoice(result.data.result, (status) => {
-                alert("Invoice closed with status:", status);
+            window.Telegram.WebApp.openInvoice(result.data.result);
+            
 
-                if (status === 'paid') {
-                    // Payment succeeded, do your logic here
-                    // For example, update user subscription status
-                    // alert("Спасибо за оплату! Подписка активирована.");
-                    // const server_response = await axios.post(`/users/givepremium`, {
-                    //     telegramId: tgId,
-                    //     duration: duration
-                    // });
 
-                    // console.log(server_response);
+            const initData = window.Telegram.WebApp.initData;
+            const params = new URLSearchParams(initData);
+            const userData = params.get("user");
+            const userObj = JSON.parse(decodeURIComponent(userData));
+            const tgId = userObj.id;
 
-                } else {
-                    // Payment failed or cancelled
-                    // alert("Платёж не был завершён.");
-                }
+            window.Telegram.WebApp.onEvent('invoiceClosed', async function(object) {
+            if (object.status == 'paid') {
+                const new_result = await axios.post('/users/givepremium', {telegramId:tgId, duration:type});
+                console.log(new_result);
+                
+                alert("PAYMENT SUCCESS NOW CLOSING");
+                window.Telegram.WebApp.close();
+            } else if (object.status == 'failed') {
+                alert("Не беспокойтесь. Мы сохраним ваш выбор.");
+            }
             });
 
         } catch (error) {
