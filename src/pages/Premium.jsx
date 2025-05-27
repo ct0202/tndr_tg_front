@@ -33,7 +33,7 @@ function Premium() {
 
             // console.log(server_response);
 
-            const result = await axios.post('/createInvoiceLink');
+            const result = await axios.post('/createInvoiceLink', {type: "1_month"});
             console.log("RESULT FROM AXIOS",result);
             window.Telegram.WebApp.openInvoice(result.data.result, (status) => {
                 alert("Invoice closed with status:", status);
