@@ -48,10 +48,12 @@ function Premium() {
 
             window.Telegram.WebApp.onEvent('invoiceClosed', async function(object) {
             if (object.status == 'paid') {
+                alert("PAYMENT SUCCESS NOW GIVE PREMIUM");
+
                 const new_result = await axios.post('/users/givepremium', {telegramId:tgId, duration:type});
                 console.log(new_result);
+                alert("PREMIUM GIVEN");
                 
-                alert("PAYMENT SUCCESS NOW CLOSING");
                 window.Telegram.WebApp.close();
             } else if (object.status == 'failed') {
                 alert("Не беспокойтесь. Мы сохраним ваш выбор.");
