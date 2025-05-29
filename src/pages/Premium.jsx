@@ -36,7 +36,7 @@ function Premium() {
 
             // const result = await axios.post('/createInvoiceLink', {type: type});
             const result = await axios.post(
-                  `https://api.telegram.org/bot8193869137:AAFifGJF9t66MPcU5d_DFWvbfAwmufnOhlU/createInvoiceLink`,
+                  `https://api.telegram.org/bot8193869137:AAHPVzF7MoMnpXK73bYOptLZSUSKqPjiSZk/createInvoiceLink`,
                   {
                     title: "Подписка Премиум",
                     description: "7 дней подписки Премиум",
