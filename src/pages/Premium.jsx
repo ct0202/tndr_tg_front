@@ -35,44 +35,110 @@ function Premium() {
             // console.log(server_response);
 
             // const result = await axios.post('/createInvoiceLink', {type: type});
-            const result = await axios.post(
-                  `https://api.telegram.org/bot8193869137:AAHPVzF7MoMnpXK73bYOptLZSUSKqPjiSZk/createInvoiceLink`,
-                  {
-                    title: "Подписка Премиум",
-                    description: "7 дней подписки Премиум",
-                    payload: "premium_7_days",
-                    provider_token: "390540012:LIVE:70096",
-                    currency: "RUB",
-                    prices: [
-                      { label: "Подписка на 2 недели", amount: 20000 }
-                    ],
-                    need_email: true,
-                    send_email_to_provider: true,
-                    need_phone_number: true,
-                    send_phone_number_to_provider: true,
-                    start_parameter: "premium7days",
-                    provider_data: JSON.stringify({
-                        receipt: {
-                            items: [
-                                {
-                                description: "Подписка на недел.",
-                                quantity: 1,
-                                amount: {
-                                    value: 200, // в рублях, не копейках!
-                                    currency: "RUB"
-                                },
-                                vat_code: 1,
-                                payment_mode: "full_payment",
-                                payment_subject: "service"
-                                }
-                            ],
-                            tax_system_code: 1
-                        }
-                    })
+            // const result = await axios.post(
+            //       `https://api.telegram.org/bot8193869137:AAHPVzF7MoMnpXK73bYOptLZSUSKqPjiSZk/createInvoiceLink`,
+            //       {
+            //         title: "Подписка Премиум",
+            //         description: "7 дней подписки Премиум",
+            //         payload: "premium_7_days",
+            //         provider_token: "390540012:LIVE:70096",
+            //         currency: "RUB",
+            //         prices: [
+            //           { label: "Подписка на 2 недели", amount: 20000 }
+            //         ],
+            //         need_email: true,
+            //         send_email_to_provider: true,
+            //         need_phone_number: true,
+            //         send_phone_number_to_provider: true,
+            //         start_parameter: "premium7days",
+            //         provider_data: JSON.stringify({
+            //             receipt: {
+            //                 items: [
+            //                     {
+            //                     description: "Подписка на недел.",
+            //                     quantity: 1,
+            //                     amount: {
+            //                         value: 200, // в рублях, не копейках!
+            //                         currency: "RUB"
+            //                     },
+            //                     vat_code: 1,
+            //                     payment_mode: "full_payment",
+            //                     payment_subject: "service"
+            //                     }
+            //                 ],
+            //                 tax_system_code: 1
+            //             }
+            //         })
+            //     }
+            
+            // );
+
+            const planMap = {
+                "1_week": {
+                title: "Подписка Премиум",
+                description: "7 дней подписки Премиум",
+                priceRub: 200,
+                amount: 20000,
+                label: "Подписка на неделю",
+                start_parameter: "premium7days"
+                },
+                "1_month": {
+                title: "Подписка Премиум",
+                description: "1 месяц подписки Премиум",
+                priceRub: 500,
+                amount: 50000,
+                label: "Подписка на 1 месяц",
+                start_parameter: "premium1month"
+                },
+                "3_months": {
+                title: "Подписка Премиум",
+                description: "3 месяца подписки Премиум",
+                priceRub: 1200,
+                amount: 120000,
+                label: "Подписка на 3 месяца",
+                start_parameter: "premium3months"
                 }
-            
-            );
-            
+            };
+        
+            const plan = planMap[type];
+        
+            if (!plan) {
+                return;
+            }
+        
+            const result = await axios.post(
+                `https://api.telegram.org/bot8193869137:AAHPVzF7MoMnpXK73bYOptLZSUSKqPjiSZk/createInvoiceLink`,
+                {
+                title: plan.title,
+                description: plan.description,
+                payload: type,
+                provider_token: "390540012:LIVE:70096",
+                currency: "RUB",
+                prices: [{ label: plan.label, amount: plan.amount }],
+                need_email: true,
+                send_email_to_provider: true,
+                need_phone_number: true,
+                send_phone_number_to_provider: true,
+                start_parameter: plan.start_parameter,
+                provider_data: JSON.stringify({
+                    receipt: {
+                    items: [
+                        {
+                        description: plan.label,
+                        quantity: 1,
+                        amount: {
+                            value: plan.priceRub,
+                            currency: "RUB"
+                        },
+                        vat_code: 1,
+                        payment_mode: "full_payment",
+                        payment_subject: "service"
+                        }
+                    ],
+                    tax_system_code: 1
+                    }
+                })
+            });
             console.log("RESULT FROM AXIOS",result);
 
             // or maybe in the callback?
