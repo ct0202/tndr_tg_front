@@ -143,7 +143,8 @@ function Premium() {
 
             // or maybe in the callback?
             window.Telegram.WebApp.openInvoice(result.data.result, async (result) => {
-                alert(result); // rn gives failed, then it cannot be connected to later lines, it is just in the createIvoiceLink method somewhere
+                console.log(result);
+                // alert(result); // rn gives failed, then it cannot be connected to later lines, it is just in the createIvoiceLink method somewhere
             });
             
 
@@ -156,11 +157,11 @@ function Premium() {
 
             window.Telegram.WebApp.onEvent('invoiceClosed', async function(object) {
             if (object.status == 'paid') {
-                alert("PAYMENT SUCCESS NOW GIVE PREMIUM");
+                // alert("PAYMENT SUCCESS NOW GIVE PREMIUM");
 
                 const new_result = await axios.post('/users/givepremium', {telegramId:tgId, duration:type});
-                console.log(new_result);
-                alert("PREMIUM GIVEN");
+                console.log("premium resukt", new_result);
+                alert("Вы успешно оплатили подписку! Вам выдан ПРЕМИУМ");
                 
                 window.Telegram.WebApp.close();
             } else if (object.status == 'failed') {
