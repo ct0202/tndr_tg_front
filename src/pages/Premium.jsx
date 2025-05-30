@@ -80,7 +80,8 @@ function Premium() {
                 priceRub: 200,
                 amount: 20000,
                 label: "Подписка на неделю",
-                start_parameter: "premium7days"
+                start_parameter: "premium7days",
+                subscription_period: (7*24*3600)
                 },
                 "1_month": {
                 title: "Подписка Премиум",
@@ -88,7 +89,8 @@ function Premium() {
                 priceRub: 500,
                 amount: 50000,
                 label: "Подписка на 1 месяц",
-                start_parameter: "premium1month"
+                start_parameter: "premium1month",
+                subscription_period: (30*24*3600)
                 },
                 "3_months": {
                 title: "Подписка Премиум",
@@ -96,7 +98,8 @@ function Premium() {
                 priceRub: 1200,
                 amount: 120000,
                 label: "Подписка на 3 месяца",
-                start_parameter: "premium3months"
+                start_parameter: "premium3months",
+                subscription_period: (90*24*3600)
                 }
             };
         
@@ -119,7 +122,9 @@ function Premium() {
                 send_email_to_provider: true,
                 need_phone_number: true,
                 send_phone_number_to_provider: true,
+                subscription_period: plan.subscription_period,
                 recurring: true,
+                test:true,
                 start_parameter: plan.start_parameter,
                 provider_data: JSON.stringify({
                     receipt: {
