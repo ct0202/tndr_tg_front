@@ -119,6 +119,7 @@ function Premium() {
                 send_email_to_provider: true,
                 need_phone_number: true,
                 send_phone_number_to_provider: true,
+                recurring: true,
                 start_parameter: plan.start_parameter,
                 provider_data: JSON.stringify({
                     receipt: {
