@@ -30,7 +30,7 @@ function Step4() {
   return (
     // <div className='flex flex-col justify-start items-center mb-[100px]'>
       <div className='flex flex-col justify-start items-center'
-      style={{ marginTop: `${inputTop}px` }}>
+      style={{ marginBottom: `${inputTop}px` }}>
 
       <div className='relative w-[125px] h-[125px] mt-[50px]'>
       {!imageLoaded && (
