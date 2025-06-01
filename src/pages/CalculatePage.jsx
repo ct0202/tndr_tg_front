@@ -89,21 +89,31 @@ function CalculatePage() {
         })
   }
 
-  const congradulations = () => {
-    const userId = filters?.userId
-    axios.post(`/updateUserInfo/${userId}`, { about: filters?.about })
-        .then(res => res.data)
-        .then(data => {
-          if(data){
-            console.log(data);
-            console.log("Успешная регистрация");
-            alert("Успешная регистрация");
-            navigate('/readyLogin')
-          }else{
-            alert("Что то пошло не так")
-          }
-        })
-  }
+  const congratulations = async () => {
+    const userId = filters?.userId;
+
+    if (!userId) {
+      alert("Ошибка: отсутствует userId");
+      return;
+    }
+
+    try {
+      const response = await axios.post(`/updateUserInfo/${userId}`, {
+        about: filters?.about
+      });
+
+      if (response.data) {
+        console.log(response.data);
+        alert("Успешная регистрация");
+        navigate('/readyLogin');
+      } else {
+        alert("Что-то пошло не так");
+      }
+    } catch (error) {
+      console.error("Ошибка при обновлении информации пользователя:", error);
+      alert("Произошла ошибка при отправке данных");
+    }
+  };
 
   return (
       <div className='flex flex-col justify-start items-center w-[100%] mt-[48px] overflow-hidden'>
@@ -131,7 +141,7 @@ function CalculatePage() {
                 !isStepValid() ? "bg-gray-300 cursor-not-allowed" : "bg-blue-500"
             }`}
             onClick={step !== 7 ?
-                (step === 8 ? congradulations : () => setStep((prev) => prev + 1)) :
+                (step === 8 ? congratulations : () => setStep((prev) => prev + 1)) :
                 registration}
 
             disabled={!isStepValid()} // Блокируем кнопку, если шаг не валиден
