@@ -1,14 +1,37 @@
-import React from 'react'
+import React, {useEffect} from 'react'
 import { useFilters } from '../context/FiltersContext';
 import {useState} from 'react'
 
 function Step4() {
   const { filters, updateFilter } = useFilters();
+  const [inputTop, setInputTop] = useState(100);
 
   const [imageLoaded, setImageLoaded] = useState(false);
+
+  useEffect(() => {
+      const elevateInput = (event) => {
+          if (event.type === "focusin") {
+              setInputTop(150);
+          }
+          if (event.type === "focusout") {
+              setInputTop(100);
+          }
+      };
+
+      document.addEventListener("focusin", elevateInput);
+      document.addEventListener("focusout", elevateInput);
+
+      return () => {
+          document.removeEventListener("focusin", elevateInput);
+          document.removeEventListener("focusout", elevateInput);
+      };
+  }, [])
   
   return (
-    <div className='flex flex-col justify-start items-center mb-[100px]'>
+    // <div className='flex flex-col justify-start items-center mb-[100px]'>
+      <div className='flex flex-col justify-start items-center'
+      style={{ marginTop: `${inputTop}px` }}>
+
       <div className='relative w-[125px] h-[125px] mt-[50px]'>
       {!imageLoaded && (
           <div

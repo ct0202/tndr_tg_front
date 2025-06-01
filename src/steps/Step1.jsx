@@ -32,6 +32,8 @@ function Step1() {
 
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
+      document.removeEventListener("focusin", elevateInput);
+      document.removeEventListener("focusout", elevateInput);
     };
   }, []);
 
