@@ -50,7 +50,7 @@ function Chat() {
                             Чаты
                         </p>
                         <img src="/images/icons/chat_seach_button.svg"
-                             className="mt-[70px]"
+                             className="mt-[100px]"
                              alt="chat_search_icon"
                              onClick={() => setIsSearchOpen(!isSearchOpen)}
                         />
