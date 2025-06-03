@@ -53,8 +53,7 @@ function CalculatePage() {
         return filters.relationshipGoal && filters.relationshipGoal.trim() !== ''; // Проверяем цель отношений
       case 8:
         return (
-            filters.about && filters.about.trim() !== '' &&
-            Array.isArray(filters.photos) && filters.photos.length > 0
+            filters.about && filters.about.trim() !== ''
         );
       default:
         return true;
@@ -142,9 +141,13 @@ function CalculatePage() {
             className={`w-[360px] h-[64px] rounded-[16px] absolute bottom-6 ${
                 !isStepValid() ? "bg-gray-300 cursor-not-allowed" : "bg-blue-500"
             }`}
-            onClick={step !== 7 ?
-                (step === 8 ? final_register : () => setStep((prev) => prev + 1)) :
-                registration}
+            onClick={
+              step !== 7
+                  ? step === 8
+                      ? final_register
+                      : () => setStep((prev) => prev + 1)
+                  : registration
+            }
             disabled={!isStepValid()} // Блокируем кнопку, если шаг не валиден
         >
           Далее
