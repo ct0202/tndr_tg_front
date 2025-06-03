@@ -89,7 +89,7 @@ function CalculatePage() {
         })
   }
 
-  const congratulations = async () => {
+  const final_register = async () => {
     const userId = filters?.userId;
 
     if (!userId) {
@@ -99,8 +99,10 @@ function CalculatePage() {
 
     try {
       const response = await axios.post(`/updateUserInfo/${userId}`, {
-        about: filters?.about
+        about: filters?.about,
+        activate: true
       });
+
 
       if (response.data) {
         console.log(response.data);
@@ -141,9 +143,8 @@ function CalculatePage() {
                 !isStepValid() ? "bg-gray-300 cursor-not-allowed" : "bg-blue-500"
             }`}
             onClick={step !== 7 ?
-                (step === 8 ? congratulations : () => setStep((prev) => prev + 1)) :
+                (step === 8 ? final_register : () => setStep((prev) => prev + 1)) :
                 registration}
-
             disabled={!isStepValid()} // Блокируем кнопку, если шаг не валиден
         >
           Далее
