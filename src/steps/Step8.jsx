@@ -33,6 +33,7 @@ function Step8() {
             );
 
             console.log('Upload successful:', response.data);
+            filters.photos.push(response.data);
         } catch (error) {
             console.error('Error uploading photo:', error);
         }

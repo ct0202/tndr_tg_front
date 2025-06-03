@@ -53,7 +53,8 @@ function CalculatePage() {
         return filters.relationshipGoal && filters.relationshipGoal.trim() !== ''; // Проверяем цель отношений
       case 8:
         return (
-            filters.about && filters.about.trim() !== ''
+            filters.about && filters.about.trim() !== "" &&
+            Array.isArray(filters.photos) && filters.photos.length > 0
         );
       default:
         return true;
