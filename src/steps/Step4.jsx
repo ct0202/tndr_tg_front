@@ -5,16 +5,19 @@ import {useState} from 'react'
 function Step4() {
   const { filters, updateFilter } = useFilters();
   const [inputTop, setInputTop] = useState(100);
+  const [hideImg, setHideImg] = useState(false);
 
   const [imageLoaded, setImageLoaded] = useState(false);
 
   useEffect(() => {
       const elevateInput = (event) => {
           if (event.type === "focusin") {
-              setInputTop(150);
+              setInputTop(0);
+              setHideImg(true);
           }
           if (event.type === "focusout") {
               setInputTop(100);
+              setHideImg(false);
           }
       };
 
@@ -30,8 +33,8 @@ function Step4() {
   return (
     // <div className='flex flex-col justify-start items-center mb-[100px]'>
       <div className='flex flex-col justify-start items-center'
-      style={{ marginBottom: `${inputTop}px` }}>
-
+      style={{ marginTop: `${inputTop}px` }}>
+          {!hideImg && (
       <div className='relative w-[125px] h-[125px] mt-[50px]'>
       {!imageLoaded && (
           <div
@@ -50,6 +53,7 @@ function Step4() {
           onError={() => console.error("Failed to load image")}
         />
       </div>
+          )}
       <p className='text-gray text-[20px] font-medium w-[268px] mt-[23px] text-center'>Какой твой рост?</p>
       <input
         type="text"
