@@ -38,7 +38,7 @@ function LogoPage() {
               localStorage.setItem("userId", response.data.user._id);
               setUser(response.data?.user);
               console.log("Пользователь успешно получен:", response.data?.user.telegramId);
-              if (response.data?.user.activated) {
+              if (!response.data?.user.activated) {
                 console.log(response.data?.user.activated);
                 axios.delete("/user", {
                   data: { telegramId: response.data.user.telegramId },
