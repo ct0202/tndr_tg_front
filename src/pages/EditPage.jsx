@@ -251,12 +251,12 @@ function EditPage() {
                 <div onClick={() => setUser((prev) => ({ ...prev,  gender: "Другое"}))} className="w-[116px] h-[52px] rounded-[12px] flex justify-center items-center " style={user?.gender == "Другое" ? { background: "#f4f4f7", border: "1.50px solid #e53935" } : { background: "#f4f4f7" }}>Другое</div>
             </div>
 
-            <div className='flex justify-start items-center gap-4 mt-4'>
-                <div className="flex flex-col justify-start items-start gap-2">
-                    <p>Рост</p>
-                    <input type="number" onChange={(e) => setUser((prev) => ({ ...prev, height: e.target.value }))} value={user?.height} className='rounded-[12px] text-center w-[121px] h-[52px] ' style={{ background: "#f4f4f7" }} />
-                </div>
+            <div className='flex w-full items-center gap-4 mt-4'>
                 <div className="flex flex-col justify-start items-start gap-1">
+                    <p>Рост</p>
+                    <input type="number" onChange={(e) => setUser((prev) => ({ ...prev, height: e.target.value }))} value={user?.height} className='rounded-[12px] text-center w-[121px] h-[48px] mt-2' style={{ background: "#f4f4f7" }} />
+                </div>
+                <div className="flex flex-col justify-start items-start gap-1 box-border">
                     <p>Дата рождения</p>
                     <input
                         type='date'
@@ -267,7 +267,7 @@ function EditPage() {
                             handleChange('birthMonth', parseInt(month, 10));
                             handleChange('birthDay', parseInt(day, 10));
                         }}
-                        className=' h-[48px] px-4 rounded-[12px] outline-none mt-2'
+                        className='h-[48px] px-4 rounded-[12px] outline-none mt-2 w-[223px]'
                         style={{ background: '#f4f4f7' }}
                     />
                 </div>

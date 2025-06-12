@@ -33,7 +33,6 @@ function ReadyLogin() {
                     console.log(data.message);
 
                     if (data.message == "Пользователь не найден"){
-                        alert("Пользователь не найден");
                         navigate('/calculate');
                     }
 
