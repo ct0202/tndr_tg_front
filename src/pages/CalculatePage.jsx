@@ -104,7 +104,7 @@ function CalculatePage() {
     try {
       const response = await axios.post(`/updateUserInfo/${userId}`, {
         about: filters?.about,
-        activate: true
+        activate: true,
       });
 
 

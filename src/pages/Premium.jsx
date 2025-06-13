@@ -1,4 +1,4 @@
-import React, { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "../axios";
 import Button from "../components/Button";
 import { useNavigate } from "react-router-dom";
@@ -14,33 +14,29 @@ function Premium() {
     // const [type, setType] = useState("2_weeks");
 
     useEffect(() => {
-        axios.get('/ispremium/' + localStorage.getItem("userId"))
-        .then(response => {
-            console.log("isPremium response", response);
-            if (response.data?.isPremium) {
-                setIsPremium(true);
-            }
-            else {
-                setIsPremium(false);
-            }
-        })
-    }, []);
+    const fetchData = async () => {
+        try {
+            // Запускаем оба запроса параллельно для оптимизации
+            const [premiumResponse, invitedResponse] = await Promise.all([
+                axios.get('/ispremium/' + localStorage.getItem("userId")),
+                axios.get('/getInvitedCount/' + localStorage.getItem("userId"))
+            ]);
 
-    useEffect(() => {
-        axios.get('/getInvitedCount/' + localStorage.getItem("userId"))
-        .then(response => {
-            console.log("invitedCount response", response);
-            if (response.data?.count) {
-                setInvitedCount(response.data.count);
-            } else {
-                setInvitedCount(0);
-            }
-        })
-        .catch(error => {
-            console.error("Error fetching invited count:", error);
+            console.log("isPremium response", premiumResponse);
+            console.log("invitedCount response", invitedResponse);
+
+            setIsPremium(!!premiumResponse.data?.isPremium);
+            setInvitedCount(invitedResponse.data?.invitedCount || 0);
+        } catch (error) {
+            console.error("Ошибка при загрузке данных:", error);
+            // Устанавливаем значения по умолчанию в случае ошибки
+            setIsPremium(false);
             setInvitedCount(0);
-        });
-    }, []);
+        }
+    };
+
+    fetchData();
+}, []);
 
 
     async function handleCancel() {

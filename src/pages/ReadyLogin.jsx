@@ -30,15 +30,12 @@ function ReadyLogin() {
             .then((res) => res.data)
             .then((data) => {
                 if (data) {
-                    console.log(data.message);
-
                     if (data.message == "Пользователь не найден"){
                         navigate('/calculate');
                     }
 
-                    console.log('===', data);
+                    console.log('===', data.premium.expiresAt, new Date().toISOString());
                     setUser(data);
-                    console.log('====', user);
                     setIsHidden(data.hidden);
                 }
             })
@@ -102,6 +99,19 @@ function ReadyLogin() {
                     <img src='/images/icons/notification.svg' alt='Уведомления' onClick={() => {setOpenNotification(true); fetchNotifications()}}/>
                 </button>
             </div>
+
+            <Button className='h-[50px] w-full flex flex-row align-center justify-center' onClick={() => navigate('/premium')}>
+                <img src="/images/icons/premium_ready_login_button_part.png" alt="Премиум" width={95} height={13} />
+                <span className='ml-[8px] mr-[2px] mb-[4px] text-center text-[24px] font-[200]'>|</span>
+                <span className='text-[16px] font-semibold ml-[8px]'>Осталось {
+                    Math.max(
+                        Math.ceil(
+                            (new Date(user?.premium?.expiresAt).getTime() - Date.now()) / (1000 * 60 * 60 * 24)
+                        ),
+                    0 
+                    )
+                } дней</span>
+            </Button>
 
             {/* Слайдер фотографий */}
             <div className='w-full max-w-[345px] mt-[30px] z-0'>
