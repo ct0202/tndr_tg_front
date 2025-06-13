@@ -14,7 +14,7 @@ function Premium() {
     // const [type, setType] = useState("2_weeks");
 
     useEffect(() => {
-    const fetchData = async () => {
+    const fetchData = async () => { 
         try {
             // Запускаем оба запроса параллельно для оптимизации
             const [premiumResponse, invitedResponse] = await Promise.all([

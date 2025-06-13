@@ -99,7 +99,7 @@ function ReadyLogin() {
                     <img src='/images/icons/notification.svg' alt='Уведомления' onClick={() => {setOpenNotification(true); fetchNotifications()}}/>
                 </button>
             </div>
-
+            { user?.premium?.expiresAt && new Date(user?.premium?.expiresAt) > new Date() &&
             <Button className='h-[50px] w-full flex flex-row align-center justify-center' onClick={() => navigate('/premium')}>
                 <img src="/images/icons/premium_ready_login_button_part.png" alt="Премиум" width={95} height={13} />
                 <span className='ml-[8px] mr-[2px] mb-[4px] text-center text-[24px] font-[200]'>|</span>
@@ -112,6 +112,7 @@ function ReadyLogin() {
                     )
                 } дней</span>
             </Button>
+            }
 
             {/* Слайдер фотографий */}
             <div className='w-full max-w-[345px] mt-[30px] z-0'>
