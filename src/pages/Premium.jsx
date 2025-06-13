@@ -14,29 +14,29 @@ function Premium() {
     // const [type, setType] = useState("2_weeks");
 
     useEffect(() => {
-    const fetchData = async () => { 
-        try {
-            // Запускаем оба запроса параллельно для оптимизации
-            const [premiumResponse, invitedResponse] = await Promise.all([
-                axios.get('/ispremium/' + localStorage.getItem("userId")),
-                axios.get('/getInvitedCount/' + localStorage.getItem("userId"))
-            ]);
+        const fetchData = async () => { 
+            try {
+                // Запускаем оба запроса параллельно для оптимизации
+                const [premiumResponse, invitedResponse] = await Promise.all([
+                    axios.get('/ispremium/' + localStorage.getItem("userId")),
+                    axios.get('/getInvitedCount/' + localStorage.getItem("userId"))
+                ]);
 
-            console.log("isPremium response", premiumResponse);
-            console.log("invitedCount response", invitedResponse);
+                console.log("isPremium response", premiumResponse);
+                console.log("invitedCount response", invitedResponse);
 
-            setIsPremium(!!premiumResponse.data?.isPremium);
-            setInvitedCount(invitedResponse.data?.invitedCount || 0);
-        } catch (error) {
-            console.error("Ошибка при загрузке данных:", error);
-            // Устанавливаем значения по умолчанию в случае ошибки
-            setIsPremium(false);
-            setInvitedCount(0);
-        }
-    };
+                setIsPremium(!!premiumResponse.data?.isPremium);
+                setInvitedCount(invitedResponse.data?.invitedCount || 0);
+            } catch (error) {
+                console.error("Ошибка при загрузке данных:", error);
+                // Устанавливаем значения по умолчанию в случае ошибки
+                setIsPremium(false);
+                setInvitedCount(0);
+            }
+        };
 
-    fetchData();
-}, []);
+        fetchData();
+    }, []);
 
 
     async function handleCancel() {
@@ -99,9 +99,13 @@ function Premium() {
             className="w-[95vw] flex flex-col justify-  start items-center"
             style={{ height: "calc(100% - 80px)" }}
         >   {buySuccess ? (
-                <div className="w-full text-center mt-4">
-                    <h2 className="text-lg font-semibold">Подписка оформлена!</h2>
-                    <p className="text-sm text-gray-500">Спасибо за покупку премиум подписки.</p>
+                <div className="w-full h-[393px] mt-[200px] rounded-[16px] border-[1px] border-[lightgrey] flex flex-col items-center justify-center gap-4 padding-[4px] relative">
+                    <img src="/images/icons/gradient.svg" className="w-full absolute top-0 left-0"/>
+                    <span className="text-[140px] leading-[140px]">❤️</span>
+                    <h2 className="text-lg font-semibold">Покупка прошла успешно</h2>
+                    <div onClick={() => navigate("/readyLogin") }>
+                        <img src="/images/icons/okay-button.png" className="w-[316px] h-[60px]"/>
+                    </div>
                 </div>
             ) : (
                 !cancelling ? (
