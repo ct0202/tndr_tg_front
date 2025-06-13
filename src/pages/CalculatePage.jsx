@@ -33,6 +33,9 @@ function CalculatePage() {
     };
   }, []);
 
+  const tg = window.Telegram.WebApp;
+  console.log('referal', tg.initDataUnsafe.start_param);
+
   const navigate = useNavigate()
   // Проверка, заполнен ли текущий шаг
   const isStepValid = () => {
@@ -74,6 +77,7 @@ function CalculatePage() {
       wantToFind: filters?.preference,
       goal: filters?.relationshipGoal,
       telegramId: filters?.telegramId,
+      referal: tg.initDataUnsafe.start_param || null,
     })
         .then(res => {
           if(res.data){
