@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import axios from "../axios";
 import Button from "../components/Button";
 import { useNavigate } from "react-router-dom";
@@ -24,6 +24,22 @@ function Premium() {
                 setIsPremium(false);
             }
         })
+    }, []);
+
+    useEffect(() => {
+        axios.get('/getInvitedCount/' + localStorage.getItem("userId"))
+        .then(response => {
+            console.log("invitedCount response", response);
+            if (response.data?.count) {
+                setInvitedCount(response.data.count);
+            } else {
+                setInvitedCount(0);
+            }
+        })
+        .catch(error => {
+            console.error("Error fetching invited count:", error);
+            setInvitedCount(0);
+        });
     }, []);
 
 
