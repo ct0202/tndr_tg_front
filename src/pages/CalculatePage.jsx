@@ -34,7 +34,6 @@ function CalculatePage() {
   }, []);
 
   const tg = window.Telegram.WebApp;
-  console.log('referal', tg.initDataUnsafe.start_param);
 
   const navigate = useNavigate()
   // Проверка, заполнен ли текущий шаг
@@ -110,7 +109,6 @@ function CalculatePage() {
 
       if (response.data) {
         console.log(response.data);
-        alert("Успешная регистрация");
         navigate('/readyLogin');
       } else {
         alert("Что-то пошло не так");

@@ -7,7 +7,8 @@ function Step2() {
   const days = Array.from({ length: 31 }, (_, i) => i + 1);
   const months = Array.from({ length: 12 }, (_, i) => i + 1);
   const currentYear = new Date().getFullYear();
-  const years = Array.from({ length: 120 }, (_, i) => currentYear - i);
+  const maxYear = currentYear - 18;
+  const years = Array.from({ length: 120 }, (_, i) => currentYear - i).filter(y => y <= maxYear);
 
   const [day, setDay] = useState(filters.birthDay || '');
   const [month, setMonth] = useState(filters.birthMonth || '');
