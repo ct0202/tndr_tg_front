@@ -25,7 +25,7 @@ function App() {
     tg.ready();
 
     return () => {
-      tg.close(); // Закрытие веб-приложения (при необходимости)
+      tg.close();
     };
   }, []);
 
