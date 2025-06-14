@@ -8,6 +8,9 @@ function EditPage() {
     const [photos, setPhotos] = useState([null, null, null]);
     const navigate = useNavigate();
 
+    const [pendingPhotos, setPendingPhotos] = useState({});
+    const [pendingDeletions, setPendingDeletions] = useState([]);
+
     // useEffect(() => {
     //     const userId = localStorage.getItem('userId');
     //     axios.post('/auth/getUserById', { userId })
@@ -69,60 +72,136 @@ function EditPage() {
         setUser((prev) => ({ ...prev, [field]: value }));
     };
 
-    const deletePhoto = async (index) => {
-        try {
-            const userId = localStorage.getItem("userId");
+    // const deletePhoto = async (index) => {
+    //     try {
+    //         const userId = localStorage.getItem("userId");
+    //
+    //         if (!userId) {
+    //             console.error("Ошибка: отсутствует userId");
+    //             return;
+    //         }
+    //
+    //         const response = await axios.delete(`/users/deletePhoto`, {
+    //             params: { userId, index },
+    //         });
+    //
+    //         setPhotos((prevPhotos) => {
+    //             const updatedPhotos = [...prevPhotos];
+    //             updatedPhotos[index] = null;
+    //             return updatedPhotos;
+    //         });
+    //
+    //         console.log(response.data.message);
+    //         return response.data;
+    //     } catch (error) {
+    //         console.error("Ошибка при удалении фото:", error.response?.data || error.message);
+    //         return null;
+    //     }
+    // };
+    const deletePhoto = (index) => {
+        setPhotos((prevPhotos) => {
+            const updated = [...prevPhotos];
+            updated[index] = null;
+            return updated;
+        });
 
-            if (!userId) {
-                console.error("Ошибка: отсутствует userId");
-                return;
-            }
-
-            const response = await axios.delete(`/users/deletePhoto`, {
-                params: { userId, index },
-            });
-
-            setPhotos((prevPhotos) => {
-                const updatedPhotos = [...prevPhotos];
-                updatedPhotos[index] = null;
-                return updatedPhotos;
-            });
-
-            console.log(response.data.message);
-            return response.data;
-        } catch (error) {
-            console.error("Ошибка при удалении фото:", error.response?.data || error.message);
-            return null;
-        }
+        setPendingDeletions((prev) => [...new Set([...prev, index])]);
     };
 
-    const handleFileSelection = async (e, index) => {
+
+
+    // const handleFileSelection = async (e, index) => {
+    //     const file = e.target.files[0];
+    //     if (!file) return;
+    //
+    //     const invalidTypes = ['image/svg+xml', 'text/html'];
+    //     if (invalidTypes.includes(file.type)) {
+    //         alert('Недопустимый формат изображения');
+    //         e.target.value = ''; // Очищаем input, чтобы пользователь мог выбрать новый файл
+    //         return;
+    //     }
+    //
+    //     const reader = new FileReader();
+    //     reader.onload = async (event) => {
+    //         const img = new Image();
+    //         img.src = event.target.result;
+    //         img.onload = () => {
+    //             const canvas = document.createElement('canvas');
+    //             const ctx = canvas.getContext('2d');
+    //
+    //             canvas.width = img.width;
+    //             canvas.height = img.height;
+    //             ctx.drawImage(img, 0, 0, img.width, img.height);
+    //
+    //             // Получаем корректное изображение без EXIF
+    //             const fixedImage = canvas.toDataURL('image/jpeg');
+    //
+    //             // Обновляем превью
+    //             const updatedPhotos = [...photos];
+    //             updatedPhotos[index] = fixedImage;
+    //             setPhotos(updatedPhotos);
+    //         };
+    //     };
+    //     reader.readAsDataURL(file);
+    //
+    //
+    //     const formData = new FormData();
+    //     formData.append('photo', file);
+    //
+    //     const userId = localStorage.getItem('userId');
+    //
+    //     try {
+    //         const response = await axios.post(
+    //             `/users/uploadPhoto?userId=${userId}&index=${index}`, // Передаем параметры в query
+    //             formData,
+    //             { headers: { 'Content-Type': 'multipart/form-data' } }
+    //         );
+    //
+    //         setPhotos((prevPhotos) => {
+    //             const updatedPhotos = [...prevPhotos];
+    //             updatedPhotos[index] = response.data.photoUrl;
+    //             return updatedPhotos;
+    //         });
+    //
+    //     } catch (error) {
+    //         console.error('Ошибка при загрузке фото:', error);
+    //         let errorMessage = 'Не удалось загрузить фото.';
+    //
+    //         if (error.response) {
+    //             errorMessage += ` Сервер ответил: ${error.response.data?.message || JSON.stringify(error.response.data)}`;
+    //         } else if (error.request) {
+    //             errorMessage += ' Нет ответа от сервера.';
+    //         } else {
+    //             errorMessage += ` Ошибка: ${error.message}`;
+    //         }
+    //
+    //         alert(errorMessage);
+    //     }
+    // };
+    const handleFileSelection = (e, index) => {
         const file = e.target.files[0];
         if (!file) return;
 
         const invalidTypes = ['image/svg+xml', 'text/html'];
         if (invalidTypes.includes(file.type)) {
             alert('Недопустимый формат изображения');
-            e.target.value = ''; // Очищаем input, чтобы пользователь мог выбрать новый файл
+            e.target.value = '';
             return;
         }
 
         const reader = new FileReader();
-        reader.onload = async (event) => {
+        reader.onload = (event) => {
             const img = new Image();
             img.src = event.target.result;
+
             img.onload = () => {
                 const canvas = document.createElement('canvas');
                 const ctx = canvas.getContext('2d');
-
                 canvas.width = img.width;
                 canvas.height = img.height;
                 ctx.drawImage(img, 0, 0, img.width, img.height);
 
-                // Получаем корректное изображение без EXIF
                 const fixedImage = canvas.toDataURL('image/jpeg');
-
-                // Обновляем превью
                 const updatedPhotos = [...photos];
                 updatedPhotos[index] = fixedImage;
                 setPhotos(updatedPhotos);
@@ -130,41 +209,14 @@ function EditPage() {
         };
         reader.readAsDataURL(file);
 
-
-        const formData = new FormData();
-        formData.append('photo', file);
-
-        const userId = localStorage.getItem('userId');
-
-        try {
-            const response = await axios.post(
-                `/users/uploadPhoto?userId=${userId}&index=${index}`, // Передаем параметры в query
-                formData,
-                { headers: { 'Content-Type': 'multipart/form-data' } }
-            );
-
-            setPhotos((prevPhotos) => {
-                const updatedPhotos = [...prevPhotos];
-                updatedPhotos[index] = response.data.photoUrl;
-                return updatedPhotos;
-            });
-
-        } catch (error) {
-            console.error('Ошибка при загрузке фото:', error);
-            let errorMessage = 'Не удалось загрузить фото.';
-
-            if (error.response) {
-                errorMessage += ` Сервер ответил: ${error.response.data?.message || JSON.stringify(error.response.data)}`;
-            } else if (error.request) {
-                errorMessage += ' Нет ответа от сервера.';
-            } else {
-                errorMessage += ` Ошибка: ${error.message}`;
-            }
-
-            alert(errorMessage);
-        }
+        setPendingPhotos((prev) => ({
+            ...prev,
+            [index]: file,
+        }));
     };
-    // Функция для обновления имени пользователя
+
+
+
     const handleNameChange = (e) => {
         setUser((prev) => ({
             ...prev,
@@ -172,18 +224,62 @@ function EditPage() {
         }));
     };
 
-    const handleSave = () => {
+    // const handleSave = () => {
+    //     const userId = localStorage.getItem('userId');
+    //     axios.post(`/updateUserInfo/${userId}`, user)
+    //         .then(() => {
+    //             alert('Данные успешно сохранены!');
+    //             navigate(-1);
+    //         })
+    //         .catch((error) => {
+    //             console.error('Ошибка при сохранении данных:', error);
+    //             alert('Ошибка при сохранении данных. Попробуйте снова.');
+    //         });
+    // };
+    const handleSave = async () => {
         const userId = localStorage.getItem('userId');
-        axios.post(`/updateUserInfo/${userId}`, user)
-            .then(() => {
-                alert('Данные успешно сохранены!');
-                navigate(-1);
-            })
-            .catch((error) => {
-                console.error('Ошибка при сохранении данных:', error);
-                alert('Ошибка при сохранении данных. Попробуйте снова.');
-            });
+
+        try {
+            // 1. Сохраняем информацию о пользователе
+            await axios.post(`/updateUserInfo/${userId}`, user);
+
+            // 2. Удаляем отмеченные фото
+            for (const index of pendingDeletions) {
+                await axios.delete(`/users/deletePhoto`, {
+                    params: { userId, index },
+                });
+            }
+
+            // 3. Загружаем новые фото
+            for (const index in pendingPhotos) {
+                const formData = new FormData();
+                formData.append('photo', pendingPhotos[index]);
+
+                const res = await axios.post(
+                    `/users/uploadPhoto?userId=${userId}&index=${index}`,
+                    formData,
+                    { headers: { 'Content-Type': 'multipart/form-data' } }
+                );
+
+                setPhotos((prevPhotos) => {
+                    const updated = [...prevPhotos];
+                    updated[index] = res.data.photoUrl;
+                    return updated;
+                });
+            }
+
+            alert('Данные и фото успешно сохранены!');
+            setPendingPhotos({});
+            setPendingDeletions([]);
+            navigate(-1);
+
+        } catch (error) {
+            console.error('Ошибка при сохранении данных:', error);
+            alert('Ошибка при сохранении данных. Попробуйте снова.');
+        }
     };
+
+
 
     return (
         <div className='flex flex-col justify-center items-start w-[360px] mb-[200px] mt-[80px] h-full overflow-auto'>

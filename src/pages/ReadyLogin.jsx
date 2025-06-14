@@ -5,6 +5,7 @@ import 'swiper/css/pagination';
 import { Pagination } from 'swiper/modules';
 import Navigation from '../components/Navigation';
 import Button from '../components/Button';
+import SecondaryButton from '../components/SecondaryButton';
 import axios from '../axios';
 import { useNavigate } from 'react-router-dom';
 import Modal from "react-modal";
@@ -174,17 +175,24 @@ function ReadyLogin() {
                 Редактировать
                 <img src='/images/icons/Edit.svg' className='w-[32px]' alt='Редактировать' />
             </Button>
-            <button
-                className='rounded-[16px] w-[345px] h-[45px] absolute bottom-[100px] flex justify-center items-center'
-                style={{
-                    boxShadow: '0 0 1px 0 rgba(201, 201, 201, 0.14), 0 2px 2px 0 rgba(201, 201, 201, 0.12), 0 4px 2px 0 rgba(201, 201, 201, 0.07), 0 7px 3px 0 rgba(201, 201, 201, 0.02), inset 0 -3px 11px 0 #e7e7e7',
-                    border: '1px solid #f2dddf',
-                }}
-                onClick={handleToggleVisibility}
-            >
+
+
+            {/*<button*/}
+            {/*    className='rounded-[16px] w-[345px] h-[45px] absolute bottom-[100px] flex justify-center items-center'*/}
+            {/*    style={{*/}
+            {/*        boxShadow: '0 0 1px 0 rgba(201, 201, 201, 0.14), 0 2px 2px 0 rgba(201, 201, 201, 0.12), 0 4px 2px 0 rgba(201, 201, 201, 0.07), 0 7px 3px 0 rgba(201, 201, 201, 0.02), inset 0 -3px 11px 0 #e7e7e7',*/}
+            {/*        border: '1px solid #f2dddf',*/}
+            {/*    }}*/}
+            {/*    onClick={handleToggleVisibility}*/}
+            {/*>*/}
+            {/*    {isHidden ? 'Показать пользователя' : 'Скрыть аккаунт из ленты'}*/}
+            {/*    {isHidden ? <img src='/images/icons/Trash_1.svg' className='ml-[8px]' alt='Удалить' /> : <></>}*/}
+            {/*</button>*/}
+            <SecondaryButton onClick={handleToggleVisibility} className='rounded-[16px] w-[345px] h-[45px] text-[#7E6B6D] absolute bottom-[100px] flex justify-center items-center'>
                 {isHidden ? 'Показать пользователя' : 'Скрыть аккаунт из ленты'}
-                {isHidden ? <img src='/images/icons/Trash_1.svg' className='ml-[8px]' alt='Удалить' /> : <></>}
-            </button>
+                {!isHidden ? <img src='/images/icons/Trash_1.svg' className='ml-[8px]' alt='Удалить' /> : <></>}
+            </SecondaryButton>
+
 
             <Modal
                 isOpen={!!openNotification}
