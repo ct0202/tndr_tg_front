@@ -90,15 +90,12 @@ function ReadyLogin() {
         >
             <div className='flex justify-between items-center w-full min-w-[343px] mt-[105px]'>
                 <h3 className='text-gray font-semibold text-[28px]'>Твоя карточка</h3>
-                <button
-                    className='rounded-[16px] w-[45px] h-[45px] flex justify-center items-center'
-                    style={{
-                        border: '1px solid #f2dddf',
-                        boxShadow: '0 0 1px 0 rgba(201, 201, 201, 0.14), 0 2px 2px 0 rgba(201, 201, 201, 0.12), 0 4px 2px 0 rgba(201, 201, 201, 0.07), 0 7px 3px 0 rgba(201, 201, 201, 0.02), inset 0 -3px 11px 0 #e7e7e7',
-                    }}
+                <SecondaryButton
+                    className='rounded-[16px] w-[81px] h-[45px] flex justify-center items-center'
+                    onClick={() => {setOpenNotification(true); fetchNotifications()}}
                 >
-                    <img src='/images/icons/notification.svg' alt='Уведомления' onClick={() => {setOpenNotification(true); fetchNotifications()}}/>
-                </button>
+                    <img src='/images/icons/bell.svg' alt='Уведомления' />
+                </SecondaryButton>
             </div>
             { user?.premium?.expiresAt && new Date(user?.premium?.expiresAt) > new Date() &&
             <Button className='h-[50px] w-full flex flex-row align-center justify-center' onClick={() => navigate('/premium')}>

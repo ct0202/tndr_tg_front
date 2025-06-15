@@ -3,6 +3,7 @@ import axios from "../axios";
 import { ChatCard } from "../components/ChatCard";
 import Loading from "../components/Loading";
 import {useNavigate} from "react-router-dom";
+import SecondaryButton from "../components/SecondaryButton";
 
 function Chat() {
     const [candidates, setCandidates] = useState([]);
@@ -49,11 +50,14 @@ function Chat() {
                         <p className="text-gray text-[20px] font-semibold w-[100%] mt-[110px] ">
                             Чаты
                         </p>
-                        <img src="/images/icons/chat_seach_button.svg"
-                             className="mt-[100px]"
-                             alt="chat_search_icon"
-                             onClick={() => setIsSearchOpen(!isSearchOpen)}
-                        />
+                        {/*<img src="/images/icons/chat_seach_button.svg"*/}
+                        {/*     className="mt-[100px]"*/}
+                        {/*     alt="chat_search_icon"*/}
+                        {/*     onClick={() => setIsSearchOpen(!isSearchOpen)}*/}
+                        {/*/>*/}
+                        <SecondaryButton className='mt-[100px] w-[81px] h-[45px]' onClick={() => setIsSearchOpen(!isSearchOpen)}>
+                            <img src='/images/icons/Search.svg' width={24} height={24} />
+                        </SecondaryButton>
                     </div>
                     {isSearchOpen && (
                         <input

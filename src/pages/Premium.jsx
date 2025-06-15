@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "../axios";
 import Button from "../components/Button";
 import { useNavigate } from "react-router-dom";
+import SecondaryButton from "../components/SecondaryButton";
 
 function Premium() {
     const navigate = useNavigate();
@@ -112,7 +113,8 @@ function Premium() {
             <div className={`w-full ${isPremium ? "h-[535px]" : "h-[661px]"} mt-[100px] relative rounded-[16px] border-[1px] border-[lightgrey]`}>
                 <img src="/images/icons/gradient.svg" className="w-full"/>
                 <img src="/images/icons/logo_premium.svg" className="w-[220px] ml-4 absolute top-[80px]" />
-                <object data="/images/icons/close_button_premium_page.svg" type="image/svg+xml" className="absolute top-2 right-2"/>
+                {/*<object data="/images/icons/close_button_premium_page.svg" type="image/svg+xml" className="absolute top-2 right-2"/>*/}
+                <SecondaryButton onClick={()=>navigate('/readyLogin')} className='absolute top-2 right-2 w-[52px] h-[50px] bg-white'><img src="/images/icons/Plus.png" width={32} height={32}/></SecondaryButton>
 
                 <div className="mt-[40px] ml-4 flex flex-col gap-[7px]">
                     <div className="w-full flex flex-row gap-[10px]">
