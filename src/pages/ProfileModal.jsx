@@ -37,7 +37,7 @@ function ProfileModal({userId}) {
     }, [user]);
 
     return (
-        <div className='z-[100] absolute top-[149px] border-[1px] border-[#D3D3D3]
+        <div className='z-[100] absolute top-[180px] border-[1px] border-[#D3D3D3]
          flex items-center justify-center bg-white px-[4px] py-[4px] rounded-[16px] w-[361px] h-[533px]'>
             {
                 user?.photos && (
