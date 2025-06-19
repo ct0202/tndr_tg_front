@@ -15,6 +15,8 @@ import {Pagination} from "swiper/modules";
 import Modal from "react-modal";
 
 import '../styles/Swipe.css'
+import SecondaryButton from "../components/SecondaryButton";
+import Button from "../components/Button";
 
 function FindPage() {
     const [candidates, setCandidates] = useState([]);
@@ -91,6 +93,9 @@ function FindPage() {
         setTimeout(() => setTrigger(null), 300);
     };
 
+    //new
+    const visibleCards = candidates.slice(0, 2).reverse();
+
     return (
         <div className="w-[90vw] flex flex-col justify-start items-center" style={{height: "calc(100% - 80px)"}}>
             {filters && <Filters closePopup={() => setFilters(false)}/>}
@@ -106,17 +111,49 @@ function FindPage() {
             </div>
 
             <div className="w-full max-w-[345px] top-[145px] absolute z-0 flex flex-col justify-start items-center">
-                {candidates
-                    .slice(0, 2)
-                    .reverse()
-                    .map((candidate, index) => (
+                {/*{candidates*/}
+                {/*    .slice(0, 2)*/}
+                {/*    .reverse()*/}
+                {/*    .map((candidate, index) => (*/}
+                {/*        <Card*/}
+                {/*            key={candidate._id}*/}
+                {/*            user={candidate}*/}
+                {/*            isFront={index === 1}*/}
+                {/*            trigger={index === 1 ? trigger : null}*/}
+                {/*            onAnimationEnd={() => {*/}
+                {/*                if (trigger && index === 1) {*/}
+                {/*                    const userId = localStorage.getItem("userId");*/}
+                {/*                    const targetUserId = candidate._id;*/}
+
+                {/*                    setCandidates((prev) => prev.slice(1));*/}
+                {/*                    setTrigger(null);*/}
+                {/*                    axios.post("/users/react", { userId, targetUserId, action: trigger });*/}
+                {/*                }*/}
+                {/*            }}*/}
+                {/*        />*/}
+                {/*    ))}*/}
+                {visibleCards.map((candidate, index) => {
+                    const isTopCard = index === visibleCards.length - 1;
+
+                    return (
                         <Card
                             key={candidate._id}
                             user={candidate}
-                            isFront={index === 1}
-                            trigger={index === 1 ? trigger : null}
+                            isFront={isTopCard}
+                            trigger={isTopCard ? trigger : null}
+                            onAnimationEnd={() => {
+                                if (trigger && isTopCard) {
+                                    const userId = localStorage.getItem("userId");
+                                    const targetUserId = candidate._id;
+
+                                    setCandidates((prev) => prev.slice(1));
+                                    setTrigger(null);
+                                    axios.post("/users/react", { userId, targetUserId, action: trigger });
+                                }
+                            }}
                         />
-                    ))}
+                    );
+                })}
 
                 {candidates.length < 2 && (
                     <object
@@ -128,30 +165,10 @@ function FindPage() {
             </div>
 
             <div className="flex justify-between items-center absolute bottom-20 w-[90%]">
-                <img
-                    src="/images/ui/primary button (1).png"
-                    className="w-[70px]"
-                    alt=""
-                    onClick={handleUndo}
-                />
-                <img
-                    src="/images/ui/closeBtn.png"
-                    className="w-[100px]"
-                    alt=""
-                    onClick={() => handleReaction("dislike")}
-                />
-                <img
-                    src="/images/ui/okBtn.png"
-                    className="w-[100px]"
-                    alt=""
-                    onClick={() => handleReaction("like")}
-                />
-                <img src="/images/ui/StarBtn.png"
-                     className="w-[70px]"
-                     alt=""
-                    // onClick={() => { setMsgModal(true);}}
-                     onClick={() => {setMsgModal(true);}}
-                />
+                <SecondaryButton onClick={handleUndo} className="w-[70px] h-[64px]"><img src="/images/ui/undo.png" alt="undo button" width={32} height={32}/></SecondaryButton>
+                <SecondaryButton onClick={() => handleReaction("dislike")} className="w-[103px] h-[64px]"><img src="/images/ui/dislike_icon.png" alt="dislike button" width={32} height={32}/></SecondaryButton>
+                <Button onClick={() => handleReaction("like")} className="w-[103px] h-[64px]"><img src="/images/ui/Check.png" alt="like button" width={32} height={32}/></Button>
+                <Button onClick={() => {setMsgModal(true);}} className="w-[70px] h-[64px]"><img src="/images/ui/Star.png" alt="superlike button" width={32} height={32}/></Button>
             </div>
             <Modal
                 isOpen={msgModal}
@@ -183,7 +200,7 @@ function FindPage() {
         ;
 }
 
-const Card = ({user, isFront, trigger}) => {
+const Card = ({user, isFront, trigger, onAnimationEnd}) => {
     const swiperRef = useRef(null);
     const [animationClass, setAnimationClass] = useState("");
     const [imageLoaded, setImageLoaded] = useState(false);
@@ -211,7 +228,12 @@ const Card = ({user, isFront, trigger}) => {
     }, [user?.photos]);
 
     return (
-        <div className={`absolute w-full h-[533px] rounded-[8px] overflow-hidden ${animationClass} ${isFront ? "z-[20]" : "z-0"}`}
+        <div className={`absolute w-full h-[533px] bg-white rounded-[8px] overflow-hidden ${animationClass} ${isFront ? "z-[20]" : "z-0"}`}
+             onAnimationEnd={() => {
+                 if (animationClass && onAnimationEnd) {
+                     onAnimationEnd();
+                 }
+             }}
         >
             {
                 user?.photos?.length > 0 ? (
