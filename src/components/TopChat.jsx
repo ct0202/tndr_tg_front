@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 import {getRelativeTime} from "../utils/timeFormatter";
 
-function TopChat({ name, img, status }) {
+function TopChat({ name, img, status, id}) {
   const navigate = useNavigate();
 
   return (

@@ -5,6 +5,7 @@ import axios from "../../axios";
 import TopChat from "../../components/TopChat";
 import "./FullChat.css";
 import Loading from "../../components/Loading";
+import ProfileModal from "../ProfileModal";
 
 const API_URL = "https://api.godateapp.ru";
 // const API_URL = "http://localhost:3001";
@@ -18,6 +19,8 @@ function FullChat() {
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
   const [status, setStatus] = useState(null);
+  const [showProfile, setShowProfile] = useState(false);
+
 
   useEffect(() => {
     socketRef.current = io(API_URL);
@@ -123,10 +126,18 @@ function FullChat() {
   }, []);
 
   return (
+      <>
+        {/*{ showProfile &&*/}
+            <div className={`w-[100vw] h-[100vh] z-[20] flex ${showProfile ? '' : 'hidden'} items-center justify-center fixed backdrop-blur-md bg-black/60`} onClick={()=>{setShowProfile(!showProfile)}}>
+              <ProfileModal userId={userId}/>
+            </div>
+        {/*}*/}
       <div className="chat-container">
         {user ? (
             <>
-              <TopChat name={user?.name} img={user?.photos[0]} status={status} />
+              <div onClick={()=>{setShowProfile(true)}}>
+                <TopChat name={user?.name} img={user?.photos[0]} status={status} id={user?._id}/>
+              </div>
 
               <div className="chat-box">
                 {messages.map((msg) => (
@@ -168,6 +179,7 @@ function FullChat() {
             <Loading />
         )}
       </div>
+        </>
   );
 }
 
