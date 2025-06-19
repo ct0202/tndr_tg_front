@@ -108,17 +108,17 @@ function Chat() {
                             <></>
                         )}
 
-                        {blurMatches && candidates.length > 0 && (
-                            <div className="w-full h-full flex items-center justify-center z-100 absolute bg-white/95 backdrop-blur-[10px]">
-                                <img
-                                    src="/images/icons/premium_cover_matches.svg"
-                                    onClick={() => setBlurMatches(false)}
-                                    className="z-20 w-absolute top-5 cursor-pointer"
-                                />
-                                <img src="/images/icons/blur.svg" className="z-10 w-full h-full absolute"/>
-                                <div className="z-[50] w-full h-full bg-white/100"/>
-                            </div>
-                        )}
+                        {/*{blurMatches && candidates.length > 0 && (*/}
+                        {/*    <div className="w-full h-full flex items-center justify-center z-100 absolute bg-white/95 backdrop-blur-[10px]">*/}
+                        {/*        <img*/}
+                        {/*            src="/images/icons/premium_cover_matches.svg"*/}
+                        {/*            onClick={() => setBlurMatches(false)}*/}
+                        {/*            className="z-20 w-absolute top-5 cursor-pointer"*/}
+                        {/*        />*/}
+                        {/*        <img src="/images/icons/blur.svg" className="z-10 w-full h-full absolute"/>*/}
+                        {/*        <div className="z-[50] w-full h-full bg-white/100"/>*/}
+                        {/*    </div>*/}
+                        {/*)}*/}
                     </div>
                     {/*<ChatCard showDelivered={true} userId={"67a0dcf645020c260d163b19"} receiverId={userId} />*/}
 
