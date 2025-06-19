@@ -102,9 +102,10 @@ function Chat() {
                                 </div>
                             ))
                         ) : (
-                            <div className="w-full text-center text-gray-500 py-4">
-                                У вас нет мэтчей
-                            </div>
+                            // <div className="w-full text-center text-gray-500 py-4">
+                            //     У вас нет мэтчей
+                            // </div>
+                            <></>
                         )}
 
                         {blurMatches && candidates.length > 0 && (
