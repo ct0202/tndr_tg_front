@@ -79,35 +79,35 @@ function Chat() {
                         </div>
                     </div>
                     <div className="flex flex-row justify-start items-start w-full overflow-x-scroll gap-2 mt-4 scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200 pb-4 relative">
-                        {candidates && candidates.length > 0 ? (
-                            candidates.map((elem) => (
-                                <div key={elem._id} className="flex flex-col w-[91px] items-center gap-1.5 relative">
-                                    <div
-                                        onClick={() => navigate(`/chatWith/${elem?._id}`)}
-                                        className="relative w-[81px] h-[81px] bg-[#feffff] rounded-[40px] overflow-hidden border border-solid border-[#f2dddf]"
-                                    >
-                                        <img
-                                            className="absolute w-[70px] h-[70px] top-[5px] left-[5px] rounded-[40px] object-cover"
-                                            alt="Image"
-                                            src={
-                                                elem?.photos[0] ||
-                                                "https://scott88lee.github.io/FMX/img/avatar.jpg"
-                                            }
-                                        />
-                                    </div>
+                        {/*{candidates && candidates.length > 0 ? (*/}
+                        {/*    candidates.map((elem) => (*/}
+                        {/*        <div key={elem._id} className="flex flex-col w-[91px] items-center gap-1.5 relative">*/}
+                        {/*            <div*/}
+                        {/*                onClick={() => navigate(`/chatWith/${elem?._id}`)}*/}
+                        {/*                className="relative w-[81px] h-[81px] bg-[#feffff] rounded-[40px] overflow-hidden border border-solid border-[#f2dddf]"*/}
+                        {/*            >*/}
+                        {/*                <img*/}
+                        {/*                    className="absolute w-[70px] h-[70px] top-[5px] left-[5px] rounded-[40px] object-cover"*/}
+                        {/*                    alt="Image"*/}
+                        {/*                    src={*/}
+                        {/*                        elem?.photos[0] ||*/}
+                        {/*                        "https://scott88lee.github.io/FMX/img/avatar.jpg"*/}
+                        {/*                    }*/}
+                        {/*                />*/}
+                        {/*            </div>*/}
 
-                                    <div className="relative w-[80px] truncate text-variable-collection-black text-[length:var(--medium-font-size)] tracking-[var(--medium-letter-spacing)] leading-[var(--medium-line-height)] whitespace-nowrap [font-style:var(--medium-font-style)]">
-                                        {elem.name}
-                                    </div>
-                                </div>
-                            ))
-                        ) : (
-                            // <div className="w-full text-center text-gray-500 py-4">
-                            //     У вас нет мэтчей
-                            // </div>
-                            <></>
-                        )}
-
+                        {/*            <div className="relative w-[80px] truncate text-variable-collection-black text-[length:var(--medium-font-size)] tracking-[var(--medium-letter-spacing)] leading-[var(--medium-line-height)] whitespace-nowrap [font-style:var(--medium-font-style)]">*/}
+                        {/*                {elem.name}*/}
+                        {/*            </div>*/}
+                        {/*        </div>*/}
+                        {/*    ))*/}
+                        {/*) : (*/}
+                        {/*    // <div className="w-full text-center text-gray-500 py-4">*/}
+                        {/*    //У вас нет мэтчей*/}
+                        {/*    // </div>*/}
+                        {/*    <></>*/}
+                        {/*)}*/}
+                        {/* TEMP */}
                         {/*{blurMatches && candidates.length > 0 && (*/}
                         {/*    <div className="w-full h-full flex items-center justify-center z-100 absolute bg-white/95 backdrop-blur-[10px]">*/}
                         {/*        <img*/}
