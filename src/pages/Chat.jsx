@@ -4,6 +4,7 @@ import { ChatCard } from "../components/ChatCard";
 import Loading from "../components/Loading";
 import {useNavigate} from "react-router-dom";
 import SecondaryButton from "../components/SecondaryButton";
+import Button from "../components/Button";
 
 function Chat() {
     const [candidates, setCandidates] = useState([]);
@@ -69,8 +70,14 @@ function Chat() {
                         />
                     )}
                     <p className="w-[100%] mt-[40px] h-[22px] text-xl font-medium  text-[#7e6b6d]">
-                        Твои Мэтчи
+                        Тeбя лайкнули
                     </p>
+                    <div className="mt-[16px] relative">
+                        <img src='/images/who_liked_chats_blur.png' width={400} height={123} alt="you_liked_by"/>
+                        <div className="bg-white top-[10px] left-[15px] absolute w-[304px] h-[64px] rounded-[16px] flex items-center justify-center">
+                            <Button className="w-[284px] h-[48px] rounded-[6px]" onClick={() => navigate("/premium")}>Узнать кто лайкнул</Button>
+                        </div>
+                    </div>
                     <div className="flex flex-row justify-start items-start w-full overflow-x-scroll gap-2 mt-4 scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200 pb-4 relative">
                         {candidates && candidates.length > 0 ? (
                             candidates.map((elem) => (

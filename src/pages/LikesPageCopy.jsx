@@ -63,7 +63,6 @@ function LikesPage() {
                     Лайки{" "}
                     <img className="w-[28px]" src="/images/icons/heart_red.png" alt="" />
                 </p>
-                <img src="" alt="" />
                 {/*<div className="flex mt-4 justify-between items-start w-[100%] flex-wrap h-[auto]">*/}
                 {/*    {users === null &&*/}
                 {/*        users.map((elem, idx) => (*/}
@@ -106,7 +105,7 @@ function LikesPage() {
                 {/*            </div>*/}
                 {/*        ))}*/}
                 {/*</div>*/}
-                <img src="/images/match_list_blur.png" alt="" width={361} height={644} />
+                <img src="/images/match_list_blur.png" alt="" width={361} height={644} className="mt-[16px]" />
             </div>
 
             <Navigation/>
