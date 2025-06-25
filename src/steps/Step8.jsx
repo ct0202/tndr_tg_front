@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from '../axios';
 import { useFilters } from '../context/FiltersContext';
+import Button from "../components/Button";
 
 function Step8() {
     const [photos, setPhotos] = useState([null, null, null]);
@@ -39,6 +40,35 @@ function Step8() {
         }
     };
 
+    const deletePhoto = async (index) => {
+        try {
+            const userId = localStorage.getItem("userId");
+
+            if (!userId) {
+                console.error("Ошибка: отсутствует userId");
+                return;
+            }
+
+            const response = await axios.delete(`/users/deletePhoto`, {
+                params: { userId, index },
+            });
+
+            setPhotos((prevPhotos) => {
+                const updatedPhotos = [...prevPhotos];
+                updatedPhotos[index] = null;
+                return updatedPhotos;
+            });
+
+            updateFilter("photos", (filters?.photos || []).filter((_, i) => i !== index));
+
+            console.log(response.data.message);
+            return response.data;
+        } catch (error) {
+            console.error("Ошибка при удалении фото:", error.response?.data || error.message);
+            return null;
+        }
+    };
+
     useEffect(() => {
         const handleKeyDown = (event) => {
             if (event.key === "Enter" && document.activeElement.tagName === "TEXTAREA") {
@@ -52,15 +82,25 @@ function Step8() {
 
     return (
         <div className='flex flex-col justify-start items-start w-[360px] overflow-hidden'>
-            <h3 className='text-[28px] font-semibold mt-[14px]' style={{ color: '#7e6b6d' }}>Покажи себя</h3>
+            <h3 className='text-[28px] font-semibold mt-[14px]' style={{ color: '#7e6b6d' }}>Покажи себя!</h3>
             <p className='text-[16px] font-medium w-[268px] mt-2' style={{ color: '#7e6b6d' }}>Загрузи свои фотки и расскажи о себе</p>
 
             <div className='flex justify-center items-start gap-1 mt-[5px]'>
                 {photos.map((photo, index) => (
                     <label key={index} htmlFor={`image${index}`}>
-                        <div className='w-[117px] h-[191px] flex justify-center items-center rounded-[12px]' style={{ background: '#f4f4f7' }}>
+                        <div className='w-[117px] h-[191px] flex justify-center items-center rounded-[12px] relative' style={{ background: '#f4f4f7' }}>
                             {photo ? (
-                                <img className='w-full h-full object-cover rounded-[12px]' src={photo} alt='Uploaded' />
+                                <>
+                                    <img
+                                        className='w-full h-full object-cover rounded-[12px]'
+                                        src={photo}
+                                        alt='Uploaded'
+                                    />
+                                    <Button className='absolute w-[30px] h-[22px] rounded-[8px] bottom-[9px]' alt='dlt photo'
+                                         onClick={() => {deletePhoto(index)}}>
+                                        <img src='/images/ui/closeWhite.png' width={12} height={12} alt='close icon'/>
+                                    </Button>
+                                </>
                             ) : (
                                 <img className='w-[30px]' src='/images/ui/plus.png' alt='+' />
                             )}

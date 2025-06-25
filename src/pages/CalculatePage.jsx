@@ -7,6 +7,7 @@ import Step4 from '../steps/Step4';
 import Step5 from '../steps/Step5';
 import Step6 from '../steps/Step6';
 import Step7 from '../steps/Step7';
+import ProfileCreated from '../steps/ProfileCreated';
 import Button from '../components/Button';
 import { useFilters } from '../context/FiltersContext';
 import Step8 from '../steps/Step8';
@@ -80,7 +81,6 @@ function CalculatePage() {
     })
         .then(res => {
           if(res.data){
-            console.log('fsdafs', res.data);
             updateFilter("userId",res.data._id)
             localStorage.setItem('userId', res.data._id)
             setStep(prev => prev + 1)
@@ -109,7 +109,7 @@ function CalculatePage() {
 
       if (response.data) {
         console.log(response.data);
-        navigate('/readyLogin');
+        navigate('/ProfileCreated');
       } else {
         alert("Что-то пошло не так");
       }

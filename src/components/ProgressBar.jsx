@@ -47,7 +47,7 @@ function ProgressBar({ current, max, onArrowClick }) {
 ProgressBar.propTypes = {
   current: PropTypes.number.isRequired,
   max: PropTypes.number.isRequired,
-  onArrowClick: PropTypes.func.isRequired,
+  onArrowClick: PropTypes.func,
 };
 
 export default ProgressBar;

@@ -93,16 +93,18 @@ function Chat() {
                                         />
                                     </div>
 
-                                    <div className="relative w-[80px] truncate text-variable-collection-black text-[length:var(--medium-font-size)] tracking-[var(--medium-letter-spacing)] leading-[var(--medium-line-height)] whitespace-nowrap [font-style:var(--medium-font-style)]">
+                                    <div className="relative w-[80px] text-center truncate text-variable-collection-black text-[length:var(--medium-font-size)] tracking-[var(--medium-letter-spacing)] leading-[var(--medium-line-height)] whitespace-nowrap [font-style:var(--medium-font-style)]">
                                         {elem.name}
                                     </div>
                                 </div>
                             ))
                         ) : (
-                            <div className="mt-[16px] relative">
+                            <div className="mt-[16px] w-full flex items-center justify-center relative">
                                 <img src='/images/who_liked_chats_blur.png' width={400} height={123} alt="you_liked_by"/>
-                                <div className="bg-white top-[10px] left-[15px] absolute w-[304px] h-[64px] rounded-[16px] flex items-center justify-center">
-                                    <Button className="w-[284px] h-[48px] rounded-[6px]" onClick={() => navigate("/premium")}>Узнать кто лайкнул</Button>
+                                <div className="top-[20px] left-[15px] absolute w-full h-[64px] rounded-[16px] flex items-center justify-center">
+                                    <div className='bg-white rounded-[16px] w-[304px] h-[64px] flex items-center justify-center'>
+                                        <Button className="w-[284px] h-[48px] rounded-[6px]" onClick={() => navigate("/premium")}>Узнать кто лайкнул</Button>
+                                    </div>
                                 </div>
                             </div>
                         )}
