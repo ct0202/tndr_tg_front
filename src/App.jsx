@@ -15,6 +15,7 @@ import {useEffect} from "react";
 import FindPageNoSwipe from "./pages/FindPageNoSwipe";
 import LikesPageCopy from "./pages/LikesPageCopy";
 import ProfileCreated from "./steps/ProfileCreated";
+import Match from "./pages/Match";
 
 function App() {
   useEffect(() => {
@@ -95,6 +96,7 @@ function App() {
           <Route path="/editProfile" element={<EditPage />} />
           <Route path="/likes" element={<LikesPageCopy />} />
           <Route path="/profilecreated" element={<ProfileCreated />} />
+          <Route path="/match/:matchId" element={<Match />} />
 
           {/* Страницы с навигацией */}
           <Route path="/" element={<Layout />}>

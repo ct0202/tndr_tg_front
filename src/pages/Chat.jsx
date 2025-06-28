@@ -53,13 +53,8 @@ function Chat() {
                         <p className="text-gray text-[20px] font-semibold w-[100%] mt-[110px] ">
                             Чаты
                         </p>
-                        {/*<img src="/images/icons/chat_seach_button.svg"*/}
-                        {/*     className="mt-[100px]"*/}
-                        {/*     alt="chat_search_icon"*/}
-                        {/*     onClick={() => setIsSearchOpen(!isSearchOpen)}*/}
-                        {/*/>*/}
                         <SecondaryButton className='mt-[100px] w-[81px] h-[45px]' onClick={() => setIsSearchOpen(!isSearchOpen)}>
-                            <img src='/images/icons/Search.svg' width={24} height={24} />
+                            <img src='/images/icons/Search.svg' alt='search button' width={24} height={24} />
                         </SecondaryButton>
                     </div>
                     {isSearchOpen && (
@@ -121,9 +116,6 @@ function Chat() {
                         {/*    </div>*/}
                         {/*)}*/}
                     </div>
-                    {/*<ChatCard showDelivered={true} userId={"67a0dcf645020c260d163b19"} receiverId={userId} />*/}
-
-                    {/* <ChatCard showDelivered={true} userId={"67a0dc3b45020c260d163b0c"} /> */}
                     <div className="w-full h-[calc(100vh-360px)] overflow-y-auto mb-[80px]">
                         {filteredChats.length > 0 ? (
                             filteredChats.map((chat) => (

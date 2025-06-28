@@ -36,6 +36,7 @@ function ProfileCreated() {
      fetchUser();
     }, []);
 
+
     useEffect(() => {
         if (user?.photos?.length > 0) {
             const loadImages = async () => {
