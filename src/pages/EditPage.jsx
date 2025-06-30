@@ -47,6 +47,26 @@ function EditPage() {
         };
     }, []);
 
+    // useEffect(() => {
+    //     const userId = localStorage.getItem('userId');
+    //
+    //     axios.post('/auth/getUserById', { userId })
+    //         .then((res) => res.data)
+    //         .then((data) => {
+    //             if (data) {
+    //                 console.log('------ >>>>', data);
+    //                 setUser(data);
+    //
+    //                 // Формируем массив из трех элементов, заполняя недостающие `null`
+    //                 const updatedPhotos = [...(data?.photos || [])];
+    //                 while (updatedPhotos.length < 3) {
+    //                     updatedPhotos.push(null);
+    //                 }
+    //                 console.log(updatedPhotos);
+    //                 setPhotos(updatedPhotos.slice(0, 3)); // Обрезаем, если вдруг больше трех
+    //             }
+    //         });
+    // }, []);
     useEffect(() => {
         const userId = localStorage.getItem('userId');
 
@@ -54,16 +74,23 @@ function EditPage() {
             .then((res) => res.data)
             .then((data) => {
                 if (data) {
-                    console.log(data);
+                    console.log('--------->>>>', data);
                     setUser(data);
 
-                    // Формируем массив из трех элементов, заполняя недостающие `null`
-                    const updatedPhotos = [...(data?.photos || [])];
-                    while (updatedPhotos.length < 3) {
-                        updatedPhotos.push(null);
+                    const slots = [data.photo1, data.photo2, data.photo3]; // ["", "", "file3.webp"]
+                    const urls = data.photos || [];                        // ["https://...webp"]
+
+                    const photos = [null, null, null];
+                    let urlIndex = 0;
+
+                    for (let i = 0; i < 3; i++) {
+                        if (slots[i]) {
+                            photos[i] = urls[urlIndex];
+                            urlIndex++;
+                        }
                     }
-                    console.log(updatedPhotos);
-                    setPhotos(updatedPhotos.slice(0, 3)); // Обрезаем, если вдруг больше трех
+
+                    setPhotos(photos);
                 }
             });
     }, []);
