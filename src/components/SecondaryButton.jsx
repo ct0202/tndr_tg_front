@@ -3,7 +3,7 @@ import cn from 'classnames';
 
 function SecondaryButton({ children, className, onClick, disabled }) {
     return (
-        <button
+        <div
             className={cn(
                 'rounded-[16px] flex justify-center items-center',
                 'cursor-pointer',
@@ -16,7 +16,7 @@ function SecondaryButton({ children, className, onClick, disabled }) {
             onClick={!disabled ? onClick : undefined}
         >
             {children}
-        </button>
+        </div>
     );
 }
 
