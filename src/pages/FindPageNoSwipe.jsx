@@ -82,7 +82,8 @@ function FindPage() {
         }
     };
 
-    const handleUndo = () => {
+    const handleUndo = (e) => {
+        e?.target?.blur();
         if (history.length === 0) return;
 
         const lastCard = history[0];
