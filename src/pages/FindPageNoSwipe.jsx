@@ -85,6 +85,9 @@ function FindPage() {
     };
 
     const handleUndo = () => {
+        if (document.activeElement) {
+            document.activeElement.blur(); // сбрасывает "залипание"
+        }
         if (history.length === 0) return;
 
         const lastCard = history[0];
