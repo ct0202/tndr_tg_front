@@ -28,6 +28,8 @@ function FindPage() {
     const [msg, setMsg] = useState('');
     const [isSending, setIsSending] = useState(false);
 
+    const undoRef = useRef(null);
+
     useEffect(() => {
         const userId = localStorage.getItem("userId");
         axios
@@ -165,7 +167,10 @@ function FindPage() {
             </div>
 
             <div className="flex justify-between items-center absolute bottom-20 w-[90%]">
-                <SecondaryButton onClick={handleUndo} className="w-[70px] h-[64px]"><img src="/images/ui/undo.png" alt="undo button" width={32} height={32}/></SecondaryButton>
+                <SecondaryButton ref={undoRef} onClick={(e) => {
+                    undoRef.current?.blur();
+                    handleUndo();
+                }} className="w-[70px] h-[64px]"><img src="/images/ui/undo.png" alt="undo button" width={32} height={32}/></SecondaryButton>
                 <SecondaryButton onClick={() => handleReaction("dislike")} className="w-[103px] h-[64px]"><img src="/images/ui/dislike_icon.png" alt="dislike button" width={32} height={32}/></SecondaryButton>
                 <Button onClick={() => handleReaction("like")} className="w-[103px] h-[64px]"><img src="/images/ui/Check.png" alt="like button" width={32} height={32}/></Button>
                 <Button onClick={() => {setMsgModal(true);}} className="w-[70px] h-[64px]"><img src="/images/ui/Star.png" alt="superlike button" width={32} height={32}/></Button>
