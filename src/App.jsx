@@ -4,13 +4,10 @@ import LogoPage from "./pages/LogoPage";
 import CalculatePage from "./pages/CalculatePage";
 import ReadyLogin from "./pages/ReadyLogin";
 import EditPage from "./pages/EditPage";
-import LikesPage from "./pages/LikesPage";
 import Layout from "./components/Layout";
-import FindPage from "./pages/FindPage";
 import Chat from "./pages/Chat";
 import FullChat from "./pages/FullChat/FullChat";
 import Premium from "./pages/Premium";
-import FindPageCopy from "./pages/FindPageCopy";
 import {useEffect} from "react";
 import FindPageNoSwipe from "./pages/FindPageNoSwipe";
 import LikesPageCopy from "./pages/LikesPageCopy";
@@ -32,44 +29,44 @@ function App() {
   }, []);
 
 
-  const useLazyLoading = () => {
-    useEffect(() => {
-      // Функция для обработки всех изображений
-      const lazyLoadImages = () => {
-        const images = document.querySelectorAll('img:not([data-handled])');
+  // const useLazyLoading = () => {
+  //   useEffect(() => {
+  //     // Функция для обработки всех изображений
+  //     const lazyLoadImages = () => {
+  //       const images = document.querySelectorAll('img:not([data-handled])');
 
-        const observer = new IntersectionObserver((entries, observer) => {
-          entries.forEach(entry => {
-            if (entry.isIntersecting) {
-              const img = entry.target;
-              // Загружаем изображение
-              img.src = img.dataset.src;
-              img.removeAttribute('data-src');
-              img.setAttribute('data-handled', 'true'); // Помечаем как обработанное
-              observer.unobserve(img);
-            }
-          });
-        }, {
-          rootMargin: '100px 0px', // Начать загрузку за 100px до появления в зоне видимости
-        });
+  //       const observer = new IntersectionObserver((entries, observer) => {
+  //         entries.forEach(entry => {
+  //           if (entry.isIntersecting) {
+  //             const img = entry.target;
+  //             // Загружаем изображение
+  //             img.src = img.dataset.src;
+  //             img.removeAttribute('data-src');
+  //             img.setAttribute('data-handled', 'true'); // Помечаем как обработанное
+  //             observer.unobserve(img);
+  //           }
+  //         });
+  //       }, {
+  //         rootMargin: '100px 0px', // Начать загрузку за 100px до появления в зоне видимости
+  //       });
 
-        images.forEach(img => {
-          if (img.dataset.src) {
-            observer.observe(img);
-          }
-        });
+  //       images.forEach(img => {
+  //         if (img.dataset.src) {
+  //           observer.observe(img);
+  //         }
+  //       });
 
-        return () => observer.disconnect();
-      };
+  //       return () => observer.disconnect();
+  //     };
 
-      // Вызываем при монтировании и после обновлений DOM
-      lazyLoadImages();
-      document.addEventListener('DOMContentLoaded', lazyLoadImages);
-      return () => {
-        document.removeEventListener('DOMContentLoaded', lazyLoadImages);
-      };
-    }, []);
-  };
+  //     // Вызываем при монтировании и после обновлений DOM
+  //     lazyLoadImages();
+  //     document.addEventListener('DOMContentLoaded', lazyLoadImages);
+  //     return () => {
+  //       document.removeEventListener('DOMContentLoaded', lazyLoadImages);
+  //     };
+  //   }, []);
+  // };
 
   useEffect(() => {
     const handleKeyDown = (event) => {
@@ -85,7 +82,8 @@ function App() {
     };
   }, []);
 
-  useLazyLoading();
+  // useLazyLoading();
+
   return (
     <FiltersProvider>
       <div className="App flex justify-center items-center">
