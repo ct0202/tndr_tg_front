@@ -3,27 +3,15 @@ import { useNavigate } from 'react-router-dom';
 import axios from '../axios';
 import Button from '../components/Button'
 import Navigation from '../components/Navigation';
+import { useUser } from '../context/UserContext';
+
 function EditPage() {
-    const [user, setUser] = useState({});
+    const { user, setUser, isLoading } = useUser();
     const [photos, setPhotos] = useState([null, null, null]);
     const navigate = useNavigate();
 
     const [pendingPhotos, setPendingPhotos] = useState({});
     const [pendingDeletions, setPendingDeletions] = useState([]);
-
-    // useEffect(() => {
-    //     const userId = localStorage.getItem('userId');
-    //     axios.post('/auth/getUserById', { userId })
-    //         .then((res) => res.data)
-    //         .then((data) => {
-    //             if (data) {
-    //                 console.log(data);
-    //                 setUser(data);
-    //                 // Убедимся, что есть хотя бы одна пустая ячейка
-    //                 setPhotos(data?.photos?.length ? [...data.photos] : [null]);
-    //             }
-    //         });
-    // }, []);
 
     useEffect(() => {
         document.body.style.overflow = "auto"; // Включаем скролл на этой странице
@@ -47,84 +35,27 @@ function EditPage() {
         };
     }, []);
 
-    // useEffect(() => {
-    //     const userId = localStorage.getItem('userId');
-    //
-    //     axios.post('/auth/getUserById', { userId })
-    //         .then((res) => res.data)
-    //         .then((data) => {
-    //             if (data) {
-    //                 console.log('------ >>>>', data);
-    //                 setUser(data);
-    //
-    //                 // Формируем массив из трех элементов, заполняя недостающие `null`
-    //                 const updatedPhotos = [...(data?.photos || [])];
-    //                 while (updatedPhotos.length < 3) {
-    //                     updatedPhotos.push(null);
-    //                 }
-    //                 console.log(updatedPhotos);
-    //                 setPhotos(updatedPhotos.slice(0, 3)); // Обрезаем, если вдруг больше трех
-    //             }
-    //         });
-    // }, []);
     useEffect(() => {
-        const userId = localStorage.getItem('userId');
-
-        axios.post('/auth/getUserById', { userId })
-            .then((res) => res.data)
-            .then((data) => {
-                if (data) {
-                    console.log('--------->>>>', data);
-                    setUser(data);
-
-                    const slots = [data.photo1, data.photo2, data.photo3]; // ["", "", "file3.webp"]
-                    const urls = data.photos || [];                        // ["https://...webp"]
-
-                    const photos = [null, null, null];
-                    let urlIndex = 0;
-
-                    for (let i = 0; i < 3; i++) {
-                        if (slots[i]) {
-                            photos[i] = urls[urlIndex];
-                            urlIndex++;
-                        }
-                    }
-
-                    setPhotos(photos);
+        if (user) {
+            // Формируем массив из трех элементов, заполняя недостающие null
+            const slots = [user.photo1, user.photo2, user.photo3];
+            const urls = user.photos || [];
+            const photosArr = [null, null, null];
+            let urlIndex = 0;
+            for (let i = 0; i < 3; i++) {
+                if (slots[i]) {
+                    photosArr[i] = urls[urlIndex];
+                    urlIndex++;
                 }
-            });
-    }, []);
+            }
+            setPhotos(photosArr);
+        }
+    }, [user]);
 
     const handleChange = (field, value) => {
         setUser((prev) => ({ ...prev, [field]: value }));
     };
 
-    // const deletePhoto = async (index) => {
-    //     try {
-    //         const userId = localStorage.getItem("userId");
-    //
-    //         if (!userId) {
-    //             console.error("Ошибка: отсутствует userId");
-    //             return;
-    //         }
-    //
-    //         const response = await axios.delete(`/users/deletePhoto`, {
-    //             params: { userId, index },
-    //         });
-    //
-    //         setPhotos((prevPhotos) => {
-    //             const updatedPhotos = [...prevPhotos];
-    //             updatedPhotos[index] = null;
-    //             return updatedPhotos;
-    //         });
-    //
-    //         console.log(response.data.message);
-    //         return response.data;
-    //     } catch (error) {
-    //         console.error("Ошибка при удалении фото:", error.response?.data || error.message);
-    //         return null;
-    //     }
-    // };
     const deletePhoto = (index) => {
         setPhotos((prevPhotos) => {
             const updated = [...prevPhotos];
@@ -135,76 +66,6 @@ function EditPage() {
         setPendingDeletions((prev) => [...new Set([...prev, index])]);
     };
 
-
-
-    // const handleFileSelection = async (e, index) => {
-    //     const file = e.target.files[0];
-    //     if (!file) return;
-    //
-    //     const invalidTypes = ['image/svg+xml', 'text/html'];
-    //     if (invalidTypes.includes(file.type)) {
-    //         alert('Недопустимый формат изображения');
-    //         e.target.value = ''; // Очищаем input, чтобы пользователь мог выбрать новый файл
-    //         return;
-    //     }
-    //
-    //     const reader = new FileReader();
-    //     reader.onload = async (event) => {
-    //         const img = new Image();
-    //         img.src = event.target.result;
-    //         img.onload = () => {
-    //             const canvas = document.createElement('canvas');
-    //             const ctx = canvas.getContext('2d');
-    //
-    //             canvas.width = img.width;
-    //             canvas.height = img.height;
-    //             ctx.drawImage(img, 0, 0, img.width, img.height);
-    //
-    //             // Получаем корректное изображение без EXIF
-    //             const fixedImage = canvas.toDataURL('image/jpeg');
-    //
-    //             // Обновляем превью
-    //             const updatedPhotos = [...photos];
-    //             updatedPhotos[index] = fixedImage;
-    //             setPhotos(updatedPhotos);
-    //         };
-    //     };
-    //     reader.readAsDataURL(file);
-    //
-    //
-    //     const formData = new FormData();
-    //     formData.append('photo', file);
-    //
-    //     const userId = localStorage.getItem('userId');
-    //
-    //     try {
-    //         const response = await axios.post(
-    //             `/users/uploadPhoto?userId=${userId}&index=${index}`, // Передаем параметры в query
-    //             formData,
-    //             { headers: { 'Content-Type': 'multipart/form-data' } }
-    //         );
-    //
-    //         setPhotos((prevPhotos) => {
-    //             const updatedPhotos = [...prevPhotos];
-    //             updatedPhotos[index] = response.data.photoUrl;
-    //             return updatedPhotos;
-    //         });
-    //
-    //     } catch (error) {
-    //         console.error('Ошибка при загрузке фото:', error);
-    //         let errorMessage = 'Не удалось загрузить фото.';
-    //
-    //         if (error.response) {
-    //             errorMessage += ` Сервер ответил: ${error.response.data?.message || JSON.stringify(error.response.data)}`;
-    //         } else if (error.request) {
-    //             errorMessage += ' Нет ответа от сервера.';
-    //         } else {
-    //             errorMessage += ` Ошибка: ${error.message}`;
-    //         }
-    //
-    //         alert(errorMessage);
-    //     }
-    // };
     const handleFileSelection = (e, index) => {
         const file = e.target.files[0];
         if (!file) return;
@@ -242,8 +103,6 @@ function EditPage() {
         }));
     };
 
-
-
     const handleNameChange = (e) => {
         setUser((prev) => ({
             ...prev,
@@ -251,18 +110,6 @@ function EditPage() {
         }));
     };
 
-    // const handleSave = () => {
-    //     const userId = localStorage.getItem('userId');
-    //     axios.post(`/updateUserInfo/${userId}`, user)
-    //         .then(() => {
-    //             alert('Данные успешно сохранены!');
-    //             navigate(-1);
-    //         })
-    //         .catch((error) => {
-    //             console.error('Ошибка при сохранении данных:', error);
-    //             alert('Ошибка при сохранении данных. Попробуйте снова.');
-    //         });
-    // };
     const handleSave = async () => {
         const userId = localStorage.getItem('userId');
 
@@ -306,7 +153,8 @@ function EditPage() {
         }
     };
 
-
+    if (isLoading) return <div>Загрузка...</div>;
+    if (!user) return <div>Пользователь не найден</div>;
 
     return (
         <div className='flex flex-col justify-center items-start w-[360px] mb-[200px] mt-[80px] h-full overflow-auto'>

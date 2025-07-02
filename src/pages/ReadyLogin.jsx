@@ -9,42 +9,23 @@ import SecondaryButton from '../components/SecondaryButton';
 import axios from '../axios';
 import { useNavigate } from 'react-router-dom';
 import Modal from "react-modal";
+import { useUser } from '../context/UserContext';
 
 Modal.setAppElement("#root");
 
 function ReadyLogin() {
-    const [user, setUser] = useState();
-    const [isLoaded, setIsLoaded] = useState(false); // Состояние для загрузки
-
+    const { user, isLoading } = useUser();
     const [openNotification, setOpenNotification] = useState(false);
     const [notifications, setNotifications] = useState([]);
-
     const [isHidden, setIsHidden] = useState(false);
-
     const navigate = useNavigate();
 
     useEffect(() => {
-        const userId = localStorage.getItem('userId');
-        axios.post('/auth/getUserById', {
-            userId,
-        })
-            .then((res) => res.data)
-            .then((data) => {
-                if (data) {
-                    if (data.message == "Пользователь не найден"){
-                        navigate('/calculate');
-                    }
+        if (user) setIsHidden(user.hidden);
+    }, [user]);
 
-                    console.log('===', data.premium.expiresAt, new Date().toISOString());
-                    setUser(data);
-                    setIsHidden(data.hidden);
-                }
-            })
-            .finally(() => {
-                // Устанавливаем isLoaded в true после загрузки
-                setTimeout(() => setIsLoaded(true), 100); // Плавный эффект
-            });
-    }, []);
+    if (isLoading) return <div>Загрузка...</div>;
+    if (!user) return <div>Пользователь не найден</div>;
 
     const handleToggleVisibility = async () => {
         try {
@@ -85,7 +66,7 @@ function ReadyLogin() {
     return (
         <div
             className={`flex flex-col justify-center items-center w-full p-[16px] transition-opacity duration-500 overflow-hidden ${
-                isLoaded ? 'opacity-100' : 'opacity-0'
+                isLoading ? 'opacity-0' : 'opacity-100'
             }`}
         >
             <div className='flex justify-between items-center w-full min-w-[343px] mt-[105px]'>
