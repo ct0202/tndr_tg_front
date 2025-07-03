@@ -15,18 +15,18 @@ import ProfileCreated from "./steps/ProfileCreated";
 import Match from "./pages/Match";
 
 function App() {
-  // useEffect(() => {
-  //   const tg = window.Telegram.WebApp;
-  //   tg.requestFullscreen();
-  //   tg.disableVerticalSwipes();
-  //   const initData = window.Telegram.WebApp.initData;
+  useEffect(() => {
+    const tg = window.Telegram.WebApp;
+    tg.requestFullscreen();
+    tg.disableVerticalSwipes();
+    const initData = window.Telegram.WebApp.initData;
 
-  //   tg.ready();
+    tg.ready();
 
-  //   return () => {
-  //     tg.close();
-  //   };
-  // }, []);
+    return () => {
+      tg.close();
+    };
+  }, []);
 
   useEffect(() => {
     const handleKeyDown = (event) => {
