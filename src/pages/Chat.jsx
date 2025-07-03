@@ -85,7 +85,7 @@ function Chat() {
                         {!isPremium && candidates && candidates.length > 0 && (
                             <>
                                 <div className="z-10 absolute inset-0 w-full h-full backdrop-blur-[8px] bg-white/60 pointer-events-none" />
-                                <div className="z-20 absolute w-full h-[64px] flex items-center justify-center pointer-events-auto" style={{top: 0, left: 0}}>
+                                <div className="z-20 absolute w-full h-[64px] flex items-center justify-center pointer-events-auto" style={{top: 15, left: 0}}>
                                     <div className='bg-white rounded-[16px] w-[304px] h-[64px] flex items-center justify-center shadow-lg'>
                                         <Button className="w-[284px] h-[48px] rounded-[6px]" onClick={() => navigate("/premium")}>Узнать кто лайкнул</Button>
                                     </div>
