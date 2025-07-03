@@ -132,14 +132,14 @@ function FullChat() {
               <ProfileModal userId={userId}/>
             </div>
         {/*}*/}
-      <div className="chat-container">
+      <div className="chat-container" style={{height: '100vh', display: 'flex', flexDirection: 'column'}}>
         {user ? (
             <>
               <div onClick={()=>{setShowProfile(true)}}>
                 <TopChat name={user?.name} img={user?.photos[0]} status={status} id={user?._id}/>
               </div>
 
-              <div className="chat-box">
+              <div className="chat-box" style={{flex: 1, overflowY: 'auto'}}>
                 {messages.map((msg) => (
                     <div
                         key={msg._id} // Используем уникальный id для ключа
@@ -165,7 +165,7 @@ function FullChat() {
                 ))}
               </div>
 
-              <div className="input-container">
+              <div className="input-container" style={{padding: 0, background: 'white'}}>
                 <input
                     type="text"
                     value={message}
