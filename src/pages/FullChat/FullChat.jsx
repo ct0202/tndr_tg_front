@@ -132,7 +132,7 @@ function FullChat() {
               <ProfileModal userId={userId}/>
             </div>
         {/*}*/}
-      <div className="chat-container" style={{height: '100vh', display: 'flex', flexDirection: 'column'}}>
+      <div className="chat-container" style={{height: '100vh', display: 'flex', flexDirection: 'column', overflowX: 'hidden'}}>
         {user ? (
             <>
               <div onClick={()=>{setShowProfile(true)}}>
