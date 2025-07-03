@@ -165,7 +165,7 @@ function FullChat() {
                 ))}
               </div>
 
-              <div className="input-container" style={{padding: 0, background: 'white'}}>
+              <div className="input-container" style={{paddingBottom: '60px', background: 'white'}}>
                 <input
                     type="text"
                     value={message}
