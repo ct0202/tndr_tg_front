@@ -6,6 +6,7 @@ import {useNavigate} from "react-router-dom";
 import SecondaryButton from "../components/SecondaryButton";
 import Button from "../components/Button";
 import ProfileModal from "./ProfileModal";
+import { useUser } from '../context/UserContext';
 
 function Chat() {
     const [candidates, setCandidates] = useState([]);
@@ -17,6 +18,8 @@ function Chat() {
     const [blurMatches, setBlurMatches] = useState(true);
     const [showProfile, setShowProfile] = useState(true);
     const [blur, setBlur] = useState(true);
+    const { user } = useUser();
+    const [isPremium, setIsPremium] = useState(false);
 
     const navigate = useNavigate();
     useEffect(() => {
@@ -40,6 +43,13 @@ function Chat() {
                 setLoading(false);
             });
     }, []);
+
+    useEffect(() => {
+        if (!user?._id) return;
+        axios.get(`/ispremium/${user._id}`)
+            .then(res => setIsPremium(!!res.data?.isPremium))
+            .catch(() => setIsPremium(false));
+    }, [user?._id]);
 
     const filteredChats = chats.filter((chat) => chat.name.toLowerCase().includes(searchTerm.toLowerCase()));
 
@@ -71,6 +81,17 @@ function Chat() {
                     </p>
 
                     <div className="flex flex-row justify-start items-start w-full overflow-x-scroll gap-2 mt-4 scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200 pb-4 relative">
+                        {/* Блюр и баннер, если нет премиума и есть кандидаты */}
+                        {!isPremium && candidates && candidates.length > 0 && (
+                            <>
+                                <div className="z-10 absolute inset-0 w-full h-full backdrop-blur-[8px] bg-white/60 pointer-events-none" />
+                                <div className="z-20 absolute w-full h-[64px] flex items-center justify-center pointer-events-auto" style={{top: 0, left: 0}}>
+                                    <div className='bg-white rounded-[16px] w-[304px] h-[64px] flex items-center justify-center shadow-lg'>
+                                        <Button className="w-[284px] h-[48px] rounded-[6px]" onClick={() => navigate("/premium")}>Узнать кто лайкнул</Button>
+                                    </div>
+                                </div>
+                            </>
+                        )}
                         {candidates && candidates.length > 0 ? (
                             candidates.map((elem) => (
                                 <div key={elem._id} className="flex flex-col w-[91px] items-center gap-1.5 relative">
@@ -87,7 +108,6 @@ function Chat() {
                                             }
                                         />
                                     </div>
-
                                     <div className="relative w-[80px] text-center truncate text-variable-collection-black text-[length:var(--medium-font-size)] tracking-[var(--medium-letter-spacing)] leading-[var(--medium-line-height)] whitespace-nowrap [font-style:var(--medium-font-style)]">
                                         {elem.name}
                                     </div>
@@ -95,12 +115,7 @@ function Chat() {
                             ))
                         ) : (
                             <div className="mt-[16px] w-full flex items-center justify-center relative">
-                                <img src='/images/who_liked_chats_blur.png' width={400} height={123} alt="you_liked_by"/>
-                                <div className="top-[20px] left-[15px] absolute w-full h-[64px] rounded-[16px] flex items-center justify-center">
-                                    <div className='bg-white rounded-[16px] w-[304px] h-[64px] flex items-center justify-center'>
-                                        <Button className="w-[284px] h-[48px] rounded-[6px]" onClick={() => navigate("/premium")}>Узнать кто лайкнул</Button>
-                                    </div>
-                                </div>
+                                {/* Баннер уже отображается выше при отсутствии премиума */}
                             </div>
                         )}
                         {/* TEMP */}

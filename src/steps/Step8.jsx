@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import axios from '../axios';
 import { useFilters } from '../context/FiltersContext';
 import Button from "../components/Button";
+import { convertToWebp } from "../utils/convertToWebp";
+
 
 function Step8() {
     const [photos, setPhotos] = useState([null, null, null]);
@@ -12,19 +14,14 @@ function Step8() {
     const handleFileSelection = async (e, index) => {
         const file = e.target.files[0];
         if (!file) return;
-
-        const reader = new FileReader();
-        reader.onload = () => {
-            const updatedPhotos = [...photos];
-            updatedPhotos[index] = reader.result;
-            setPhotos(updatedPhotos);
-        };
-        reader.readAsDataURL(file);
-
         try {
+            const webpBlob = await convertToWebp(file);
+            const previewUrl = URL.createObjectURL(webpBlob);
+            const updatedPhotos = [...photos];
+            updatedPhotos[index] = previewUrl;
+            setPhotos(updatedPhotos);
             const formData = new FormData();
-            formData.append('photo', file);
-
+            formData.append('photo', webpBlob, 'photo.webp');
             const response = await axios.post(
                 `/users/uploadPhoto?index=${index}&userId=${filters.userId}`,
                 formData,
@@ -32,10 +29,9 @@ function Step8() {
                     headers: { 'Content-Type': 'multipart/form-data' },
                 }
             );
-
-            console.log('Upload successful:', response.data);
             updateFilter("photos", [...(filters?.photos || []), response.data]);
         } catch (error) {
+            alert('Ошибка при конвертации или загрузке изображения.');
             console.error('Error uploading photo:', error);
         }
     };

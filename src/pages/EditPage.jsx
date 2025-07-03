@@ -4,6 +4,7 @@ import axios from '../axios';
 import Button from '../components/Button'
 import Navigation from '../components/Navigation';
 import { useUser } from '../context/UserContext';
+import { convertToWebp } from '../utils/convertToWebp';
 
 function EditPage() {
     const { user, setUser, isLoading } = useUser();
@@ -66,7 +67,7 @@ function EditPage() {
         setPendingDeletions((prev) => [...new Set([...prev, index])]);
     };
 
-    const handleFileSelection = (e, index) => {
+    const handleFileSelection = async (e, index) => {
         const file = e.target.files[0];
         if (!file) return;
 
@@ -77,30 +78,19 @@ function EditPage() {
             return;
         }
 
-        const reader = new FileReader();
-        reader.onload = (event) => {
-            const img = new Image();
-            img.src = event.target.result;
-
-            img.onload = () => {
-                const canvas = document.createElement('canvas');
-                const ctx = canvas.getContext('2d');
-                canvas.width = img.width;
-                canvas.height = img.height;
-                ctx.drawImage(img, 0, 0, img.width, img.height);
-
-                const fixedImage = canvas.toDataURL('image/jpeg');
-                const updatedPhotos = [...photos];
-                updatedPhotos[index] = fixedImage;
-                setPhotos(updatedPhotos);
-            };
-        };
-        reader.readAsDataURL(file);
-
-        setPendingPhotos((prev) => ({
-            ...prev,
-            [index]: file,
-        }));
+        try {
+            const webpBlob = await convertToWebp(file);
+            const previewUrl = URL.createObjectURL(webpBlob);
+            const updatedPhotos = [...photos];
+            updatedPhotos[index] = previewUrl;
+            setPhotos(updatedPhotos);
+            setPendingPhotos((prev) => ({
+                ...prev,
+                [index]: webpBlob,
+            }));
+        } catch (err) {
+            alert('Ошибка при конвертации изображения.');
+        }
     };
 
     const handleNameChange = (e) => {
@@ -112,41 +102,32 @@ function EditPage() {
 
     const handleSave = async () => {
         const userId = localStorage.getItem('userId');
-
         try {
             // 1. Сохраняем информацию о пользователе
             await axios.post(`/updateUserInfo/${userId}`, user);
-
             // 2. Удаляем отмеченные фото
             for (const index of pendingDeletions) {
                 await axios.delete(`/users/deletePhoto`, {
                     params: { userId, index },
                 });
             }
-
             // 3. Загружаем новые фото
             for (const index in pendingPhotos) {
                 const formData = new FormData();
                 formData.append('photo', pendingPhotos[index]);
-
-                const res = await axios.post(
+                await axios.post(
                     `/users/uploadPhoto?userId=${userId}&index=${index}`,
                     formData,
                     { headers: { 'Content-Type': 'multipart/form-data' } }
                 );
-
-                setPhotos((prevPhotos) => {
-                    const updated = [...prevPhotos];
-                    updated[index] = res.data.photoUrl;
-                    return updated;
-                });
             }
-
+            // 4. Обновляем пользователя в контексте
+            const updatedUser = await axios.post('/auth/getUserById', { userId });
+            setUser(updatedUser.data);
             alert('Данные и фото успешно сохранены!');
             setPendingPhotos({});
             setPendingDeletions([]);
             navigate(-1);
-
         } catch (error) {
             console.error('Ошибка при сохранении данных:', error);
             alert('Ошибка при сохранении данных. Попробуйте снова.');

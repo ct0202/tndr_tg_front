@@ -14,7 +14,7 @@ import { useUser } from '../context/UserContext';
 Modal.setAppElement("#root");
 
 function ReadyLogin() {
-    const { user, isLoading } = useUser();
+    const { user, isLoading, refreshUser } = useUser();
     const [openNotification, setOpenNotification] = useState(false);
     const [notifications, setNotifications] = useState([]);
     const [isHidden, setIsHidden] = useState(false);
@@ -23,6 +23,15 @@ function ReadyLogin() {
     useEffect(() => {
         if (user) setIsHidden(user.hidden);
     }, [user]);
+
+    useEffect(() => {
+        // Обновлять пользователя при каждом открытии страницы
+        refreshUser();
+        // Также обновлять при возврате на страницу (focus)
+        const onFocus = () => refreshUser();
+        window.addEventListener('focus', onFocus);
+        return () => window.removeEventListener('focus', onFocus);
+    }, []);
 
     if (isLoading) return <div>Загрузка...</div>;
     if (!user) return <div>Пользователь не найден</div>;
@@ -129,7 +138,7 @@ function ReadyLogin() {
             </div>
             {openNotification ? <></> :
 
-                <div className='flex flex-col w-[345px] text-left z-10 ml-3 absolute top-[400px] pointer-events-none'>
+                <div className='flex flex-col w-[345px] text-left z-10 ml-3 absolute top-[420px] pointer-events-none'>
                     <p className='bg-red-500 text-white rounded-[16px] px-[12px] py-1 font-medium min-w-[100px] max-w-fit flex justify-center items-center'>
                         {user?.goal || 'Цель не указана'}
                     </p>

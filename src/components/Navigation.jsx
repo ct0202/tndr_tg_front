@@ -19,8 +19,8 @@ function Navigation({ styled = false }) {
         <div
             className={
                 !styled
-                    ? "w-full h-[60px] pb-9 flex justify-between items-center fixed bottom-1 bg-white z-10 pt-5"
-                    : "w-[100vw] h-[60px] pb-9 flex justify-between items-center bg-white z-10"
+                    ? "w-full h-[60px] pb-12 flex justify-between items-center fixed bottom-0 bg-white z-10 pt-5"
+                    : "w-[100vw] h-[60px] pb-12 flex justify-between items-center bg-white z-10"
             }
             style={{ borderTop: "1px solid #f2dddf" }}
         >

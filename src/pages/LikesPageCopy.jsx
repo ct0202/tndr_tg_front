@@ -6,15 +6,17 @@ import axios from "../axios";
 import {Swiper, SwiperSlide} from "swiper/react";
 import {Pagination} from "swiper/modules";
 import { useUser } from '../context/UserContext';
+import { LikerCard } from '../components/LikerCard';
 
 Modal.setAppElement("#root");
 
 function LikesPage() {
     const { user, isLoading } = useUser();
     const [popup, setPopup] = useState(true);
-    const [users, setUsers] = useState();
+    const [likers, setLikers] = useState();
     const [selectedUser, setSelectedUser] = useState(null);
     const [trigger, setTrigger] = useState(0);
+    const [isPremium, setIsPremium] = useState(false);
 
     useEffect(() => {
         if (!user || !user.likedBy) return;
@@ -27,10 +29,18 @@ function LikesPage() {
             .then((res) => res.data)
             .then((data) => {
                 if (data) {
-                    setUsers(data);
+                    console.log('лайки', data);
+                    setLikers(data);
                 }
             });
     }, [trigger, user]);
+
+    useEffect(() => {
+        if (!user?._id) return;
+        axios.get(`/ispremium/${user._id}`)
+            .then(res => setPopup(!res.data?.isPremium))
+            .catch(() => setPopup(true));
+    }, [user?._id]);
 
     const handleReaction = async (action) => {
         const userId = localStorage.getItem("userId");
@@ -57,9 +67,23 @@ function LikesPage() {
                     Лайки{" "}
                     <img className="w-[28px]" src="/images/icons/heart_red.png" alt="" />
                 </p>
-                <img src="/images/match_list_blur.png" alt="" width={361} height={644} className="mt-[16px]" />
+                {/* <img src="/images/match_list_blur.png" alt="" width={361} height={644} className="mt-[16px]" /> */}
+                <div className="w-full flex-1 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 120px)', paddingBottom: 120  }}>
+                    <div className="grid grid-cols-2 gap-x-2 gap-y-4 mt-2 w-full justify-items-center">
+                        {likers?.map((liker) => (
+                            <LikerCard
+                                key={liker._id}
+                                photos={liker.photos}
+                                name={liker.name}
+                                age={liker.birthYear ? new Date().getFullYear() - liker.birthYear : 20}
+                                city={liker.city}
+                                km={liker.km ? liker.km.replace('.', ',') : "1,3 км"}
+                            />
+                        ))}
+                    </div>
+                </div>
             </div>
-
+            
             <Navigation/>
 
             <Modal
@@ -110,26 +134,25 @@ function LikesPage() {
                                     >
                                         <SwiperSlide>
                                             <div className="relative w-full h-[533px] rounded-[8px] overflow-hidden">
-                                                <img
+                                                {/* <img
                                                     className="w-full h-full object-cover"
                                                     src={"https://scott88lee.github.io/FMX/img/avatar.jpg"}
                                                     alt={`photo`}
-                                                />
+                                                /> */}
                                                 <div
                                                     className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent"></div>
                                             </div>
                                         </SwiperSlide>
                                     </Swiper>
                                 ) : (
-                                    <img
-                                        src="/images/icons/undef.svg"
-                                        alt="afddas"
-                                        className="w-[100%]"
-                                    />
+                                    // <img
+                                    //     src="/images/icons/undef.svg"
+                                    //     alt="afddas"
+                                    //     className="w-[100%]"
+                                    // />
+                                    <></>
                                 )
 
-
-                                // https://scott88lee.github.io/FMX/img/avatar.jpg
                             }
                             {selectedUser ? (
                                 <div
