@@ -1,8 +1,7 @@
 import React from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 
 function Navigation({ styled = false }) {
-    const navigate = useNavigate();
     const location = useLocation();
 
     // Определяем текущую страницу по пути URL
@@ -13,6 +12,11 @@ function Navigation({ styled = false }) {
         if (path.startsWith("/chats")) return "chat";
         if (path.startsWith("/readyLogin")) return "user";
         return null;
+    };
+
+    // Функция для префетча страницы
+    const prefetch = (importFunc) => {
+      importFunc();
     };
 
     return (
@@ -26,58 +30,78 @@ function Navigation({ styled = false }) {
         >
             {/* Heart */}
             <div className="flex justify-center items-center w-[100%]">
-                <img
-                    className="w-[28px] cursor-pointer"
-                    src={
-                        getCurrentPage() === "heart"
-                            ? "/images/icons/heart_red.png"
-                            : "/images/icons/heart.png"
-                    }
-                    onClick={() => navigate("/likes")}
-                    alt="Heart Icon"
-                />
+                <Link
+                  to="/likes"
+                  onMouseEnter={() => prefetch(() => import(/* webpackPrefetch: true */ '../pages/LikesPageCopy'))}
+                  onFocus={() => prefetch(() => import(/* webpackPrefetch: true */ '../pages/LikesPageCopy'))}
+                >
+                  <img
+                      className="w-[28px] cursor-pointer"
+                      src={
+                          getCurrentPage() === "heart"
+                              ? "/images/icons/heart_red.png"
+                              : "/images/icons/heart.png"
+                      }
+                      alt="Heart Icon"
+                  />
+                </Link>
             </div>
 
             {/* Tinder */}
             <div className="flex justify-center items-center w-[100%]">
-                <img
-                    className="w-[28px] cursor-pointer"
-                    src={
-                        getCurrentPage() === "find"
-                            ? "/images/icons/tinder_red.svg"
-                            : "/images/icons/tinder.png"
-                    }
-                    onClick={() => navigate("/find")}
-                    alt="Tinder Icon"
-                />
+                <Link
+                  to="/find"
+                  onMouseEnter={() => prefetch(() => import(/* webpackPrefetch: true */ '../pages/FindPageNoSwipe'))}
+                  onFocus={() => prefetch(() => import(/* webpackPrefetch: true */ '../pages/FindPageNoSwipe'))}
+                >
+                  <img
+                      className="w-[28px] cursor-pointer"
+                      src={
+                          getCurrentPage() === "find"
+                              ? "/images/icons/tinder_red.svg"
+                              : "/images/icons/tinder.png"
+                      }
+                      alt="Tinder Icon"
+                  />
+                </Link>
             </div>
 
             {/* Chat */}
             <div className="flex justify-center items-center w-[100%]">
-                <img
-                    className="w-[28px] cursor-pointer"
-                    src={
-                        getCurrentPage() === "chat"
-                            ? "/images/icons/chat_red.png"
-                            : "/images/icons/chat.png"
-                    }
-                    onClick={() => navigate("/chats")}
-                    alt="Chat Icon"
-                />
+                <Link
+                  to="/chats"
+                  onMouseEnter={() => prefetch(() => import(/* webpackPrefetch: true */ '../pages/Chat'))}
+                  onFocus={() => prefetch(() => import(/* webpackPrefetch: true */ '../pages/Chat'))}
+                >
+                  <img
+                      className="w-[28px] cursor-pointer"
+                      src={
+                          getCurrentPage() === "chat"
+                              ? "/images/icons/chat_red.png"
+                              : "/images/icons/chat.png"
+                      }
+                      alt="Chat Icon"
+                  />
+                </Link>
             </div>
 
             {/* User */}
             <div className="flex justify-center items-center w-[100%]">
-                <img
-                    className="w-[28px] cursor-pointer"
-                    src={
-                        getCurrentPage() === "user"
-                            ? "/images/icons/user_red.png"
-                            : "/images/icons/user.png"
-                    }
-                    onClick={() => navigate("/readyLogin")}
-                    alt="User Icon"
-                />
+                <Link
+                  to="/readyLogin"
+                  onMouseEnter={() => prefetch(() => import(/* webpackPrefetch: true */ '../pages/ReadyLogin'))}
+                  onFocus={() => prefetch(() => import(/* webpackPrefetch: true */ '../pages/ReadyLogin'))}
+                >
+                  <img
+                      className="w-[28px] cursor-pointer"
+                      src={
+                          getCurrentPage() === "user"
+                              ? "/images/icons/user_red.png"
+                              : "/images/icons/user.png"
+                      }
+                      alt="User Icon"
+                  />
+                </Link>
             </div>
         </div>
     );
