@@ -134,7 +134,48 @@ function EditPage() {
         }
     };
 
-    if (isLoading) return <div>Загрузка...</div>;
+    if (isLoading) return (
+        <div className='flex flex-col justify-center items-start w-[360px] mb-[200px] mt-[80px] h-full overflow-auto animate-pulse'>
+            <div className='flex items-center gap-2 mb-6'>
+                <div className='w-[50px] h-[50px] bg-gray-200 rounded-full' />
+                <div className='h-8 w-40 bg-gray-200 rounded-md' />
+            </div>
+            <div className='flex justify-center items-start gap-1 mt-[24px]'>
+                {[1,2,3].map(i => (
+                    <div key={i} className='w-[117px] h-[191px] bg-gray-200 rounded-[12px]' />
+                ))}
+            </div>
+            <div className='mt-[13px] h-5 w-16 bg-gray-200 rounded' />
+            <div className='w-[358px] h-[48px] bg-gray-200 rounded-[12px] mt-2' />
+            <div className='mt-4 h-5 w-20 bg-gray-200 rounded' />
+            <div className='flex justify-between items-center w-[360px] mt-2'>
+                {[1,2,3].map(i => (
+                    <div key={i} className='w-[116px] h-[52px] bg-gray-200 rounded-[12px]' />
+                ))}
+            </div>
+            <div className='flex w-full items-center gap-4 mt-4'>
+                <div className='flex flex-col gap-1'>
+                    <div className='h-5 w-10 bg-gray-200 rounded' />
+                    <div className='w-[121px] h-[48px] bg-gray-200 rounded-[12px] mt-2' />
+                </div>
+                <div className='flex flex-col gap-1'>
+                    <div className='h-5 w-20 bg-gray-200 rounded' />
+                    <div className='h-[48px] w-[223px] bg-gray-200 rounded-[12px] mt-2' />
+                </div>
+            </div>
+            <div className='mt-4 h-5 w-32 bg-gray-200 rounded' />
+            <div className='w-[358px] h-[48px] bg-gray-200 rounded-[12px] mt-2' />
+            <div className='mt-4 h-5 w-16 bg-gray-200 rounded' />
+            <div className='w-[358px] h-[48px] bg-gray-200 rounded-[12px] mt-2 flex items-center'>
+                <div className='w-[24px] h-[24px] bg-gray-300 rounded-full mr-2' />
+                <div className='h-5 w-24 bg-gray-200 rounded' />
+            </div>
+            <div className='mt-4 h-5 w-16 bg-gray-200 rounded' />
+            <div className='w-[361px] h-[130px] bg-gray-200 rounded-[12px] mt-4' />
+            <div className='w-[360px] h-[64px] bg-gray-300 rounded-[16px] mt-[23px]' />
+            <div className='w-[360px] h-[64px] bg-gray-100 rounded-[16px] mt-[9px]' />
+        </div>
+    );
     if (!user) return <div>Пользователь не найден</div>;
 
     return (
