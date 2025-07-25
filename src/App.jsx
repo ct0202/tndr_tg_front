@@ -2,6 +2,7 @@ import { Routes, Route, useLocation } from "react-router-dom";
 import { FiltersProvider } from "./context/FiltersContext";
 import { Suspense, lazy } from "react";
 import Layout from "./components/Layout";
+import Navigation from "./components/Navigation";
 // import Chat from "./pages/Chat";
 // import FullChat from "./pages/FullChat/FullChat";
 // import Premium from "./pages/Premium";
@@ -57,6 +58,13 @@ function App() {
 
   // useLazyLoading();
 
+  // Список путей, где показывать Navigation
+  const showNavigation =
+    location.pathname.startsWith("/likes") ||
+    location.pathname.startsWith("/find") ||
+    location.pathname.startsWith("/chats") ||
+    location.pathname.startsWith("/readyLogin");
+
   return (
     <FiltersProvider>
       <div className="App flex justify-center items-center">
@@ -91,6 +99,7 @@ function App() {
             </motion.div>
           </AnimatePresence>
         </Suspense>
+        {showNavigation && <Navigation />}
       </div>
     </FiltersProvider>
   );

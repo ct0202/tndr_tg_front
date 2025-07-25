@@ -10,8 +10,8 @@ function LogoPage() {
   const navigate = useNavigate();
   const { filters, updateFilter } = useFilters();
 
-   const initData = window.Telegram.WebApp.initData;
-   const tg = window.Telegram.WebApp;
+    const initData = window.Telegram.WebApp.initData;
+    const tg = window.Telegram.WebApp;
    // console.log('referal', tg.initDataUnsafe.start_param);
 
   // const initData =
