@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
 import { FiltersProvider } from "./context/FiltersContext";
 import { Suspense, lazy } from "react";
 import Layout from "./components/Layout";
@@ -10,6 +10,7 @@ import {useEffect} from "react";
 // import LikesPageCopy from "./pages/LikesPageCopy";
 // import ProfileCreated from "./steps/ProfileCreated";
 // import Match from "./pages/Match";
+import { AnimatePresence, motion } from "framer-motion";
 
 // Импортируем страницы через React.lazy с префетч
 const LogoPage = lazy(() => import(/* webpackPrefetch: true */ "./pages/LogoPage"));
@@ -25,6 +26,8 @@ const ProfileCreated = lazy(() => import(/* webpackPrefetch: true */ "./steps/Pr
 const Match = lazy(() => import(/* webpackPrefetch: true */ "./pages/Match"));
 
 function App() {
+  const location = useLocation();
+
   useEffect(() => {
     const tg = window.Telegram.WebApp;
     tg.requestFullscreen();
@@ -58,24 +61,35 @@ function App() {
     <FiltersProvider>
       <div className="App flex justify-center items-center">
         <Suspense fallback={<div>Загрузка...</div>}>
-          <Routes>
-            {/* Главные страницы без навигации */}
-            <Route path="/" element={<LogoPage />} />
-            <Route path="/calculate" element={<CalculatePage />} />
-            <Route path="/editProfile" element={<EditPage />} />
-            <Route path="/likes" element={<LikesPageCopy />} />
-            <Route path="/profilecreated" element={<ProfileCreated />} />
-            <Route path="/match/:matchId" element={<Match />} />
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={location.pathname}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.25 }}
+              
+            >
+              <Routes location={location}>
+                {/* Главные страницы без навигации */}
+                <Route path="/" element={<LogoPage />} />
+                <Route path="/calculate" element={<CalculatePage />} />
+                <Route path="/editProfile" element={<EditPage />} />
+                <Route path="/likes" element={<LikesPageCopy />} />
+                <Route path="/profilecreated" element={<ProfileCreated />} />
+                <Route path="/match/:matchId" element={<Match />} />
 
-            {/* Страницы с навигацией */}
-            <Route path="/" element={<Layout />}>
-              <Route path="/readyLogin" element={<ReadyLogin />} />
-              <Route path="/chats" element={<Chat />} />
-              <Route path="/chatWith/:userId" element={<FullChat />} />
-              <Route path="/premium" element={<Premium />} />
-              <Route path="/find" element={<FindPageNoSwipe />} />
-            </Route>
-          </Routes>
+                {/* Страницы с навигацией */}
+                <Route path="/" element={<Layout />}>
+                  <Route path="/readyLogin" element={<ReadyLogin />} />
+                  <Route path="/chats" element={<Chat />} />
+                  <Route path="/chatWith/:userId" element={<FullChat />} />
+                  <Route path="/premium" element={<Premium />} />
+                  <Route path="/find" element={<FindPageNoSwipe />} />
+                </Route>
+              </Routes>
+            </motion.div>
+          </AnimatePresence>
         </Suspense>
       </div>
     </FiltersProvider>
