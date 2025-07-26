@@ -16,7 +16,7 @@ function LikesPopup({ onClose }) {
     return (
         <>
             <div
-                className="fixed inset-0 bg-black bg-opacity-30 z-10"
+                className="fixed inset-0 bg-black bg-opacity-30 z-[20]"
                 style={{ backdropFilter: "blur(5px)" }} // Слабое размытие
             ></div>
             <div

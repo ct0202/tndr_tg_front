@@ -61,7 +61,7 @@ function LikesPage() {
 
     return (
         <>
-            <div className="w-[90%] mt-[80px] flex flex-col justify-start items-center mb-[70px]">
+            <div className="w-[100%] mt-[80px] flex flex-col justify-start items-center mb-[70px]">
                 {popup && <LikesPopup onClose={() => setPopup(false)}></LikesPopup>}
                 <p className="flex justify-start items-center gap-1 font-semibold text-[28px] text-gray w-[100%] text-start mt-[30px]">
                     Лайки{" "}
