@@ -28,8 +28,55 @@ function drawImageWithOrientation(ctx, img, orientation, width, height) {
  * Конвертирует файл изображения в webp (если возможно), учитывая EXIF-ориентацию.
  * Возвращает Blob webp-изображения.
  */
+
+async function blobToImage(blob) {
+  return await new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = reject;
+    img.src = URL.createObjectURL(blob);
+  });
+}
+
+function resizeAndConvertToWebp(img, orientation) {
+  return new Promise((resolve, reject) => {
+    let width = img.width;
+    let height = img.height;
+
+    if ([5, 6, 7, 8].includes(orientation)) {
+      [width, height] = [height, width];
+    }
+
+    const maxSize = 1200;
+    if (width > maxSize || height > maxSize) {
+      const scale = Math.min(maxSize / width, maxSize / height);
+      width = Math.round(width * scale);
+      height = Math.round(height * scale);
+    }
+
+    const canvas = document.createElement("canvas");
+    canvas.width = width;
+    canvas.height = height;
+    const ctx = canvas.getContext("2d");
+
+    drawImageWithOrientation(ctx, img, orientation, width, height);
+
+    canvas.toBlob(
+      (blob) => {
+        if (blob) resolve(blob);
+        else reject(new Error("Не удалось сконвертировать в webp"));
+      },
+      "image/webp",
+      0.8
+    );
+  });
+}
+
 export async function convertToWebp(file) {
   // HEIC/HEIF
+  console.log("TYPE:", file.type);
+  console.log("NAME:", file.name);
+
   if (
     file.type === "image/heic" ||
     file.type === "image/heif" ||
@@ -42,7 +89,12 @@ export async function convertToWebp(file) {
         toType: "image/webp",
         quality: 0.8,
       });
-      return webpBlob;
+
+      const imageBitmap = await blobToImage(webpBlob);
+      const orientation = await getOrientation(file); // исходный HEIC всё ещё содержит EXIF
+      const resizedBlob = await resizeAndConvertToWebp(imageBitmap, orientation);
+
+      return resizedBlob;
     } catch (e) {
       alert("Не удалось конвертировать HEIC/HEIF. Попробуйте другое фото.");
       throw e;
@@ -62,11 +114,20 @@ export async function convertToWebp(file) {
           if ([5, 6, 7, 8].includes(orientation)) {
             [width, height] = [height, width];
           }
+
+          const maxSize = 1200; // Максимальный размер по ширине или высоте
+          if (width > maxSize || height > maxSize) {
+            const scale = Math.min(maxSize / width, maxSize / height);
+            width = Math.round(width * scale);
+            height = Math.round(height * scale);
+          }
+
           const canvas = document.createElement("canvas");
           canvas.width = width;
           canvas.height = height;
           const ctx = canvas.getContext("2d");
-          drawImageWithOrientation(ctx, img, orientation, img.width, img.height);
+          // drawImageWithOrientation(ctx, img, orientation, img.width, img.height);
+          drawImageWithOrientation(ctx, img, orientation, width, height);
           canvas.toBlob(
             (blob) => {
               if (blob) resolve(blob);

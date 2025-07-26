@@ -6,6 +6,7 @@ import Navigation from '../components/Navigation';
 import { useUser } from '../context/UserContext';
 import { convertToWebp } from '../utils/convertToWebp';
 
+
 function EditPage() {
     const { user, setUser, isLoading } = useUser();
     const [photos, setPhotos] = useState([null, null, null]);
@@ -92,6 +93,7 @@ function EditPage() {
             alert('Ошибка при конвертации изображения.');
         }
     };
+
 
     const handleNameChange = (e) => {
         setUser((prev) => ({
