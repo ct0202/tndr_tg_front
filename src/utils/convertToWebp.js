@@ -5,7 +5,16 @@ function getOrientation(file) {
   return new Promise((resolve) => {
     EXIF.getData(file, function () {
       const orientation = EXIF.getTag(this, "Orientation");
-      resolve(orientation || 1);
+      // resolve(orientation || 1);
+
+
+      console.log("Detected orientation:", orientation);
+      // Если ориентация отсутствует или невалидна — вернуть 1 (нормальная)
+      if (typeof orientation === "number" && orientation >= 1 && orientation <= 8) {
+        resolve(orientation);
+      } else {
+        resolve(1);
+      }
     });
   });
 }
@@ -42,7 +51,7 @@ function resizeAndConvertToWebp(img, orientation) {
   return new Promise((resolve, reject) => {
     let width = img.width;
     let height = img.height;
-
+    
     if ([5, 6, 7, 8].includes(orientation)) {
       [width, height] = [height, width];
     }
@@ -71,6 +80,47 @@ function resizeAndConvertToWebp(img, orientation) {
     );
   });
 }
+// function resizeAndConvertToWebp(img, orientation) {
+//   return new Promise((resolve, reject) => {
+//     let drawWidth = img.width;
+//     let drawHeight = img.height;
+
+//     // 1. Считаем целевые размеры для канваса
+//     let targetWidth = drawWidth;
+//     let targetHeight = drawHeight;
+
+//     if ([5, 6, 7, 8].includes(orientation)) {
+//       [targetWidth, targetHeight] = [drawHeight, drawWidth];
+//     }
+
+//     const maxSize = 1200;
+//     if (targetWidth > maxSize || targetHeight > maxSize) {
+//       const scale = Math.min(maxSize / targetWidth, maxSize / targetHeight);
+//       drawWidth = Math.round(drawWidth * scale);
+//       drawHeight = Math.round(drawHeight * scale);
+//       targetWidth = Math.round(targetWidth * scale);
+//       targetHeight = Math.round(targetHeight * scale);
+//     }
+
+//     const canvas = document.createElement("canvas");
+//     canvas.width = targetWidth;
+//     canvas.height = targetHeight;
+//     const ctx = canvas.getContext("2d");
+
+//     drawImageWithOrientation(ctx, img, orientation, drawWidth, drawHeight);
+
+//     canvas.toBlob(
+//       (blob) => {
+//         if (blob) resolve(blob);
+//         else reject(new Error("Не удалось сконвертировать в webp"));
+//       },
+//       "image/webp",
+//       0.8
+//     );
+//   });
+// }
+
+
 
 export async function convertToWebp(file) {
   // HEIC/HEIF
