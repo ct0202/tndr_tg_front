@@ -1,156 +1,167 @@
 import React, { useEffect, useState } from "react";
 import axios from "../axios";
 import { ChatCard } from "../components/ChatCard";
-import Loading from "../components/Loading";
-import {useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import SecondaryButton from "../components/SecondaryButton";
 import Button from "../components/Button";
-import ProfileModal from "./ProfileModal";
-import { useUser } from '../context/UserContext';
+import { useUser } from "../context/UserContext";
 
 function Chat() {
-    const [candidates, setCandidates] = useState([]);
-    const [loading, setLoading] = useState(false);
-    const [userId, setUserId] = useState(null);
-    const [chats, setChats] = useState([]);
-    const [searchTerm, setSearchTerm] = useState("");
-    const [isSearchOpen, setIsSearchOpen] = useState(false);
-    const [blurMatches, setBlurMatches] = useState(true);
-    const [showProfile, setShowProfile] = useState(true);
-    const [blur, setBlur] = useState(true);
-    const { user } = useUser();
-    const [isPremium, setIsPremium] = useState(false);
+  const [candidates, setCandidates] = useState(null);
+  const [chats, setChats] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [userId, setUserId] = useState(null);
+  const [isPremium, setIsPremium] = useState(false);
+  const { user } = useUser();
+  const navigate = useNavigate();
 
-    const navigate = useNavigate();
-    useEffect(() => {
-        setLoading(true);
-        const userId = localStorage.getItem("userId");
+  useEffect(() => {
+    const uid = localStorage.getItem("userId");
+    setUserId(uid);
 
-        setUserId(userId);
+    Promise.all([
+      axios.post("/users/getMatches", { userId: uid }),
+      axios.get(`/users/getChats/${uid}`),
+    ])
+      .then(([matchesRes, chatsRes]) => {
+        setCandidates(matchesRes.data);
+        setChats(chatsRes.data);
+      })
+      .catch((err) => {
+        console.error("Ошибка загрузки данных:", err);
+        setCandidates([]);
+        setChats([]);
+      });
+  }, []);
 
-        Promise.all([
-            axios.post("/users/getMatches", { userId }),
-            axios.get(`/users/getChats/${userId}`)
-        ])
-            .then(([matchesRes, chatsRes]) => {
-                setCandidates(matchesRes.data);
-                setChats(chatsRes.data);
-                console.log(chatsRes.data);
-                setLoading(false);
-            })
-            .catch((err) => {
-                console.error("Ошибка загрузки данных:", err);
-                setLoading(false);
-            });
-    }, []);
+  useEffect(() => {
+    if (!user?._id) return;
+    axios
+      .get(`/ispremium/${user._id}`)
+      .then((res) => setIsPremium(!!res.data?.isPremium))
+      .catch(() => setIsPremium(false));
+  }, [user?._id]);
 
-    useEffect(() => {
-        if (!user?._id) return;
-        axios.get(`/ispremium/${user._id}`)
-            .then(res => setIsPremium(!!res.data?.isPremium))
-            .catch(() => setIsPremium(false));
-    }, [user?._id]);
+  const filteredChats = chats?.filter((chat) =>
+    chat.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
-    const filteredChats = chats.filter((chat) => chat.name.toLowerCase().includes(searchTerm.toLowerCase()));
-
-    return (
-        <div className={`flex flex-col justify-start items-center w-[90vw] h-screen `}>
-            {loading ? (
-                <Loading />
-            ) : (
-                <>
-                    <div className={'w-full flex flex-row justify-between items-center'}>
-                        <p className="text-gray text-[20px] font-semibold w-[100%] mt-[110px] ">
-                            Чаты
-                        </p>
-                        <SecondaryButton className='mt-[100px] w-[81px] h-[45px]' onClick={() => setIsSearchOpen(!isSearchOpen)}>
-                            <img src='/images/icons/Search.svg' alt='search button' width={24} height={24} />
-                        </SecondaryButton>
-                    </div>
-                    {isSearchOpen && (
-                        <input
-                            type="text"
-                            placeholder="Поиск..."
-                            className="w-full mt-2 p-2 border border-gray-300 rounded-md"
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                        />
-                    )}
-                    <p className="w-[100%] mt-[40px] h-[22px] text-xl font-medium  text-[#7e6b6d]">
-                        Тeбя лайкнули
-                    </p>
-
-                    <div className="flex flex-row justify-start items-start w-full overflow-x-scroll gap-2 mt-4 scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200 pb-4 relative">
-                        {/* Блюр и баннер, если нет премиума и есть кандидаты */}
-                        {!isPremium && candidates && candidates.length > 0 && (
-                            <>
-                                <div className="z-10 absolute inset-0 w-full h-full backdrop-blur-[8px] bg-white/60 pointer-events-none" />
-                                <div className="z-20 absolute w-full h-[64px] flex items-center justify-center pointer-events-auto" style={{top: 15, left: 0}}>
-                                    <div className='bg-white rounded-[16px] w-[304px] h-[64px] flex items-center justify-center shadow-lg'>
-                                        <Button className="w-[284px] h-[48px] rounded-[6px]" onClick={() => navigate("/premium")}>Узнать кто лайкнул</Button>
-                                    </div>
-                                </div>
-                            </>
-                        )}
-                        {candidates && candidates.length > 0 ? (
-                            candidates.map((elem) => (
-                                <div key={elem._id} className="flex flex-col w-[91px] items-center gap-1.5 relative">
-                                    <div
-                                        onClick={() => navigate(`/chatWith/${elem?._id}`)}
-                                        className="relative w-[81px] h-[81px] bg-[#feffff] rounded-[40px] overflow-hidden border border-solid border-[#f2dddf]"
-                                    >
-                                        <img
-                                            className="absolute w-[70px] h-[70px] top-[5px] left-[5px] rounded-[40px] object-cover"
-                                            alt="Image"
-                                            src={
-                                                elem?.photos[0] ||
-                                                "https://scott88lee.github.io/FMX/img/avatar.jpg"
-                                            }
-                                        />
-                                    </div>
-                                    <div className="relative w-[80px] text-center truncate text-variable-collection-black text-[length:var(--medium-font-size)] tracking-[var(--medium-letter-spacing)] leading-[var(--medium-line-height)] whitespace-nowrap [font-style:var(--medium-font-style)]">
-                                        {elem.name}
-                                    </div>
-                                </div>
-                            ))
-                        ) : (
-                            <div className="mt-[16px] w-full flex items-center justify-center relative">
-                                {/* Баннер уже отображается выше при отсутствии премиума */}
-                            </div>
-                        )}
-                        {/* TEMP */}
-                        {/*{blurMatches && candidates.length > 0 && (*/}
-                        {/*    <div className="w-full h-full flex items-center justify-center z-100 absolute bg-white/95 backdrop-blur-[10px]">*/}
-                        {/*        <img*/}
-                        {/*            src="/images/icons/premium_cover_matches.svg"*/}
-                        {/*            onClick={() => setBlurMatches(false)}*/}
-                        {/*            className="z-20 w-absolute top-5 cursor-pointer"*/}
-                        {/*        />*/}
-                        {/*        <img src="/images/icons/blur.svg" className="z-10 w-full h-full absolute"/>*/}
-                        {/*        <div className="z-[50] w-full h-full bg-white/100"/>*/}
-                        {/*    </div>*/}
-                        {/*)}*/}
-                    </div>
-                    <div className="w-full h-[calc(100vh-360px)] overflow-y-auto mb-[80px]">
-                        {filteredChats.length > 0 ? (
-                            filteredChats.map((chat) => (
-                                <ChatCard
-                                    key={chat._id}
-                                    showDelivered={true}
-                                    userId={chat._id}
-                                    receiverId={userId}
-                                />
-                            ))
-                        ) : (
-                            <div style={{ textAlign: "center", padding: "20px", color: "gray" }}>
-                                Вы еще не начали ни с кем переписываться
-                            </div>
-                        )}
-                    </div>
-                </>
-            )}
+  return (
+    <div className="flex flex-col justify-start items-center w-[90vw] h-screen">
+      <div className="w-full flex flex-row justify-between items-center">
+        {candidates === null ? (
+          <div className="mt-[110px] w-1/2 h-6 bg-gray-300 rounded animate-pulse" />
+        ) : (
+          <p className="text-gray text-[20px] font-semibold w-full mt-[110px]">Чаты</p>
+        )}
+        <div className="mt-[100px]">
+          {candidates === null ? (
+            <div className="w-[45px] h-[45px] rounded-md bg-gray-300 animate-pulse" />
+          ) : (
+            <SecondaryButton
+              className="w-[81px] h-[45px]"
+              onClick={() => setIsSearchOpen(!isSearchOpen)}
+            >
+              <img src="/images/icons/Search.svg" alt="search" width={24} height={24} />
+            </SecondaryButton>
+          )}
         </div>
-    );
+      </div>
+
+      {isSearchOpen && (
+        <input
+          type="text"
+          placeholder="Поиск..."
+          className="w-full mt-2 p-2 border border-gray-300 rounded-md"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+      )}
+
+      <p className="w-full mt-[40px] h-[22px] text-xl font-medium text-[#7e6b6d]">Тeбя лайкнули</p>
+
+      <div className="flex flex-row justify-start items-start w-full overflow-x-scroll gap-2 mt-4 scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200 pb-4 relative">
+        {!isPremium && candidates?.length > 0 && (
+          <>
+            <div className="z-10 absolute inset-0 w-full h-full backdrop-blur-[8px] bg-white/60 pointer-events-none" />
+            <div
+              className="z-20 absolute w-full h-[64px] flex items-center justify-center pointer-events-auto"
+              style={{ top: 15, left: 0 }}
+            >
+              <div className="bg-white rounded-[16px] w-[304px] h-[64px] flex items-center justify-center shadow-lg">
+                <Button className="w-[284px] h-[48px] rounded-[6px]" onClick={() => navigate("/premium")}>
+                  Узнать кто лайкнул
+                </Button>
+              </div>
+            </div>
+          </>
+        )}
+
+        {candidates === null ? (
+          [...Array(5)].map((_, idx) => (
+            <div key={idx} className="flex flex-col w-[91px] items-center gap-1.5">
+              <div className="w-[81px] h-[81px] rounded-full bg-gray-300 animate-pulse" />
+              <div className="w-[60px] h-[10px] mt-1 rounded bg-gray-300 animate-pulse" />
+            </div>
+          ))
+        ) : candidates.length > 0 ? (
+          candidates.map((elem) => (
+            <div key={elem._id} className="flex flex-col w-[91px] items-center gap-1.5 relative">
+              <div
+                onClick={() => navigate(`/chatWith/${elem?._id}`)}
+                className="relative w-[81px] h-[81px] bg-[#feffff] rounded-[40px] overflow-hidden border border-solid border-[#f2dddf]"
+              >
+                <img
+                  className="absolute w-[70px] h-[70px] top-[5px] left-[5px] rounded-[40px] object-cover"
+                  alt="Image"
+                  src={elem?.photos[0] || "https://scott88lee.github.io/FMX/img/avatar.jpg"}
+                />
+              </div>
+              <div className="w-[80px] text-center truncate text-sm">{elem.name}</div>
+            </div>
+          ))
+        ) : (
+          <div className="text-sm text-gray-400 mt-2">Пока никого нет</div>
+        )}
+      </div>
+
+      {/* Чаты */}
+      <div className="w-full h-[calc(100vh-360px)] overflow-y-auto mb-[80px] mt-4 flex flex-col gap-4">
+        {chats === null ? (
+          [...Array(4)].map((_, idx) => (
+            <div
+              key={idx}
+              className="w-full flex items-center gap-2 px-2 py-6 bg-white rounded-lg animate-pulse"
+            >
+              <div className="w-[47px] h-[47px] bg-gray-300 rounded-full" />
+              <div className="flex flex-col flex-1 gap-2">
+                <div className="w-1/2 h-4 bg-gray-300 rounded" />
+                <div className="w-3/4 h-3 bg-gray-200 rounded" />
+              </div>
+              <div className="flex flex-col items-end justify-between h-[42px] gap-2">
+                <div className="w-8 h-3 bg-gray-300 rounded" />
+                <div className="w-5 h-3 bg-gray-200 rounded" />
+              </div>
+            </div>
+          ))
+        ) : filteredChats.length > 0 ? (
+          filteredChats.map((chat) => (
+            <ChatCard
+              key={chat._id}
+              showDelivered={true}
+              userId={chat._id}
+              receiverId={userId}
+            />
+          ))
+        ) : (
+          <div className="text-center text-gray-400 py-4">
+            Вы еще не начали ни с кем переписываться
+          </div>
+        )}
+      </div>
+    </div>
+  );
 }
 
 export default Chat;
