@@ -10,11 +10,11 @@ function getOrientation(file) {
 
       console.log("Detected orientation:", orientation);
       // Если ориентация отсутствует или невалидна — вернуть 1 (нормальная)
-      if (typeof orientation === "number" && orientation >= 1 && orientation <= 8) {
-        resolve(orientation);
-      } else {
+      // if (typeof orientation === "number" && orientation >= 1 && orientation <= 8) {
+      //   resolve(orientation);
+      // } else {
         resolve(1);
-      }
+      // }
     });
   });
 }
