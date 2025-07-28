@@ -29,18 +29,18 @@ const Match = lazy(() => import(/* webpackPrefetch: true */ "./pages/Match"));
 function App() {
   const location = useLocation();
 
-  useEffect(() => {
-    const tg = window.Telegram.WebApp;
-    tg.requestFullscreen();
-    tg.disableVerticalSwipes();
-    const initData = window.Telegram.WebApp.initData;
+  // useEffect(() => {
+  //   const tg = window.Telegram.WebApp;
+  //   tg.requestFullscreen();
+  //   tg.disableVerticalSwipes();
+  //   const initData = window.Telegram.WebApp.initData;
 
-    tg.ready();
+  //   tg.ready();
 
-    return () => {
-      tg.close();
-    };
-  }, []);
+  //   return () => {
+  //     tg.close();
+  //   };
+  // }, []);
 
   useEffect(() => {
     const handleKeyDown = (event) => {

@@ -7,6 +7,8 @@ import {Swiper, SwiperSlide} from "swiper/react";
 import {Pagination} from "swiper/modules";
 import { useUser } from '../context/UserContext';
 import { LikerCard } from '../components/LikerCard';
+import { SkeletonLikerCard } from "../components/SkeletonLikerCard";
+import Loading from "../components/Loading";
 
 Modal.setAppElement("#root");
 
@@ -17,6 +19,9 @@ function LikesPage() {
     const [selectedUser, setSelectedUser] = useState(null);
     const [trigger, setTrigger] = useState(0);
     const [isPremium, setIsPremium] = useState(false);
+
+    const [allPhotosLoaded, setAllPhotosLoaded] = useState(false);
+
 
     useEffect(() => {
         if (!user || !user.likedBy) return;
@@ -31,6 +36,21 @@ function LikesPage() {
                 if (data) {
                     console.log('лайки', data);
                     setLikers(data);
+
+                    const imagePromises = data.flatMap((liker) =>
+                        (liker.photos || []).map((src) => {
+                            return new Promise((resolve) => {
+                                const img = new Image();
+                                img.src = src;
+                                img.onload = resolve;
+                                img.onerror = resolve; // чтобы не висело при ошибке
+                            });
+                        })
+                    );
+                
+                    Promise.all(imagePromises).then(() => {
+                        setAllPhotosLoaded(true);
+                    });
                 }
             });
     }, [trigger, user]);
@@ -69,6 +89,13 @@ function LikesPage() {
                 </p>
                 {/* <img src="/images/match_list_blur.png" alt="" width={361} height={644} className="mt-[16px]" /> */}
                 <div className="w-full flex-1 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 120px)', paddingBottom: 120  }}>
+                {!allPhotosLoaded ? (
+                    <div className="grid grid-cols-2 gap-x-2 gap-y-4 mt-2 w-full justify-items-center">
+                        {Array.from({ length: 6 }).map((_, i) => (
+                            <SkeletonLikerCard key={i} />
+                        ))}
+                    </div>
+                ) : (
                     <div className="grid grid-cols-2 gap-x-2 gap-y-4 mt-2 w-full justify-items-center">
                         {likers?.map((liker) => (
                             <LikerCard
@@ -81,6 +108,7 @@ function LikesPage() {
                             />
                         ))}
                     </div>
+                )}
                 </div>
             </div>
             

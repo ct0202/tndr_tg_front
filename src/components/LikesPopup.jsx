@@ -20,7 +20,7 @@ function LikesPopup({ onClose }) {
                 style={{ backdropFilter: "blur(5px)" }} // Слабое размытие
             ></div>
             <div
-                className="flex flex-col justify-start items-center w-[304px] h-[304px] rounded-[16px] bg-white absolute top-[30%] z-20"
+                className="flex flex-col justify-start items-center w-[304px] h-[304px] rounded-[16px] bg-white absolute top-[30%] z-40"
                 style={{
                     border: "1px solid #f2dddf",
                     boxShadow:
