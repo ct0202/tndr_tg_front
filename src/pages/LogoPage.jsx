@@ -3,15 +3,19 @@ import Button from "../components/Button";
 import { useNavigate } from "react-router-dom";
 import axios from "../axios";
 import { useFilters } from "../context/FiltersContext";
+import { useUser } from "../context/UserContext";
 
 function LogoPage() {
-  const [user, setUser] = useState(undefined); // Изначально undefined для загрузки
+  const [user, setUserS] = useState(undefined); 
   const [isLoaded, setIsLoaded] = useState(false); // Для анимации загрузки
   const navigate = useNavigate();
+
+  const { setUser } = useUser();
+  
   const { filters, updateFilter } = useFilters();
 
-  const initData = window.Telegram.WebApp.initData;
-  const tg = window.Telegram.WebApp;
+   const initData = window.Telegram.WebApp.initData;
+   const tg = window.Telegram.WebApp;
    // console.log('referal', tg.initDataUnsafe.start_param);
 
   // const initData =
@@ -37,7 +41,7 @@ function LogoPage() {
           .then((response) => {
             if (response.data?.user?._id) {
               localStorage.setItem("userId", response.data.user._id);
-              setUser(response.data?.user);
+              setUserS(response.data?.user);
               if (!response.data?.user.activated) {
                 axios.delete("/user", {
                   data: { telegramId: response.data.user.telegramId },
@@ -57,10 +61,20 @@ function LogoPage() {
   }, [initData]);
 
   useEffect(() => {
-    // Второй эффект: навигация после загрузки
     if (isLoaded) {
       if (user?.name) {
-        navigate("/readyLogin");
+        try {
+          axios.post("/auth/getUserById").then((res) => {
+            if(res.status == 200){
+              setUser(res.data.user);
+              navigate("/readyLogin");
+            }
+          })
+        }
+        catch (e) {
+          
+        }
+       
       } else {
         navigate("/calculate");
       }
