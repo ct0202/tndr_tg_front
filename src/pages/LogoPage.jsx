@@ -63,10 +63,12 @@ function LogoPage() {
   useEffect(() => {
     if (isLoaded) {
       if (user?.name) {
+        const userId = localStorage.getItem("userId");
         try {
-          axios.post("/auth/getUserById").then((res) => {
+          axios.post("/auth/getUserById", {userId: userId} ).then((res) => {
             if(res.status == 200){
               setUser(res.data.user);
+              console.log('123', res.data);
               navigate("/readyLogin");
             }
           })
@@ -94,18 +96,23 @@ function LogoPage() {
         src="/images/ui/logo.svg"
         alt=""
       />
-      <Button
-        className="mt-[120px] h-[64px] w-[250px]"
-        onClick={() => {
-          if (user === undefined || user === null || user.name === undefined || user.name === null) {
-            navigate("/calculate");
-          } else {
-            navigate("/readyLogin");
-          }
-        }}
-      >
-        Найти вторую половинку
-      </Button>
+      { isLoaded ?
+        <Button
+          className="mt-[120px] h-[64px] w-[250px]"
+          onClick={() => {
+            if (user === undefined || user === null || user.name === undefined || user.name === null) {
+              navigate("/calculate");
+            } else {
+              navigate("/readyLogin");
+            }
+          }}
+        >
+          Найти вторую половинку
+        </Button>
+        :
+        <>
+        </>
+      }
     </div>
   );
 }
