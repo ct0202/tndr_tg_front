@@ -68,6 +68,10 @@ function LogoPage() {
           axios.post("/auth/getUserById", {userId: userId} ).then((res) => {
             if(res.status == 200){
               setUser(res.data.user);
+              res.data.user.photos.forEach((url) => {
+                const img = new Image();
+                img.src = url;
+              });
               console.log('123', res.data);
               navigate("/readyLogin");
             }
