@@ -4,10 +4,13 @@ import { useNavigate } from "react-router-dom";
 import axios from "../axios";
 import { useFilters } from "../context/FiltersContext";
 import { useUser } from "../context/UserContext";
+import pageCache from "../utils/pageCache";
+import PreloadProgress from "../components/PreloadProgress";
 
 function LogoPage() {
   const [user, setUserS] = useState(undefined); 
   const [isLoaded, setIsLoaded] = useState(false); // Для анимации загрузки
+  const [showPreloadProgress, setShowPreloadProgress] = useState(false);
   const navigate = useNavigate();
 
   const { setUser } = useUser();
@@ -65,20 +68,32 @@ function LogoPage() {
       if (user?.name) {
         const userId = localStorage.getItem("userId");
         try {
-          axios.post("/auth/getUserById", {userId: userId} ).then((res) => {
+          axios.post("/auth/getUserById", {userId: userId} ).then(async (res) => {
             if(res.status == 200){
               setUser(res.data.user);
-              res.data.user.photos.forEach((url) => {
+              
+              // Предварительная загрузка изображений пользователя
+              res.data.photos.forEach((url) => {
                 const img = new Image();
                 img.src = url;
               });
+              
+              // Кэширование данных пользователя для страниц
+              pageCache.cachePageData('userData', res.data);
+              
+              // Предварительная загрузка всех необходимых страниц
+              console.log('🚀 Начинаю предварительную загрузку страниц...');
+              setShowPreloadProgress(true);
+              await pageCache.preloadPages();
+              console.log('✅ Предварительная загрузка завершена');
+              
               console.log('123', res.data);
               navigate("/readyLogin");
             }
           })
         }
         catch (e) {
-          
+          console.error('Ошибка при получении данных пользователя:', e);
         }
        
       } else {
@@ -89,35 +104,42 @@ function LogoPage() {
 
 
   return (
-    <div
-      className={`flex flex-col justify-start items-center transition-opacity duration-500 ${
-        isLoaded ? "opacity-100" : "opacity-0"
-      }`}
-    >
-      <img
-        className="mt-[250px]"
-        loading="eager"
-        src="/images/ui/logo.svg"
-        alt=""
-      />
-      { isLoaded ?
-        <Button
-          className="mt-[120px] h-[64px] w-[250px]"
-          onClick={() => {
-            if (user === undefined || user === null || user.name === undefined || user.name === null) {
-              navigate("/calculate");
-            } else {
-              navigate("/readyLogin");
-            }
-          }}
-        >
-          Найти вторую половинку
-        </Button>
-        :
-        <>
-        </>
-      }
-    </div>
+    <>
+      {showPreloadProgress && (
+        <PreloadProgress 
+          onComplete={() => setShowPreloadProgress(false)}
+        />
+      )}
+      <div
+        className={`flex flex-col justify-start items-center transition-opacity duration-500 ${
+          isLoaded ? "opacity-100" : "opacity-0"
+        }`}
+      >
+        <img
+          className="mt-[250px]"
+          loading="eager"
+          src="/images/ui/logo.svg"
+          alt=""
+        />
+        { isLoaded ?
+          <Button
+            className="mt-[120px] h-[64px] w-[250px]"
+            onClick={() => {
+              if (user === undefined || user === null || user.name === undefined || user.name === null) {
+                navigate("/calculate");
+              } else {
+                navigate("/readyLogin");
+              }
+            }}
+          >
+            Найти вторую половинку
+          </Button>
+          :
+          <>
+          </>
+        }
+      </div>
+    </>
   );
 }
 

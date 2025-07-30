@@ -12,6 +12,7 @@ import {useEffect} from "react";
 // import ProfileCreated from "./steps/ProfileCreated";
 // import Match from "./pages/Match";
 import { AnimatePresence, motion } from "framer-motion";
+import pageCache from "./utils/pageCache";
 
 // Импортируем страницы через React.lazy с префетч
 const LogoPage = lazy(() => import(/* webpackPrefetch: true */ "./pages/LogoPage"));
@@ -36,6 +37,9 @@ function App() {
     const initData = window.Telegram.WebApp.initData;
 
     tg.ready();
+
+    // Очистка устаревшего кэша при запуске приложения
+    pageCache.clearExpiredCache();
 
     return () => {
       tg.close();
