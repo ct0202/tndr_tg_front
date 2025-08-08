@@ -14,7 +14,8 @@ const PreloadProgress = ({ onComplete }) => {
       { name: 'Chat', import: () => import('../pages/Chat') },
       { name: 'Premium', import: () => import('../pages/Premium') },
       { name: 'ReadyLogin', import: () => import('../pages/ReadyLogin') },
-      { name: 'LikesPage', import: () => import('../pages/LikesPageCopy') }
+      { name: 'LikesPage', import: () => import('../pages/LikesPageCopy') },
+      { name: 'FindPage', import: () => import('../pages/FindPageNoSwipe') }
     ];
 
     let loadedCount = 0;

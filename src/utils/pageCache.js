@@ -50,7 +50,8 @@ class PageCache {
       { name: 'Chat', import: () => import('../pages/Chat') },
       { name: 'Premium', import: () => import('../pages/Premium') },
       { name: 'ReadyLogin', import: () => import('../pages/ReadyLogin') },
-      { name: 'LikesPage', import: () => import('../pages/LikesPageCopy') }
+      { name: 'LikesPage', import: () => import('../pages/LikesPageCopy') },
+      { name: 'FindPage', import: () => import('../pages/FindPageNoSwipe') }
     ];
 
     const preloadPromises = pagesToPreload.map(async (page) => {
@@ -66,6 +67,65 @@ class PageCache {
     });
 
     await Promise.allSettled(preloadPromises);
+  }
+
+  // Предварительная загрузка изображений пользователей
+  async preloadUserImages(users) {
+    if (!users || !Array.isArray(users)) return;
+
+    const imagePromises = users.flatMap((user) =>
+      (user.photos || []).map((src) => {
+        return new Promise((resolve) => {
+          const img = new Image();
+          img.src = src;
+          img.onload = resolve;
+          img.onerror = resolve; // чтобы не висело при ошибке
+        });
+      })
+    );
+
+    try {
+      await Promise.allSettled(imagePromises);
+      console.log(`✅ Предварительно загружены изображения для ${users.length} пользователей`);
+    } catch (error) {
+      console.error('❌ Ошибка предварительной загрузки изображений:', error);
+    }
+  }
+
+  // Кэширование данных для страниц с пользователями
+  async cacheUsersData(userId, userData) {
+    try {
+      // Кэшируем данные пользователей для LikesPage
+      if (userData.likedBy && userData.likedBy.length > 0) {
+        const axios = (await import('../axios')).default;
+        const likedUsersResponse = await axios.post("/getLikedUsers", {
+          userIds: userData.likedBy,
+          currentUserId: userId,
+        });
+        
+        if (likedUsersResponse.data) {
+          this.cachePageData('likedUsers', likedUsersResponse.data);
+          await this.preloadUserImages(likedUsersResponse.data);
+          console.log('✅ Кэшированы данные лайкнувших пользователей');
+        }
+      }
+
+      // Кэшируем данные кандидатов для FindPage
+      const axios = (await import('../axios')).default;
+      const candidatesResponse = await axios.post("/users/getCandidates", { 
+        userId, 
+        filters: {} // Базовые фильтры
+      });
+      
+      if (candidatesResponse.data) {
+        this.cachePageData('candidates', candidatesResponse.data);
+        await this.preloadUserImages(candidatesResponse.data);
+        console.log('✅ Кэшированы данные кандидатов');
+      }
+
+    } catch (error) {
+      console.error('❌ Ошибка кэширования данных пользователей:', error);
+    }
   }
 }
 

@@ -9,6 +9,7 @@ import { useUser } from '../context/UserContext';
 import { LikerCard } from '../components/LikerCard';
 import { SkeletonLikerCard } from "../components/SkeletonLikerCard";
 import Loading from "../components/Loading";
+import pageCache from "../utils/pageCache";
 
 Modal.setAppElement("#root");
 
@@ -25,6 +26,16 @@ function LikesPage() {
 
     useEffect(() => {
         if (!user || !user.likedBy) return;
+        
+        // Проверяем кэш перед запросом к серверу
+        const cachedLikedUsers = pageCache.getCachedData('likedUsers');
+        if (cachedLikedUsers) {
+            console.log('✅ Используем кэшированные данные лайкнувших пользователей');
+            setLikers(cachedLikedUsers);
+            setAllPhotosLoaded(true);
+            return;
+        }
+
         const userId = localStorage.getItem("userId");
         axios
             .post("/getLikedUsers", {
@@ -36,6 +47,9 @@ function LikesPage() {
                 if (data) {
                     console.log('лайки', data);
                     setLikers(data);
+                    
+                    // Кэшируем полученные данные
+                    pageCache.cachePageData('likedUsers', data);
 
                     const imagePromises = data.flatMap((liker) =>
                         (liker.photos || []).map((src) => {

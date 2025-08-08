@@ -8,6 +8,7 @@ import axios from "../axios";
 
 import Filters from "../components/Filters";
 import { useFilters } from "../context/FiltersContext";
+import pageCache from "../utils/pageCache";
 
 import {Swiper, SwiperSlide} from "swiper/react";
 import {Pagination} from "swiper/modules";
@@ -32,11 +33,27 @@ function FindPage() {
 
     useEffect(() => {
         const userId = localStorage.getItem("userId");
+        
+        // Проверяем кэш перед запросом к серверу (только для базовых фильтров)
+        if (Object.keys(findFilters).length === 0) {
+            const cachedCandidates = pageCache.getCachedData('candidates');
+            if (cachedCandidates) {
+                console.log('✅ Используем кэшированные данные кандидатов');
+                setCandidates(cachedCandidates);
+                return;
+            }
+        }
+        
         axios
             .post("/users/getCandidates", { userId, filters: findFilters })
             .then((res) => {
                 console.log("Загруженные кандидаты:", res.data);
                 setCandidates(res.data);
+                
+                // Кэшируем данные только для базовых фильтров
+                if (Object.keys(findFilters).length === 0) {
+                    pageCache.cachePageData('candidates', res.data);
+                }
             })
             .catch((err) => console.error("Ошибка загрузки кандидатов:", err));
     }, [findFilters]);
