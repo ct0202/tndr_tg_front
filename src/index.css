@@ -7,6 +7,15 @@
   --safe-bottom: env(--tg-safe-area-inset-bottom, 0px);
 }
 
+/* Стили для плавного появления контента */
+.content-loaded {
+  opacity: 1;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.content-loading {
+  opacity: 0;
+}
 
 html, body, #root {
   margin: 0;

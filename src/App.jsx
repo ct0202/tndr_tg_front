@@ -3,6 +3,7 @@ import { FiltersProvider } from "./context/FiltersContext";
 import { Suspense, lazy } from "react";
 import Layout from "./components/Layout";
 import Navigation from "./components/Navigation";
+import StyleLoader from "./components/StyleLoader";
 // import Chat from "./pages/Chat";
 // import FullChat from "./pages/FullChat/FullChat";
 // import Premium from "./pages/Premium";
@@ -70,42 +71,44 @@ function App() {
     location.pathname.startsWith("/readyLogin");
 
   return (
-    <FiltersProvider>
-      <div className="App flex justify-center items-center">
-        <Suspense fallback={<div>Загрузка...</div>}>
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={location.pathname}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.5 }}
-              
-            >
-              <Routes location={location}>
-                {/* Главные страницы без навигации */}
-                <Route path="/" element={<LogoPage />} />
-                <Route path="/calculate" element={<CalculatePage />} />
-                <Route path="/editProfile" element={<EditPage />} />
-                <Route path="/likes" element={<LikesPageCopy />} />
-                <Route path="/profilecreated" element={<ProfileCreated />} />
-                <Route path="/match/:matchId" element={<Match />} />
+    <StyleLoader>
+      <FiltersProvider>
+        <div className="App flex justify-center items-center">
+          <Suspense fallback={<div>Загрузка...</div>}>
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={location.pathname}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.5 }}
+                
+              >
+                <Routes location={location}>
+                  {/* Главные страницы без навигации */}
+                  <Route path="/" element={<LogoPage />} />
+                  <Route path="/calculate" element={<CalculatePage />} />
+                  <Route path="/editProfile" element={<EditPage />} />
+                  <Route path="/likes" element={<LikesPageCopy />} />
+                  <Route path="/profilecreated" element={<ProfileCreated />} />
+                  <Route path="/match/:matchId" element={<Match />} />
 
-                {/* Страницы с навигацией */}
-                <Route path="/" element={<Layout />}>
-                  <Route path="/readyLogin" element={<ReadyLogin />} />
-                  <Route path="/chats" element={<Chat />} />
-                  <Route path="/chatWith/:userId" element={<FullChat />} />
-                  <Route path="/premium" element={<Premium />} />
-                  <Route path="/find" element={<FindPageNoSwipe />} />
-                </Route>
-              </Routes>
-            </motion.div>
-          </AnimatePresence>
-        </Suspense>
-        {showNavigation && <Navigation />}
-      </div>
-    </FiltersProvider>
+                  {/* Страницы с навигацией */}
+                  <Route path="/" element={<Layout />}>
+                    <Route path="/readyLogin" element={<ReadyLogin />} />
+                    <Route path="/chats" element={<Chat />} />
+                    <Route path="/chatWith/:userId" element={<FullChat />} />
+                    <Route path="/premium" element={<Premium />} />
+                    <Route path="/find" element={<FindPageNoSwipe />} />
+                  </Route>
+                </Routes>
+              </motion.div>
+            </AnimatePresence>
+          </Suspense>
+          {showNavigation && <Navigation />}
+        </div>
+      </FiltersProvider>
+    </StyleLoader>
   );
 }
 
