@@ -124,6 +124,8 @@ function ReadyLogin() {
                                         className="w-full h-full object-cover"
                                         src={photo}
                                         alt={`Фото ${index + 1}`}
+                                        width={345}
+                                        height={403}
                                     />
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent"></div>
                                 </div>

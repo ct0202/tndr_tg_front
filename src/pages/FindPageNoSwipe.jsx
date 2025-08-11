@@ -293,6 +293,8 @@ const Card = ({user, isFront, trigger, onAnimationEnd}) => {
                                         src={photo}
                                         alt={`photo ${index + 1}`}
                                         loading="lazy"
+                                        width={345}
+                                        height={533}
                                         onLoad={() => setImageLoaded(true)}
                                         onError={() => console.error("Failed to load image")}
                                     />
@@ -321,6 +323,8 @@ const Card = ({user, isFront, trigger, onAnimationEnd}) => {
                                     src={"https://scott88lee.github.io/FMX/img/avatar.jpg"}
                                     alt={`photo`}
                                     loading="lazy"
+                                    width={345}
+                                    height={533}
                                     onLoad={() => setImageLoaded(true)}
                                     onError={() => console.error("Failed to load image")}
                                 />
@@ -333,6 +337,8 @@ const Card = ({user, isFront, trigger, onAnimationEnd}) => {
                         src="/images/icons/undef.svg"
                         alt="afddas"
                         className="w-[100%]"
+                        width={345}
+                        height={533}
                     />
                 )
             }

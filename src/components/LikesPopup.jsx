@@ -27,7 +27,7 @@ function LikesPopup({ onClose }) {
                         "0 2px 4px 0 rgba(139, 146, 159, 0.1), 0 8px 8px 0 rgba(139, 146, 159, 0.09), 0 18px 11px 0 rgba(139, 146, 159, 0.05), 0 32px 13px 0 rgba(139, 146, 159, 0.01), 0 50px 14px 0 rgba(139, 146, 159, 0)",
                 }}
             >
-                <img src="/images/icons/hearts_1.png" alt=""/>
+                <img src="/images/icons/hearts_1.png" alt="" width={161} height={161}/>
                 {/*<object data="/images/ui/hearts_1.png" type="image/svg+xml"/>*/}
                 <p className="text-[20px] font-semibold ">Хочешь узнать кто лайкнул?</p>
                 <p
