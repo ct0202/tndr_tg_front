@@ -98,6 +98,9 @@ export const  ChatCard = ({
         src={user?.photos[0]}
         className="relative w-[47px] h-[47px] object-cover bg-variable-collection-light-grey rounded-[80px]"
         alt=""
+        loading="lazy"
+        width={47}
+        height={47}
       />
 
       <div className="flex flex-col items-start grow flex-1 h-11 justify-between relative">

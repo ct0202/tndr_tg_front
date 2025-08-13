@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import SecondaryButton from "../components/SecondaryButton";
 import Button from "../components/Button";
 import { useUser } from "../context/UserContext";
+import Loading from "../components/Loading";
 
 function Chat() {
   const [candidates, setCandidates] = useState(null);
@@ -15,6 +16,7 @@ function Chat() {
   const [isPremium, setIsPremium] = useState(false);
   const { user } = useUser();
   const navigate = useNavigate();
+  const [isInitialOverlayVisible, setIsInitialOverlayVisible] = useState(true);
 
   useEffect(() => {
     const uid = localStorage.getItem("userId");
@@ -35,6 +37,14 @@ function Chat() {
       });
   }, []);
 
+  // Плавное появление контента страницы после загрузки данных
+  useEffect(() => {
+    if (candidates !== null && chats !== null) {
+      const timeoutId = setTimeout(() => setIsInitialOverlayVisible(false), 150);
+      return () => clearTimeout(timeoutId);
+    }
+  }, [candidates, chats]);
+
   useEffect(() => {
     if (!user?._id) return;
     axios
@@ -49,6 +59,11 @@ function Chat() {
 
   return (
     <div className="flex flex-col justify-start items-center w-[90vw] h-screen">
+      {isInitialOverlayVisible && (
+        <div className="fixed inset-0 z-40 bg-white">
+          <Loading />
+        </div>
+      )}
       <div className="w-full flex flex-row justify-between items-center">
         {candidates === null ? (
           <div className="mt-[110px] w-1/2 h-6 bg-gray-300 rounded animate-pulse" />
@@ -115,6 +130,9 @@ function Chat() {
                 <img
                   className="absolute w-[70px] h-[70px] top-[5px] left-[5px] rounded-[40px] object-cover"
                   alt="Image"
+                  loading="lazy"
+                  width={70}
+                  height={70}
                   src={elem?.photos[0] || "https://scott88lee.github.io/FMX/img/avatar.jpg"}
                 />
               </div>
