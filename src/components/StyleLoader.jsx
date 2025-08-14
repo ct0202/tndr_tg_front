@@ -44,9 +44,9 @@ const StyleLoader = ({ children }) => {
     return () => clearTimeout(timeout);
   }, []);
 
-  if (!stylesLoaded) {
-    return <Loading />;
-  }
+  // if (!stylesLoaded) {
+  //   return <Loading />;
+  // }
 
   return (
     <div className="content-loaded">
