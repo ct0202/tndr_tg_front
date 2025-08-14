@@ -74,7 +74,7 @@ function App() {
     <StyleLoader>
       <FiltersProvider>
         <div className="App flex justify-center items-center">
-          <Suspense fallback={<div>Загрузка...</div>}>
+          {/* <Suspense fallback={<div>Загрузка...</div>}> */}
             <AnimatePresence mode="wait">
               <motion.div
                 key={location.pathname}
@@ -104,7 +104,7 @@ function App() {
                 </Routes>
               </motion.div>
             </AnimatePresence>
-          </Suspense>
+          {/* </Suspense> */}
           {showNavigation && <Navigation />}
         </div>
       </FiltersProvider>
