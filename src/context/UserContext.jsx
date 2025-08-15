@@ -12,6 +12,7 @@ export const UserProvider = ({ children }) => {
   const [matches, setMatches] = useState(null);
   const [chats, setChats] = useState(null);
   const [chatDetails, setChatDetails] = useState(null);
+  const [candidates, setCandidates] = useState(null);
   const [isDataLoaded, setIsDataLoaded] = useState(false);
   const [isImagesLoaded, setIsImagesLoaded] = useState(false);
 
@@ -94,6 +95,34 @@ export const UserProvider = ({ children }) => {
     await loadMatchesAndChats();
   };
 
+  const loadCandidates = async () => {
+    const userId = localStorage.getItem("userId");
+    if (!userId) {
+      setCandidates([]);
+      return;
+    }
+
+    try {
+      // Проверяем кэш для кандидатов
+      const cachedCandidates = pageCache.getCachedData('candidates');
+      if (cachedCandidates) {
+        console.log('✅ Используем кэшированные данные кандидатов');
+        setCandidates(cachedCandidates);
+        return;
+      }
+
+      const res = await axios.post("/users/getCandidates", { userId, filters: {} });
+      console.log("Загруженные кандидаты:", res.data);
+      setCandidates(res.data);
+      
+      // Кэшируем данные
+      pageCache.cachePageData('candidates', res.data);
+    } catch (error) {
+      console.error('Ошибка загрузки кандидатов:', error);
+      setCandidates([]);
+    }
+  };
+
   const loadChatDetails = async () => {
     if (!chats || chats.length === 0) {
       setChatDetails([]);
@@ -162,10 +191,10 @@ export const UserProvider = ({ children }) => {
   };
 
   const loadImages = async () => {
-    if (!matches || !chatDetails) return;
+    if (!matches || !chatDetails || !candidates) return;
 
     try {
-      // Собираем все URL изображений из матчей и деталей чатов
+      // Собираем все URL изображений из матчей, деталей чатов и кандидатов
       const allImageUrls = [];
       
       // Изображения из матчей
@@ -179,6 +208,13 @@ export const UserProvider = ({ children }) => {
       chatDetails.forEach(chatDetail => {
         if (chatDetail.user?.photos && chatDetail.user.photos.length > 0) {
           allImageUrls.push(chatDetail.user.photos[0]);
+        }
+      });
+
+      // Изображения из кандидатов (все фото)
+      candidates.forEach(candidate => {
+        if (candidate.photos && candidate.photos.length > 0) {
+          allImageUrls.push(...candidate.photos);
         }
       });
 
@@ -229,6 +265,7 @@ export const UserProvider = ({ children }) => {
 
   useEffect(() => {
     if (isDataLoaded) {
+      loadCandidates();
       loadChatDetails();
     }
   }, [isDataLoaded]);
@@ -251,6 +288,8 @@ export const UserProvider = ({ children }) => {
       setChats,
       chatDetails,
       setChatDetails,
+      candidates,
+      setCandidates,
       isDataLoaded,
       isImagesLoaded,
       refreshMatchesAndChats

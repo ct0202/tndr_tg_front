@@ -8,6 +8,7 @@ import axios from "../axios";
 
 import Filters from "../components/Filters";
 import { useFilters } from "../context/FiltersContext";
+import { useUser } from "../context/UserContext";
 import pageCache from "../utils/pageCache";
 
 import {Swiper, SwiperSlide} from "swiper/react";
@@ -20,9 +21,10 @@ import SecondaryButton from "../components/SecondaryButton";
 import Button from "../components/Button";
 
 function FindPage() {
-    const [candidates, setCandidates] = useState([]);
+    const [localCandidates, setLocalCandidates] = useState([]);
     const [filters, setFilters] = useState(false);
     const { updateFindFilter, findFilters } = useFilters();
+    const { candidates: globalCandidates, isDataLoaded, isImagesLoaded } = useUser();
     const [trigger, setTrigger] = useState(null);
     const [history, setHistory] = useState([]);
     const [msgModal, setMsgModal] = useState(false);
@@ -32,44 +34,38 @@ function FindPage() {
     const undoRef = useRef(null);
 
     useEffect(() => {
-        const userId = localStorage.getItem("userId");
-        
-        // Проверяем кэш перед запросом к серверу (только для базовых фильтров)
-        if (Object.keys(findFilters).length === 0) {
-            const cachedCandidates = pageCache.getCachedData('candidates');
-            if (cachedCandidates) {
-                console.log('✅ Используем кэшированные данные кандидатов');
-                setCandidates(cachedCandidates);
-                return;
-            }
+        // Инициализируем локальных кандидатов из глобальных данных
+        if (globalCandidates && isDataLoaded && isImagesLoaded) {
+            setLocalCandidates([...globalCandidates]);
         }
-        
-        axios
-            .post("/users/getCandidates", { userId, filters: findFilters })
-            .then((res) => {
-                console.log("Загруженные кандидаты:", res.data);
-                setCandidates(res.data);
-                
-                // Кэшируем данные только для базовых фильтров
-                if (Object.keys(findFilters).length === 0) {
-                    pageCache.cachePageData('candidates', res.data);
-                }
-            })
-            .catch((err) => console.error("Ошибка загрузки кандидатов:", err));
+    }, [globalCandidates, isDataLoaded, isImagesLoaded]);
+
+    // Обработка фильтров (если нужно загрузить новые данные с фильтрами)
+    useEffect(() => {
+        if (Object.keys(findFilters).length > 0) {
+            const userId = localStorage.getItem("userId");
+            axios
+                .post("/users/getCandidates", { userId, filters: findFilters })
+                .then((res) => {
+                    console.log("Загруженные кандидаты с фильтрами:", res.data);
+                    setLocalCandidates(res.data);
+                })
+                .catch((err) => console.error("Ошибка загрузки кандидатов с фильтрами:", err));
+        }
     }, [findFilters]);
 
     const handleReaction = async (action) => {
-        if (candidates.length === 0) return;
+        if (localCandidates.length === 0) return;
 
         setTrigger(action);
-        setHistory(prev => [candidates[0], ...prev]);
+        setHistory(prev => [localCandidates[0], ...prev]);
 
         setTimeout(async () => {
             const userId = localStorage.getItem("userId");
-            const targetUserId = candidates[0]._id;
+            const targetUserId = localCandidates[0]._id;
 
             try {
-                setCandidates((prev) => prev.slice(1));
+                setLocalCandidates((prev) => prev.slice(1));
                 setTrigger(null); // Сбрасываем триггер
                 await axios.post("/users/react", { userId, targetUserId, action });
             } catch (err) {
@@ -85,7 +81,7 @@ function FindPage() {
         try {
             await axios.post('/send', {
                 senderId: localStorage.getItem("userId"),
-                receiverId: candidates[0]._id,
+                receiverId: localCandidates[0]._id,
                 message: msg
             });
 
@@ -108,7 +104,7 @@ function FindPage() {
         if (history.length === 0) return;
 
         const lastCard = history[0];
-        setCandidates(prev => [lastCard, ...prev]);
+        setLocalCandidates(prev => [lastCard, ...prev]);
         setHistory(prev => prev.slice(1));
 
         setTrigger('back');
@@ -116,7 +112,7 @@ function FindPage() {
     };
 
     //new
-    const visibleCards = candidates.slice(0, 2).reverse();
+    const visibleCards = localCandidates.slice(0, 2).reverse();
 
     return (
         <div className="w-[90vw] flex flex-col justify-start items-center" style={{height: "calc(100% - 80px)"}}>
@@ -177,7 +173,7 @@ function FindPage() {
                     );
                 })}
 
-                {candidates.length < 2 && (
+                {localCandidates.length < 2 && (
                     <object
                         type="image/svg+xml"
                         data="/images/icons/undef.svg"
@@ -230,6 +226,7 @@ const Card = ({user, isFront, trigger, onAnimationEnd}) => {
     const [animationClass, setAnimationClass] = useState("");
     const [imageLoaded, setImageLoaded] = useState(false);
     const [nextImageLoaded, setNextImageLoaded] = useState(false);
+    const { isImagesLoaded } = useUser();
 
     useEffect(() => {
         if (trigger === "like") {
@@ -283,12 +280,12 @@ const Card = ({user, isFront, trigger, onAnimationEnd}) => {
                         {user.photos.map((photo, index) => (
                             <SwiperSlide key={index}>
                                 <div className="relative w-full h-[533px] rounded-[8px] overflow-hidden">
-                                    {!imageLoaded && (
+                                    {(!imageLoaded || !isImagesLoaded) && (
                                         <div className="absolute inset-0 bg-gray-300 animate-pulse" style={{ background: '#f4f4f7' }} />
                                     )}
                                     <img
                                         className={`w-full h-full object-cover transition-opacity duration-500 ${
-                                            imageLoaded ? 'opacity-100' : 'opacity-0'
+                                            imageLoaded && isImagesLoaded ? 'opacity-100' : 'opacity-0'
                                         }`}
                                         src={photo}
                                         alt={`photo ${index + 1}`}
@@ -313,12 +310,12 @@ const Card = ({user, isFront, trigger, onAnimationEnd}) => {
                     >
                         <SwiperSlide>
                             <div className="relative w-full h-[533px] rounded-[8px] overflow-hidden">
-                                {!imageLoaded && (
+                                {(!imageLoaded || !isImagesLoaded) && (
                                     <div className="absolute inset-0 bg-gray-300 animate-pulse" style={{ background: '#f4f4f7' }} />
                                 )}
                                 <img
                                     className={`w-full h-full object-cover transition-opacity duration-500 ${
-                                        imageLoaded ? 'opacity-100' : 'opacity-0'
+                                        imageLoaded && isImagesLoaded ? 'opacity-100' : 'opacity-0'
                                     }`}
                                     src={"https://scott88lee.github.io/FMX/img/avatar.jpg"}
                                     alt={`photo`}
