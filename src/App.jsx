@@ -12,8 +12,9 @@ import {useEffect} from "react";
 // import LikesPageCopy from "./pages/LikesPageCopy";
 // import ProfileCreated from "./steps/ProfileCreated";
 // import Match from "./pages/Match";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence } from "framer-motion";
 import pageCache from "./utils/pageCache";
+import PageTransition from "./components/PageTransition";
 
 // Импортируем страницы через React.lazy с префетч
 const LogoPage = lazy(() => import(/* webpackPrefetch: true */ "./pages/LogoPage"));
@@ -76,14 +77,7 @@ function App() {
         <div className="App flex justify-center items-center">
           {/* <Suspense fallback={<div>Загрузка...</div>}> */}
             <AnimatePresence mode="wait">
-              <motion.div
-                key={location.pathname}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.5 }}
-                
-              >
+              <PageTransition key={location.pathname} location={location}>
                 <Routes location={location}>
                   {/* Главные страницы без навигации */}
                   <Route path="/" element={<LogoPage />} />
@@ -102,7 +96,7 @@ function App() {
                     <Route path="/find" element={<FindPageNoSwipe />} />
                   </Route>
                 </Routes>
-              </motion.div>
+              </PageTransition>
             </AnimatePresence>
           {/* </Suspense> */}
           {showNavigation && <Navigation />}

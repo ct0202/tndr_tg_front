@@ -14,7 +14,7 @@ function Chat() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [userId, setUserId] = useState(null);
   const [isPremium, setIsPremium] = useState(false);
-  const { user, matches: candidates, chats, isDataLoaded } = useUser();
+  const { user, matches: candidates, chats, isDataLoaded, isImagesLoaded } = useUser();
   const navigate = useNavigate();
   const [isInitialOverlayVisible, setIsInitialOverlayVisible] = useState(true);
 
@@ -42,13 +42,13 @@ function Chat() {
     setUserId(uid);
   }, []);
 
-  // Плавное появление контента страницы после загрузки данных
+  // Плавное появление контента страницы после загрузки данных и изображений
   useEffect(() => {
-    if (isDataLoaded) {
+    if (isDataLoaded && isImagesLoaded) {
       const timeoutId = setTimeout(() => setIsInitialOverlayVisible(false), 150);
       return () => clearTimeout(timeoutId);
     }
-  }, [isDataLoaded]);
+  }, [isDataLoaded, isImagesLoaded]);
 
   useEffect(() => {
     if (!user?._id) return;
@@ -70,13 +70,13 @@ function Chat() {
         </div>
       )} */}
       <div className="w-full flex flex-row justify-between items-center">
-        {!isDataLoaded ? (
+        {!isDataLoaded || !isImagesLoaded ? (
           <div className="mt-[110px] w-1/2 h-6 bg-gray-300 rounded animate-pulse" />
         ) : (
           <p className="text-gray text-[20px] font-semibold w-full mt-[110px]">Чаты</p>
         )}
         <div className="mt-[100px]">
-          {!isDataLoaded ? (
+          {!isDataLoaded || !isImagesLoaded ? (
             <div className="w-[45px] h-[45px] rounded-md bg-gray-300 animate-pulse" />
           ) : (
             <SecondaryButton
@@ -118,7 +118,7 @@ function Chat() {
           </>
         )}
 
-        {!isDataLoaded ? (
+        {!isDataLoaded || !isImagesLoaded ? (
           [...Array(5)].map((_, idx) => (
             <div key={idx} className="flex flex-col w-[91px] items-center gap-1.5">
               <div className="w-[81px] h-[81px] rounded-full bg-gray-300 animate-pulse" />
@@ -151,7 +151,7 @@ function Chat() {
 
       {/* Чаты */}
       <div className="w-full h-[calc(100vh-360px)] overflow-y-auto mb-[80px] mt-4 flex flex-col gap-4">
-        {!isDataLoaded ? (
+        {!isDataLoaded || !isImagesLoaded ? (
           [...Array(4)].map((_, idx) => (
             <div
               key={idx}

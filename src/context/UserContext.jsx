@@ -12,6 +12,7 @@ export const UserProvider = ({ children }) => {
   const [matches, setMatches] = useState(null);
   const [chats, setChats] = useState(null);
   const [isDataLoaded, setIsDataLoaded] = useState(false);
+  const [isImagesLoaded, setIsImagesLoaded] = useState(false);
 
   const refreshUser = async () => {
     const userId = localStorage.getItem("userId");
@@ -92,6 +93,62 @@ export const UserProvider = ({ children }) => {
     await loadMatchesAndChats();
   };
 
+  const loadImages = async () => {
+    if (!matches || !chats) return;
+
+    try {
+      // Собираем все URL изображений из матчей и чатов
+      const allImageUrls = [];
+      
+      // Изображения из матчей
+      matches.forEach(match => {
+        if (match.photos && match.photos.length > 0) {
+          allImageUrls.push(...match.photos);
+        }
+      });
+
+      // Изображения из чатов (первое фото каждого пользователя)
+      chats.forEach(chat => {
+        if (chat.photos && chat.photos.length > 0) {
+          allImageUrls.push(chat.photos[0]);
+        }
+      });
+
+      // Убираем дубликаты
+      const uniqueImageUrls = [...new Set(allImageUrls)];
+
+      if (uniqueImageUrls.length === 0) {
+        setIsImagesLoaded(true);
+        return;
+      }
+
+      console.log(`Загружаем ${uniqueImageUrls.length} изображений...`);
+
+      // Загружаем все изображения
+      const imagePromises = uniqueImageUrls.map(url => {
+        return new Promise((resolve) => {
+          const img = new Image();
+          img.onload = () => {
+            console.log(`Изображение загружено: ${url}`);
+            resolve();
+          };
+          img.onerror = () => {
+            console.warn(`Ошибка загрузки изображения: ${url}`);
+            resolve(); // Продолжаем даже при ошибке загрузки
+          };
+          img.src = url;
+        });
+      });
+
+      await Promise.all(imagePromises);
+      console.log('Все изображения загружены');
+      setIsImagesLoaded(true);
+    } catch (error) {
+      console.error('Ошибка загрузки изображений:', error);
+      setIsImagesLoaded(true); // Продолжаем даже при ошибке
+    }
+  };
+
   useEffect(() => {
     refreshUser();
   }, []);
@@ -101,6 +158,12 @@ export const UserProvider = ({ children }) => {
       loadMatchesAndChats();
     }
   }, [user]);
+
+  useEffect(() => {
+    if (isDataLoaded) {
+      loadImages();
+    }
+  }, [isDataLoaded]);
 
   return (
     <UserContext.Provider value={{ 
@@ -113,6 +176,7 @@ export const UserProvider = ({ children }) => {
       chats,
       setChats,
       isDataLoaded,
+      isImagesLoaded,
       refreshMatchesAndChats
     }}>
       {children}
