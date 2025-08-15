@@ -4,13 +4,13 @@ import { useUser } from '../context/UserContext';
 import Loading from './Loading';
 
 const PageTransition = ({ children, location }) => {
-  const { isDataLoaded, isImagesLoaded, isLoading } = useUser();
+  const { isDataLoaded, isImagesLoaded, isLoading, chatDetails } = useUser();
   
   // Определяем, нужны ли изображения для текущей страницы
   const needsImages = location.pathname === '/chats' || location.pathname.startsWith('/chatWith');
   
   // Показываем загрузку, пока данные и изображения не загружены
-  const isFullyLoaded = isDataLoaded && (!needsImages || isImagesLoaded) && !isLoading;
+  const isFullyLoaded = isDataLoaded && (!needsImages || (isImagesLoaded && chatDetails)) && !isLoading;
 
   return (
     <motion.div

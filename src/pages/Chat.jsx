@@ -14,7 +14,7 @@ function Chat() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [userId, setUserId] = useState(null);
   const [isPremium, setIsPremium] = useState(false);
-  const { user, matches: candidates, chats, isDataLoaded, isImagesLoaded } = useUser();
+  const { user, matches: candidates, chats, chatDetails, isDataLoaded, isImagesLoaded } = useUser();
   const navigate = useNavigate();
   const [isInitialOverlayVisible, setIsInitialOverlayVisible] = useState(true);
 
@@ -58,9 +58,9 @@ function Chat() {
       .catch(() => setIsPremium(false));
   }, [user?._id]);
 
-  const filteredChats = chats?.filter((chat) =>
-    chat.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredChatDetails = chatDetails?.filter((chatDetail) =>
+    chatDetail.user?.name?.toLowerCase().includes(searchTerm.toLowerCase())
+  ) || [];
 
   return (
     <div className="flex flex-col justify-start items-center w-[90vw] h-screen">
@@ -151,7 +151,7 @@ function Chat() {
 
       {/* Чаты */}
       <div className="w-full h-[calc(100vh-360px)] overflow-y-auto mb-[80px] mt-4 flex flex-col gap-4">
-        {!isDataLoaded || !isImagesLoaded ? (
+        {!isDataLoaded || !isImagesLoaded || !chatDetails ? (
           [...Array(4)].map((_, idx) => (
             <div
               key={idx}
@@ -168,13 +168,15 @@ function Chat() {
               </div>
             </div>
           ))
-        ) : filteredChats?.length > 0 ? (
-          filteredChats.map((chat) => (
+        ) : filteredChatDetails.length > 0 ? (
+          filteredChatDetails.map((chatDetail) => (
             <ChatCard
-              key={chat._id}
+              key={chatDetail.chatId}
               showDelivered={true}
-              userId={chat._id}
+              userId={chatDetail.chatId}
               receiverId={userId}
+              preloadedUser={chatDetail.user}
+              preloadedLastMessage={chatDetail.lastMessage}
             />
           ))
         ) : (

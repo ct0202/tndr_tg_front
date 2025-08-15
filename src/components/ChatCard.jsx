@@ -5,16 +5,17 @@ export const  ChatCard = ({
   showDelivered = true,
   property1,
   className,
-  userId, receiverId
+  userId, receiverId,
+  preloadedUser,
+  preloadedLastMessage
 }) => {
   const navigate = useNavigate();
-  const [user, setUser] = useState();
-
-  const [lastMessage, setLastMessage] = useState({
+  const [user, setUser] = useState(preloadedUser);
+  const [lastMessage, setLastMessage] = useState(preloadedLastMessage || {
       senderId: '',
       message: '',
       status: ''
-});
+  });
 
   // useEffect(() => {
   //   axios
@@ -44,6 +45,13 @@ export const  ChatCard = ({
   // }, []);
 
   useEffect(() => {
+    // Если данные уже предзагружены, не загружаем их снова
+    if (preloadedUser && preloadedLastMessage) {
+      setUser(preloadedUser);
+      setLastMessage(preloadedLastMessage);
+      return;
+    }
+
     if (!userId || !receiverId) return;
 
     const fetchUser = axios.post("/auth/getUserById", { userId });
@@ -83,7 +91,7 @@ export const  ChatCard = ({
 
         })
         .catch((err) => console.error("Ошибка при загрузке данных:", err));
-  }, [userId, receiverId]);
+  }, [userId, receiverId, preloadedUser, preloadedLastMessage]);
 
 
 

@@ -11,6 +11,7 @@ export const UserProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [matches, setMatches] = useState(null);
   const [chats, setChats] = useState(null);
+  const [chatDetails, setChatDetails] = useState(null);
   const [isDataLoaded, setIsDataLoaded] = useState(false);
   const [isImagesLoaded, setIsImagesLoaded] = useState(false);
 
@@ -93,11 +94,78 @@ export const UserProvider = ({ children }) => {
     await loadMatchesAndChats();
   };
 
-  const loadImages = async () => {
-    if (!matches || !chats) return;
+  const loadChatDetails = async () => {
+    if (!chats || chats.length === 0) {
+      setChatDetails([]);
+      return;
+    }
 
     try {
-      // Собираем все URL изображений из матчей и чатов
+      const currentUserId = localStorage.getItem("userId");
+      const chatDetailsPromises = chats.map(async (chat) => {
+        try {
+          // Загружаем данные пользователя и последнее сообщение параллельно
+          const [userRes, messageRes] = await Promise.all([
+            axios.post("/auth/getUserById", { userId: chat._id }),
+            axios.post("/getLastMessage", { userId: chat._id, receiverId: currentUserId })
+          ]);
+
+          let lastMessage = null;
+          if (messageRes.data) {
+            const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+            const messageDate = new Date(messageRes.data.createdAt);
+            const now = new Date();
+
+            // Переводим время в локальный часовой пояс
+            const messageTime = messageDate.toLocaleString("ru-RU", {
+              timeZone: userTimeZone,
+              hour: "2-digit",
+              minute: "2-digit",
+            });
+
+            // Проверяем, прошло ли более 24 часов
+            const isYesterday =
+                now.getDate() - messageDate.getDate() === 1 &&
+                now.getMonth() === messageDate.getMonth() &&
+                now.getFullYear() === messageDate.getFullYear();
+
+            lastMessage = {
+              senderId: messageRes.data.senderId.toString(),
+              message: messageRes.data.message,
+              status: messageRes.data.status,
+              time: isYesterday ? "Вчера" : messageTime,
+            };
+          }
+
+          return {
+            user: userRes.data,
+            lastMessage: lastMessage,
+            chatId: chat._id
+          };
+        } catch (error) {
+          console.error(`Ошибка загрузки деталей чата ${chat._id}:`, error);
+          return {
+            user: null,
+            lastMessage: null,
+            chatId: chat._id
+          };
+        }
+      });
+
+      const chatDetailsData = await Promise.all(chatDetailsPromises);
+      setChatDetails(chatDetailsData);
+      console.log('Детали чатов загружены:', chatDetailsData);
+    } catch (error) {
+      console.error('Ошибка загрузки деталей чатов:', error);
+      setChatDetails([]);
+    }
+  };
+
+  const loadImages = async () => {
+    if (!matches || !chatDetails) return;
+
+    try {
+      // Собираем все URL изображений из матчей и деталей чатов
       const allImageUrls = [];
       
       // Изображения из матчей
@@ -107,10 +175,10 @@ export const UserProvider = ({ children }) => {
         }
       });
 
-      // Изображения из чатов (первое фото каждого пользователя)
-      chats.forEach(chat => {
-        if (chat.photos && chat.photos.length > 0) {
-          allImageUrls.push(chat.photos[0]);
+      // Изображения из деталей чатов (первое фото каждого пользователя)
+      chatDetails.forEach(chatDetail => {
+        if (chatDetail.user?.photos && chatDetail.user.photos.length > 0) {
+          allImageUrls.push(chatDetail.user.photos[0]);
         }
       });
 
@@ -161,9 +229,15 @@ export const UserProvider = ({ children }) => {
 
   useEffect(() => {
     if (isDataLoaded) {
-      loadImages();
+      loadChatDetails();
     }
   }, [isDataLoaded]);
+
+  useEffect(() => {
+    if (chatDetails) {
+      loadImages();
+    }
+  }, [chatDetails]);
 
   return (
     <UserContext.Provider value={{ 
@@ -175,6 +249,8 @@ export const UserProvider = ({ children }) => {
       setMatches,
       chats,
       setChats,
+      chatDetails,
+      setChatDetails,
       isDataLoaded,
       isImagesLoaded,
       refreshMatchesAndChats
