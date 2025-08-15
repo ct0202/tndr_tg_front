@@ -5,7 +5,6 @@ const StyleLoader = ({ children }) => {
   const [stylesLoaded, setStylesLoaded] = useState(false);
 
   useEffect(() => {
-    // Простая проверка загрузки стилей Tailwind
     const checkStylesLoaded = () => {
       const testElement = document.createElement('div');
       testElement.className = 'hidden';
@@ -19,7 +18,6 @@ const StyleLoader = ({ children }) => {
       return hasStyles;
     };
 
-    // Ожидаем загрузки стилей
     const waitForStyles = () => {
       if (checkStylesLoaded()) {
         setStylesLoaded(true);

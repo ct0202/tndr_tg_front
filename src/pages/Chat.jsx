@@ -59,11 +59,11 @@ function Chat() {
 
   return (
     <div className="flex flex-col justify-start items-center w-[90vw] h-screen">
-      {isInitialOverlayVisible && (
+      {/* {isInitialOverlayVisible && (
         <div className="fixed inset-0 z-40 bg-white">
           <Loading />
         </div>
-      )}
+      )} */}
       <div className="w-full flex flex-row justify-between items-center">
         {candidates === null ? (
           <div className="mt-[110px] w-1/2 h-6 bg-gray-300 rounded animate-pulse" />
