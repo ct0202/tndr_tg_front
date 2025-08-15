@@ -9,6 +9,9 @@ export const useUser = () => useContext(UserContext);
 export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [matches, setMatches] = useState(null);
+  const [chats, setChats] = useState(null);
+  const [isDataLoaded, setIsDataLoaded] = useState(false);
 
   const refreshUser = async () => {
     const userId = localStorage.getItem("userId");
@@ -37,12 +40,81 @@ export const UserProvider = ({ children }) => {
     }
   };
 
+  const loadMatchesAndChats = async () => {
+    const userId = localStorage.getItem("userId");
+    if (!userId) {
+      setMatches([]);
+      setChats([]);
+      setIsDataLoaded(true);
+      return;
+    }
+
+    // Ждем загрузки пользователя перед загрузкой матчей и чатов
+    if (!user) {
+      return;
+    }
+
+    try {
+      // Проверяем кэш для матчей и чатов
+      const cachedMatches = pageCache.getCachedData('matches');
+      const cachedChats = pageCache.getCachedData('chats');
+      
+      if (cachedMatches && cachedChats) {
+        setMatches(cachedMatches);
+        setChats(cachedChats);
+        setIsDataLoaded(true);
+        return;
+      }
+
+      const [matchesRes, chatsRes] = await Promise.all([
+        axios.post("/users/getMatches", { userId }),
+        axios.get(`/users/getChats/${userId}`),
+      ]);
+
+      setMatches(matchesRes.data);
+      setChats(chatsRes.data);
+      
+      // Кэшируем данные
+      pageCache.cachePageData('matches', matchesRes.data);
+      pageCache.cachePageData('chats', chatsRes.data);
+      
+      setIsDataLoaded(true);
+    } catch (err) {
+      console.error("Ошибка загрузки данных:", err);
+      setMatches([]);
+      setChats([]);
+      setIsDataLoaded(true);
+    }
+  };
+
+  const refreshMatchesAndChats = async () => {
+    setIsDataLoaded(false);
+    await loadMatchesAndChats();
+  };
+
   useEffect(() => {
     refreshUser();
   }, []);
 
+  useEffect(() => {
+    if (user) {
+      loadMatchesAndChats();
+    }
+  }, [user]);
+
   return (
-    <UserContext.Provider value={{ user, setUser, isLoading, refreshUser }}>
+    <UserContext.Provider value={{ 
+      user, 
+      setUser, 
+      isLoading, 
+      refreshUser,
+      matches,
+      setMatches,
+      chats,
+      setChats,
+      isDataLoaded,
+      refreshMatchesAndChats
+    }}>
       {children}
     </UserContext.Provider>
   );

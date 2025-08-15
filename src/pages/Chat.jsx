@@ -8,42 +8,47 @@ import { useUser } from "../context/UserContext";
 import Loading from "../components/Loading";
 
 function Chat() {
-  const [candidates, setCandidates] = useState(null);
-  const [chats, setChats] = useState(null);
+  // const [candidates, setCandidates] = useState(null);
+  // const [chats, setChats] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [userId, setUserId] = useState(null);
   const [isPremium, setIsPremium] = useState(false);
-  const { user } = useUser();
+  const { user, matches: candidates, chats, isDataLoaded } = useUser();
   const navigate = useNavigate();
   const [isInitialOverlayVisible, setIsInitialOverlayVisible] = useState(true);
+
+  // useEffect(() => {
+  //   const uid = localStorage.getItem("userId");
+  //   setUserId(uid);
+
+  //   Promise.all([
+  //     axios.post("/users/getMatches", { userId: uid }),
+  //     axios.get(`/users/getChats/${uid}`),
+  //   ])
+  //     .then(([matchesRes, chatsRes]) => {
+  //       setCandidates(matchesRes.data);
+  //       setChats(chatsRes.data);
+  //     })
+  //     .catch((err) => {
+  //       console.error("Ошибка загрузки данных:", err);
+  //       setCandidates([]);
+  //       setChats([]);
+  //     });
+  // }, []);
 
   useEffect(() => {
     const uid = localStorage.getItem("userId");
     setUserId(uid);
-
-    Promise.all([
-      axios.post("/users/getMatches", { userId: uid }),
-      axios.get(`/users/getChats/${uid}`),
-    ])
-      .then(([matchesRes, chatsRes]) => {
-        setCandidates(matchesRes.data);
-        setChats(chatsRes.data);
-      })
-      .catch((err) => {
-        console.error("Ошибка загрузки данных:", err);
-        setCandidates([]);
-        setChats([]);
-      });
   }, []);
 
   // Плавное появление контента страницы после загрузки данных
   useEffect(() => {
-    if (candidates !== null && chats !== null) {
+    if (isDataLoaded) {
       const timeoutId = setTimeout(() => setIsInitialOverlayVisible(false), 150);
       return () => clearTimeout(timeoutId);
     }
-  }, [candidates, chats]);
+  }, [isDataLoaded]);
 
   useEffect(() => {
     if (!user?._id) return;
@@ -65,13 +70,13 @@ function Chat() {
         </div>
       )} */}
       <div className="w-full flex flex-row justify-between items-center">
-        {candidates === null ? (
+        {!isDataLoaded ? (
           <div className="mt-[110px] w-1/2 h-6 bg-gray-300 rounded animate-pulse" />
         ) : (
           <p className="text-gray text-[20px] font-semibold w-full mt-[110px]">Чаты</p>
         )}
         <div className="mt-[100px]">
-          {candidates === null ? (
+          {!isDataLoaded ? (
             <div className="w-[45px] h-[45px] rounded-md bg-gray-300 animate-pulse" />
           ) : (
             <SecondaryButton
@@ -113,14 +118,14 @@ function Chat() {
           </>
         )}
 
-        {candidates === null ? (
+        {!isDataLoaded ? (
           [...Array(5)].map((_, idx) => (
             <div key={idx} className="flex flex-col w-[91px] items-center gap-1.5">
               <div className="w-[81px] h-[81px] rounded-full bg-gray-300 animate-pulse" />
               <div className="w-[60px] h-[10px] mt-1 rounded bg-gray-300 animate-pulse" />
             </div>
           ))
-        ) : candidates.length > 0 ? (
+        ) : candidates?.length > 0 ? (
           candidates.map((elem) => (
             <div key={elem._id} className="flex flex-col w-[91px] items-center gap-1.5 relative">
               <div
@@ -146,7 +151,7 @@ function Chat() {
 
       {/* Чаты */}
       <div className="w-full h-[calc(100vh-360px)] overflow-y-auto mb-[80px] mt-4 flex flex-col gap-4">
-        {chats === null ? (
+        {!isDataLoaded ? (
           [...Array(4)].map((_, idx) => (
             <div
               key={idx}
@@ -163,7 +168,7 @@ function Chat() {
               </div>
             </div>
           ))
-        ) : filteredChats.length > 0 ? (
+        ) : filteredChats?.length > 0 ? (
           filteredChats.map((chat) => (
             <ChatCard
               key={chat._id}
