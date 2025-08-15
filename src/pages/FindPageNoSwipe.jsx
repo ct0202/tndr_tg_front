@@ -21,6 +21,7 @@ import SecondaryButton from "../components/SecondaryButton";
 import Button from "../components/Button";
 
 function FindPage() {
+    const [candidates, setCandidates] = useState([]);
     const [localCandidates, setLocalCandidates] = useState([]);
     const [filters, setFilters] = useState(false);
     const { updateFindFilter, findFilters } = useFilters();
