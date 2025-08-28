@@ -104,12 +104,25 @@ function Chat() {
       <div className="flex flex-row justify-start items-start w-full overflow-x-scroll gap-2 mt-4 scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200 pb-4 relative">
         {!isPremium && candidates?.length > 0 && (
           <>
-            <div className="z-10 absolute inset-0 w-full h-full backdrop-blur-[8px] bg-white/60 pointer-events-none" />
+                          <div className="z-10 absolute inset-0 w-full h-full pointer-events-none">
+                {/* Основное размытие под SVG */}
+                <div className="absolute inset-0" />
+                
+                {/* Дополнительный слой для более мягкого эффекта */}
+                <div className="absolute inset-0 backdrop-blur-[2px] bg-black/10" />
+                
+                {/* SVG оверлей с текстурой */}
+                <img 
+                  src="/images/ui/blur.svg" 
+                  alt="blur overlay"
+                  className="absolute inset-0 w-full h-full object-cover opacity-90"
+                />
+            </div>
             <div
               className="z-20 absolute w-full h-[64px] flex items-center justify-center pointer-events-auto"
               style={{ top: 15, left: 0 }}
             >
-              <div className="bg-white rounded-[16px] w-[304px] h-[64px] flex items-center justify-center shadow-lg">
+              <div className="bg-white/90 backdrop-blur-sm rounded-[16px] w-[304px] h-[64px] flex items-center justify-center shadow-lg border border-white/50">
                 <Button className="w-[284px] h-[48px] rounded-[6px]" onClick={() => navigate("/premium")}>
                   Узнать кто лайкнул
                 </Button>
