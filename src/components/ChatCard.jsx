@@ -7,7 +7,8 @@ export const  ChatCard = ({
   className,
   userId, receiverId,
   preloadedUser,
-  preloadedLastMessage
+  preloadedLastMessage,
+  revealImages = true
 }) => {
   const navigate = useNavigate();
   const [user, setUser] = useState(preloadedUser);
@@ -104,7 +105,7 @@ export const  ChatCard = ({
     >
       <img
         src={user?.photos[0]}
-        className="relative w-[47px] h-[47px] object-cover bg-variable-collection-light-grey rounded-[80px]"
+        className={`relative w-[47px] h-[47px] object-cover bg-variable-collection-light-grey rounded-[80px] transition-opacity duration-300 ${revealImages ? 'opacity-100' : 'opacity-0'}`}
         alt=""
         loading="lazy"
         width={47}

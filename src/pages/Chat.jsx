@@ -17,6 +17,7 @@ function Chat() {
   const { user, matches: candidates, chats, chatDetails, isDataLoaded, isImagesLoaded } = useUser();
   const navigate = useNavigate();
   const [isInitialOverlayVisible, setIsInitialOverlayVisible] = useState(true);
+  const [revealImages, setRevealImages] = useState(false);
 
   // useEffect(() => {
   //   const uid = localStorage.getItem("userId");
@@ -42,13 +43,24 @@ function Chat() {
     setUserId(uid);
   }, []);
 
-  // Плавное появление контента страницы после загрузки данных и изображений
+  // Плавное появление контента страницы после загрузки данных. Страница не блокируется загрузкой изображений
   useEffect(() => {
-    if (isDataLoaded && isImagesLoaded) {
+    if (isDataLoaded) {
       const timeoutId = setTimeout(() => setIsInitialOverlayVisible(false), 150);
       return () => clearTimeout(timeoutId);
     }
-  }, [isDataLoaded, isImagesLoaded]);
+  }, [isDataLoaded]);
+
+  // Синхронное появление изображений (и в Chat и в ChatCard), без блокировки страницы
+  useEffect(() => {
+    if (isImagesLoaded) {
+      setRevealImages(true);
+      return;
+    }
+    // Фолбэк: если изображения долго грузятся, всё равно показать через небольшую задержку
+    const fallback = setTimeout(() => setRevealImages(true), 2000);
+    return () => clearTimeout(fallback);
+  }, [isImagesLoaded]);
 
   useEffect(() => {
     if (!user?._id) return;
@@ -70,13 +82,13 @@ function Chat() {
         </div>
       )} */}
       <div className="w-full flex flex-row justify-between items-center">
-        {!isDataLoaded || !isImagesLoaded ? (
+        {!isDataLoaded ? (
           <div className="mt-[110px] w-1/2 h-6 bg-gray-300 rounded animate-pulse" />
         ) : (
           <p className="text-gray text-[20px] font-semibold w-full mt-[110px]">Чаты</p>
         )}
         <div className="mt-[100px]">
-          {!isDataLoaded || !isImagesLoaded ? (
+          {!isDataLoaded ? (
             <div className="w-[45px] h-[45px] rounded-md bg-gray-300 animate-pulse" />
           ) : (
             <SecondaryButton
@@ -131,7 +143,7 @@ function Chat() {
           </>
         )}
 
-        {!isDataLoaded || !isImagesLoaded ? (
+        {!isDataLoaded ? (
           [...Array(5)].map((_, idx) => (
             <div key={idx} className="flex flex-col w-[91px] items-center gap-1.5">
               <div className="w-[81px] h-[81px] rounded-full bg-gray-300 animate-pulse" />
@@ -146,7 +158,7 @@ function Chat() {
                 className="relative w-[81px] h-[81px] bg-[#feffff] rounded-[40px] overflow-hidden border border-solid border-[#f2dddf]"
               >
                 <img
-                  className="absolute w-[70px] h-[70px] top-[5px] left-[5px] rounded-[40px] object-cover"
+                  className={`absolute w-[70px] h-[70px] top-[5px] left-[5px] rounded-[40px] object-cover transition-opacity duration-300 ${revealImages ? 'opacity-100' : 'opacity-0'}`}
                   alt="Image"
                   loading="lazy"
                   width={70}
@@ -164,7 +176,7 @@ function Chat() {
 
       {/* Чаты */}
       <div className="w-full h-[calc(100vh-360px)] overflow-y-auto mb-[80px] mt-4 flex flex-col gap-4">
-        {!isDataLoaded || !isImagesLoaded || !chatDetails ? (
+        {!isDataLoaded || !chatDetails ? (
           [...Array(4)].map((_, idx) => (
             <div
               key={idx}
@@ -190,6 +202,7 @@ function Chat() {
               receiverId={userId}
               preloadedUser={chatDetail.user}
               preloadedLastMessage={chatDetail.lastMessage}
+              revealImages={revealImages}
             />
           ))
         ) : (
