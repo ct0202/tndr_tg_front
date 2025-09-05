@@ -25,7 +25,7 @@ function FindPage() {
     const [localCandidates, setLocalCandidates] = useState([]);
     const [filters, setFilters] = useState(false);
     const { updateFindFilter, findFilters } = useFilters();
-    const { candidates: globalCandidates, isDataLoaded, isImagesLoaded } = useUser();
+    const { candidates: globalCandidates, isDataLoaded, isImagesLoaded, isCandidatesLoaded } = useUser();
     const [trigger, setTrigger] = useState(null);
     const [history, setHistory] = useState([]);
     const [msgModal, setMsgModal] = useState(false);
@@ -36,10 +36,10 @@ function FindPage() {
 
     useEffect(() => {
         // Инициализируем локальных кандидатов из глобальных данных
-        if (globalCandidates && isDataLoaded && isImagesLoaded) {
+        if (globalCandidates && isDataLoaded && isCandidatesLoaded && isImagesLoaded) {
             setLocalCandidates([...globalCandidates]);
         }
-    }, [globalCandidates, isDataLoaded, isImagesLoaded]);
+    }, [globalCandidates, isDataLoaded, isCandidatesLoaded, isImagesLoaded]);
 
     // Обработка фильтров (если нужно загрузить новые данные с фильтрами)
     useEffect(() => {

@@ -37,12 +37,12 @@ function App() {
     tg.requestFullscreen();
     tg.disableVerticalSwipes();
     const initData = window.Telegram.WebApp.initData;
-
+  
     tg.ready();
-
+  
     // Очистка устаревшего кэша при запуске приложения
     pageCache.clearExpiredCache();
-
+  
     return () => {
       tg.close();
     };

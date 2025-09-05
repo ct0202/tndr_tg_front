@@ -14,7 +14,7 @@ function Chat() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [userId, setUserId] = useState(null);
   const [isPremium, setIsPremium] = useState(false);
-  const { user, matches: candidates, chats, chatDetails, isDataLoaded, isImagesLoaded } = useUser();
+  const { user, matches: candidates, chats, chatDetails, isDataLoaded, isImagesLoaded, isCandidatesLoaded, isChatDetailsLoaded } = useUser();
   const navigate = useNavigate();
   const [isInitialOverlayVisible, setIsInitialOverlayVisible] = useState(true);
   const [revealImages, setRevealImages] = useState(false);
@@ -176,7 +176,7 @@ function Chat() {
 
       {/* Чаты */}
       <div className="w-full h-[calc(100vh-360px)] overflow-y-auto mb-[80px] mt-4 flex flex-col gap-4">
-        {!isDataLoaded || !chatDetails ? (
+        {!isDataLoaded || !isChatDetailsLoaded ? (
           [...Array(4)].map((_, idx) => (
             <div
               key={idx}

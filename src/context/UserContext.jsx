@@ -14,6 +14,8 @@ export const UserProvider = ({ children }) => {
   const [chatDetails, setChatDetails] = useState(null);
   const [candidates, setCandidates] = useState(null);
   const [isDataLoaded, setIsDataLoaded] = useState(false);
+  const [isCandidatesLoaded, setIsCandidatesLoaded] = useState(false);
+  const [isChatDetailsLoaded, setIsChatDetailsLoaded] = useState(false);
   const [isImagesLoaded, setIsImagesLoaded] = useState(false);
 
   const refreshUser = async () => {
@@ -99,6 +101,7 @@ export const UserProvider = ({ children }) => {
     const userId = localStorage.getItem("userId");
     if (!userId) {
       setCandidates([]);
+      setIsCandidatesLoaded(true);
       return;
     }
 
@@ -108,6 +111,7 @@ export const UserProvider = ({ children }) => {
       if (cachedCandidates) {
         console.log('✅ Используем кэшированные данные кандидатов');
         setCandidates(cachedCandidates);
+        setIsCandidatesLoaded(true);
         return;
       }
 
@@ -117,15 +121,18 @@ export const UserProvider = ({ children }) => {
       
       // Кэшируем данные
       pageCache.cachePageData('candidates', res.data);
+      setIsCandidatesLoaded(true);
     } catch (error) {
       console.error('Ошибка загрузки кандидатов:', error);
       setCandidates([]);
+      setIsCandidatesLoaded(true);
     }
   };
 
   const loadChatDetails = async () => {
     if (!chats || chats.length === 0) {
       setChatDetails([]);
+      setIsChatDetailsLoaded(true);
       return;
     }
 
@@ -183,10 +190,12 @@ export const UserProvider = ({ children }) => {
 
       const chatDetailsData = await Promise.all(chatDetailsPromises);
       setChatDetails(chatDetailsData);
+      setIsChatDetailsLoaded(true);
       console.log('Детали чатов загружены:', chatDetailsData);
     } catch (error) {
       console.error('Ошибка загрузки деталей чатов:', error);
       setChatDetails([]);
+      setIsChatDetailsLoaded(true);
     }
   };
 
@@ -271,10 +280,10 @@ export const UserProvider = ({ children }) => {
   }, [isDataLoaded]);
 
   useEffect(() => {
-    if (chatDetails) {
+    if (isCandidatesLoaded && isChatDetailsLoaded) {
       loadImages();
     }
-  }, [chatDetails]);
+  }, [isCandidatesLoaded, isChatDetailsLoaded]);
 
   return (
     <UserContext.Provider value={{ 
@@ -291,6 +300,8 @@ export const UserProvider = ({ children }) => {
       candidates,
       setCandidates,
       isDataLoaded,
+      isCandidatesLoaded,
+      isChatDetailsLoaded,
       isImagesLoaded,
       refreshMatchesAndChats
     }}>
